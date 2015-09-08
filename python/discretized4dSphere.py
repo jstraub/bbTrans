@@ -132,7 +132,6 @@ class S3Grid(object):
   def GetVertex(self, id):
     return self.vertices[id,:]
 
-
 if __name__ == "__main__":
   lvls = 4
   s3 = S3Grid(lvls)
