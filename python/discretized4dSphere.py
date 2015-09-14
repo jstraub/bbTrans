@@ -44,7 +44,7 @@ class S3Grid(object):
             i+=1
     vs *= 0.5
     # Tada: all of the vertices are unit length and hence \in S^3
-    print np.sqrt((vs**2).sum(axis=1))
+#    print np.sqrt((vs**2).sum(axis=1))
     if False:
       import mayavi.mlab as mlab
       figm = mlab.figure()
@@ -62,7 +62,7 @@ class S3Grid(object):
           G[i,j] = qi.angleTo(qj)
 
     GSorted = np.sort(G, axis=1)
-    print GSorted[0,:] * 180. / np.pi
+#    print GSorted[0,:] * 180. / np.pi
 
     minAngle = GSorted[0, 1] 
     G[G < minAngle - 1e-6] = -1.
@@ -79,9 +79,9 @@ class S3Grid(object):
       if G[p[0], p[1]] > 0 and G[p[0], p[2]] > 0 and G[p[0], p[3]] > 0 and  \
         G[p[1], p[2]] > 0 and G[p[1], p[3]] > 0 and G[p[2], p[3]] > 0:
         tetra.append(p)
-    print len(tetra)
-    if len(tetra) == 600:
-      print "Yeaha the 600 cell"
+#    print len(tetra)
+#    if len(tetra) == 600:
+#      print "Yeaha the 600 cell"
     self.tetra_levels = [0, 600]
     self.vertices = vs
     self.tetra = np.array(tetra)
