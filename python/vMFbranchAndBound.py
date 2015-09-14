@@ -54,12 +54,33 @@ def LowerBound(vMFMM_A, vMFMM_B, vertices, tetra):
 
 def UpperBoundConvexity(vMFMM_A, vMFMM_B, vertices, tetra):
   ''' 
+  TODO
   '''
   ub = 0.
   for j in range(vMFMM_A.GetK()):
     for k in range(vMFMM_B.GetK()):
       ub += 2. * np.pi * vMFMM_A.GetPi(j) * vMFMM_B.GetPi(k) * \
           vMFMM_A.GetvMF(j).GetZ() * vMFMM_A.GetvMF(k).GetZ() 
+  return ub
+
+
+def ClosestMu(muA, muB, qs):
+  mus = np.array([q.rotate(muB) for q in qs])
+  a = np.linalg.solve(mus, muA)
+  if np.all(a > 0.):
+    return muA
+  else:
+    #TODO
+   
+
+def UpperBound(vMFMM_A, vMFMM_B, vertices, tetra):
+  ''' 
+  '''
+  qs = [Quaternion(vec=vertices[tetra[i],:]) for i in range(4)]
+  ub = 0.
+  for j in range(vMFMM_A.GetK()):
+    for k in range(vMFMM_B.GetK()):
+      mu_star = ClosestMu(vMFMM_A.GetvMF(j).GetMu(), vMFMM_B.GetvMF(k).GetMu(), qs)
   return ub
 
 if __name__ == "__main__":
