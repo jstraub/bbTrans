@@ -182,7 +182,7 @@ class SphereGrid(object):
       return len(self.tri_levels) - 1
 
     def Plot(self, level, figm):
-        if level + 1 >= len(self.trilevels):
+        if level + 1 >= len(self.tri_levels):
             print "Cannot plot this level in the SphereGrid"
             return 
         mlab.triangular_mesh(self.vertices[:, 0], self.vertices[:, 1],
@@ -241,6 +241,11 @@ if run_tests:
     print "intersection not detected {}".format(q)
   t1 = time.clock()
   print "tests tock {} ms".format((t1-t0)*1e3)
+
+figm = mlab.figure(bgcolor=(1,1,1))
+for lvl in range(3):
+  sphere.Plot(lvl, figm)
+  mlab.show(stop=True)
 
 #q = np.array([0.5, 0.5, -0.5])
 #q /= np.sqrt((q**2).sum())

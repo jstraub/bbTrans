@@ -94,6 +94,16 @@ def UpperBound(vMFMM_A, vMFMM_B, vertices, tetra):
       ub += ComputevMFtovMFcost(vMFMM_A, vMFMM_B, j, k, mu_star)
   return ub
 
+
+def BranchAndBound(nodes, LowerBound, UpperBound):
+  
+  while np.abs(ub - lb) > 1e-3:
+    node = nodes[-1]
+    u = UpperBound(node)
+    l = LowerBound(node)
+    if 
+
+
 if __name__ == "__main__":
   s3 = S3Grid(0)
   print s3.tetra_levels
