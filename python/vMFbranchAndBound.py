@@ -19,13 +19,18 @@ def LowerBound(vMFMM_A, vMFMM_B, vertices, tetra):
   center = 0.25*vertices[tetra[0]] + 0.25*vertices[tetra[1]] + \
     0.25*vertices[tetra[2]] +  0.25*vertices[tetra[3]]
   center /= np.sqrt((center**2).sum())
-  q = Quaternion(vec=center)
-  lb = 0.
-  for j in range(vMFMM_A.GetK()):
-    for k in range(vMFMM_B.GetK()):
-      lb += ComputevMFtovMFcost(vMFMM_A,
-          vMFMM_B, j, k, q.toRot().R.dot(vMFMM_B.GetvMF(k).GetMu()))
-  return lb
+  qs = [Quaternion(vec=center),
+      Quaternion(vec=vertices[tetra[0]]),
+      Quaternion(vec=vertices[tetra[1]]),
+      Quaternion(vec=vertices[tetra[2]]),
+      Quaternion(vec=vertices[tetra[3]])]
+  lb = np.zeros(5)
+  for i in range(5):
+    for j in range(vMFMM_A.GetK()):
+      for k in range(vMFMM_B.GetK()):
+        lb[i] += ComputevMFtovMFcost(vMFMM_A,
+            vMFMM_B, j, k, qs[i].toRot().R.dot(vMFMM_B.GetvMF(k).GetMu()))
+  return np.max(lb)
 
 def UpperBoundConvexity(vMFMM_A, vMFMM_B, vertices, tetra):
   ''' 
