@@ -2,6 +2,76 @@ import numpy as np
 from js.geometry.rotations import *
 from itertools import combinations, permutations
 
+def normed(a):
+  return a/np.sqrt((a**2).sum())
+
+class Tetrahedron(object):
+  def __init__(self, vertices, lvl):
+    self.vertices = vertices
+    self.tetra = np.arange(4)
+    self.lvl = lvl
+  def Center(self):
+    center = 0.25*self.vertices[self.tetra[0]] \
+      + 0.25*self.vertices[self.tetra[1]] + \
+      0.25*self.vertices[self.tetra[2]] + 0.25*self.vertices[self.tetra[3]]
+    return normed(center)
+  def Subdivide(self):
+    '''
+    Subdivide the tetraheadron 
+    8 tetrahedra and pop out the inner corners of
+    the new tetrahedra to the S3 sphere.
+    http://www.ams.org/journals/mcom/1996-65-215/S0025-5718-96-00748-X/S0025-5718-96-00748-X.pdf
+    '''
+    tetrahedra = []
+    vertices = np.zeros((6, 4))
+    vertices[0, :] = 0.5 * (self.vertices[0] + self.vertices[1]) 
+    vertices[1, :] = 0.5 * (self.vertices[1] + self.vertices[2]) 
+    vertices[2, :] = 0.5 * (self.vertices[2] + self.vertices[0]) 
+    vertices[3, :] = 0.5 * (self.vertices[0] + self.vertices[3]) 
+    vertices[4, :] = 0.5 * (self.vertices[1] + self.vertices[3]) 
+    vertices[5, :] = 0.5 * (self.vertices[2] + self.vertices[3]) 
+    tetrahedra.append(Tetrahedron([
+      normed(self.vertices[0]), 
+      normed(vertices[0,:]),
+      normed(vertices[2,:]),
+      normed(vertices[3,:])], self.lvl+1))
+    tetrahedra.append(Tetrahedron([
+      normed(self.vertices[1]), 
+      normed(vertices[0,:]),
+      normed(vertices[1,:]),
+      normed(vertices[4,:])], self.lvl+1))
+    tetrahedra.append(Tetrahedron([
+      normed(self.vertices[2]), 
+      normed(vertices[1,:]),
+      normed(vertices[2,:]),
+      normed(vertices[5,:])], self.lvl+1))
+    tetrahedra.append(Tetrahedron([
+      normed(self.vertices[3]), 
+      normed(vertices[3,:]),
+      normed(vertices[4,:]),
+      normed(vertices[5,:])], self.lvl+1))
+    tetrahedra.append(Tetrahedron([
+      normed(vertices[0,:]), 
+      normed(vertices[4,:]),
+      normed(vertices[3,:]),
+      normed(vertices[2,:])], self.lvl+1))
+    tetrahedra.append(Tetrahedron([
+      normed(vertices[0,:]), 
+      normed(vertices[1,:]),
+      normed(vertices[4,:]),
+      normed(vertices[2,:])], self.lvl+1))
+    tetrahedra.append(Tetrahedron([
+      normed(vertices[5,:]), 
+      normed(vertices[2,:]),
+      normed(vertices[1,:]),
+      normed(vertices[4,:])], self.lvl+1))
+    tetrahedra.append(Tetrahedron([
+      normed(vertices[5,:]), 
+      normed(vertices[3,:]),
+      normed(vertices[2,:]),
+      normed(vertices[4,:])], self.lvl+1))
+    return tetrahedra
+
 class S3Grid(object):
   def __init__(self, depth):
     self.depth = depth
@@ -131,6 +201,18 @@ class S3Grid(object):
         self.tetra_levels[level+1]]
   def GetVertex(self, id):
     return self.vertices[id,:]
+  def GetTetrahedra(self, level):
+    tetras = self.GetTetras(level)
+    tetrahedra = []
+    for tetra in tetras:
+      tetrahedra.append(Tetrahedron([
+        self.vertices[tetra[0],:],
+        self.vertices[tetra[1],:],
+        self.vertices[tetra[2],:],
+        self.vertices[tetra[3],:]
+        ], level))
+    return tetrahedra
+
 
 if __name__ == "__main__":
   lvls = 4
