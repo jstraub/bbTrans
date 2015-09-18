@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.linalg import det, eig, inv, solve
+import scipy
 from itertools import combinations
 from js.geometry.rotations import *
 from js.geometry.sphere import Sphere
@@ -155,29 +156,31 @@ def FurtestMu(muA, muB, qs, figm = None):
   mus = [q.toRot().R.dot(muB) for q in qs]
   A = np.zeros((3,3))
   for tri in combinations(range(4),3):
-#    A[0,:] = mus[tri[0]]
-#    A[1,:] = mus[tri[1]]
-#    A[2,:] = mus[tri[2]]
     A[:,0] = mus[tri[0]]
     A[:,1] = mus[tri[1]]
     A[:,2] = mus[tri[2]]
-    if np.abs(det(A)) > 1e-6:
+    try:
+#    if np.abs(det(A)) > 1e-6:
       # If the triangle of mus is not degenrate (i.e. they ly on a
       # line)
       a = np.linalg.solve(A, -muA)
       if np.all(a > 0.):
         # Closest mu is interior point.
-        mu_star = muA
+        mu_star = -muA
         if not figm is None:
           for mu in mus:
             mlab.points3d([mu[0]],[mu[1]],[mu[2]], scale_factor=0.1, opacity
                 = 0.5)
           mlab.points3d([mu_star[0]],[mu_star[1]],[mu_star[2]],
-              scale_factor=0.1, color=(0,1,0), opacity = 0.5, mode="2dcross")
+              scale_factor=0.1, color=(0,1,1), opacity = 1.0,
+              mode="2ddiamond")
           mlab.points3d([muA[0]],[muA[1]],[muA[2]],
               scale_factor=0.1, color=(1,0,0), opacity = 0.5, mode="2dcircle")
-          mlab.show(stop=True)
-        return muA
+#          mlab.show(stop=True)
+        return mu_star
+    except scipy.linalg.LinAlgError:
+      print "singular matrix in FurthesstMu"
+#      pass
 #      if np.sum(a == 1.) == 1 and np.sum(a == 0.) == 2:
 #        return A.dot(a)
   furthestLocations = [mu for mu in mus]
@@ -193,10 +196,10 @@ def FurtestMu(muA, muB, qs, figm = None):
       mlab.points3d([mu[0]],[mu[1]],[mu[2]], scale_factor=0.1, opacity
           = 0.5)
     mlab.points3d([mu_star[0]],[mu_star[1]],[mu_star[2]],
-        scale_factor=0.1, color=(0,1,0), opacity = 0.5, mode="2dcross")
+        scale_factor=0.1, color=(0,1,1), opacity = 1.0, mode="2ddiamond")
     mlab.points3d([muA[0]],[muA[1]],[muA[2]],
         scale_factor=0.1, color=(1,0,0), opacity = 0.5, mode="2dcircle")
-    mlab.show(stop=True)
+#    mlab.show(stop=True)
   return mu_star
 
 def ClosestMu(muA, muB, qs, figm = None):
@@ -206,7 +209,8 @@ def ClosestMu(muA, muB, qs, figm = None):
     A[:,0] = mus[tri[0]]
     A[:,1] = mus[tri[1]]
     A[:,2] = mus[tri[2]]
-    if np.abs(det(A)) > 1e-6:
+    try:
+#    if np.abs(det(A)) > 1e-6:
       # If the triangle of mus is not degenrate (i.e. they ly on a
       # line)
       a = np.linalg.solve(A, muA)
@@ -218,14 +222,17 @@ def ClosestMu(muA, muB, qs, figm = None):
             mlab.points3d([mu[0]],[mu[1]],[mu[2]], scale_factor=0.1, opacity
                 = 0.5)
           mlab.points3d([mu_star[0]],[mu_star[1]],[mu_star[2]],
-              scale_factor=0.1, color=(0,1,0), opacity = 0.5, mode="2dcross")
+              scale_factor=0.1, color=(0,1,0), opacity = 1., mode="2dcross")
           mlab.points3d([muA[0]],[muA[1]],[muA[2]],
               scale_factor=0.1, color=(1,0,0), opacity = 0.5, mode="2dcircle")
-          mlab.show(stop=True)
+#          mlab.show(stop=True)
 #        print a, muA, A, 
 #        import ipdb
 #        ipdb.set_trace()
         return muA
+    except scipy.linalg.LinAlgError:
+      print "singular matrix in ClosestMu"
+#      pass
 #      if np.sum(a == 1.) == 1 and np.sum(a == 0.) == 2:
 #        return A.dot(a)
   closestLocations = [mu for mu in mus]
@@ -237,14 +244,15 @@ def ClosestMu(muA, muB, qs, figm = None):
   mu_star = closestLocations[np.argmax(dists)]
 #  print mu_star, dists
   if not figm is None:
+    print "plotting closest"
     for mu in mus:
       mlab.points3d([mu[0]],[mu[1]],[mu[2]], scale_factor=0.1, opacity
           = 0.5)
     mlab.points3d([mu_star[0]],[mu_star[1]],[mu_star[2]],
-        scale_factor=0.1, color=(0,1,0), opacity = 0.5, mode="2dcross")
+        scale_factor=0.1, color=(0,1,0), opacity = 1., mode="2dcross")
     mlab.points3d([muA[0]],[muA[1]],[muA[2]],
         scale_factor=0.1, color=(1,0,0), opacity = 0.5, mode="2dcircle")
-    mlab.show(stop=True)
+#    mlab.show(stop=True)
   return mu_star
    
 def UpperBound(vMFMM_A, vMFMM_B, vertices, tetra):
@@ -263,7 +271,6 @@ def UpperBound(vMFMM_A, vMFMM_B, vertices, tetra):
   return ub
 
 if __name__ == "__main__":
-
   if False:
     a, b = 0.1, 2.
     z = np.linspace(a, b,100)
@@ -315,6 +322,36 @@ if __name__ == "__main__":
     lb[i] = LowerBound(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
     ub[i] = UpperBound(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
     ubC[i], ubCB[i], ubCL[i] = UpperBoundConvexity(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
+    if lb[i] > ubC[i] + 1e-6:
+      print i, lb[i], ub[i], ubC[i]
+      tetra = tetras[i,:]
+      vertices = s3.vertices
+      qs = [Quaternion(vec=vertices[tetra[0],:]),
+          Quaternion(vec=vertices[tetra[1],:]),
+          Quaternion(vec=vertices[tetra[2],:]),
+          Quaternion(vec=vertices[tetra[3],:])]
+      for j in range(vMFMM_A.GetK()):
+        for k in range(vMFMM_B.GetK()):
+          figm = mlab.figure(bgcolor=(1,1,1))
+          s = Sphere(3)
+          s.plotFanzy(figm,1.)
+          muA = vMFMM_A.GetvMF(j).GetMu()
+          muB = vMFMM_B.GetvMF(k).GetMu()
+          print ClosestMu(muA, muB, qs, figm)
+          print FurtestMu(muA, muB, qs, figm)
+          center = 0.25*vertices[tetra[0],:] + 0.25*vertices[tetra[1],:] + \
+            0.25*vertices[tetra[2],:] +  0.25*vertices[tetra[3],:]
+          center /= np.sqrt((center**2).sum())
+          mus = [q.toRot().R.dot(muB) for q in qs]
+          for mu in mus:
+            mlab.points3d([mu[0]],[mu[1]],[mu[2]], scale_factor=0.1, opacity
+                = 0.5)
+#          mlab.points3d([mu_star[0]],[mu_star[1]],[mu_star[2]],
+#              scale_factor=0.1, color=(0,1,0), opacity = 0.5, mode="2dcross")
+          mlab.points3d([muA[0]],[muA[1]],[muA[2]],
+              scale_factor=0.1, color=(1,0,0), opacity = 0.5, mode="2dcircle")
+          mlab.show(stop=True)
+
   print lb.T
   print ub.T
   print ubC.T
@@ -350,4 +387,8 @@ if __name__ == "__main__":
 #  plt.plot(ubCB, label="B")
 #  plt.plot(ubCL, label="lambda_max")
   plt.legend()
+
+  plt.figure()
+  plt.hist((ubC-lb)/(ub-lb), 100)
   plt.show()
+
