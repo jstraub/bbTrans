@@ -54,8 +54,6 @@ def FindMaximumQAQ(A, vertices, tetra):
   alpha = np.real(V[:,np.argmax(e)])
   if np.all(alpha >= 0.) or np.all(alpha <= 0.):
     lambdas.append(np.max(np.real(e)))
-#  print V
-#  print alpha
   # Only three qs: 
   for comb in combinations(range(4), 3):
     A__ = np.array([[A_[i,j] for j in comb] for i in comb])
@@ -75,7 +73,6 @@ def FindMaximumQAQ(A, vertices, tetra):
   # Only one q: 
   for i in range(4):
     lambdas.append((Q[:,i]).T.dot(A).dot(Q[:,i]))
-#  print lambdas
   return np.max(np.array(lambdas))
 
 def BuildM(u,v):
