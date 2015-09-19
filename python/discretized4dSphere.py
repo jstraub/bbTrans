@@ -113,22 +113,33 @@ class S3Grid(object):
             vs[i,perm[3]] = 0.
             i+=1
     vs *= 0.5
+    # Filter out half the sphere
+    north = np.array([1.,0.,0.,0.])
+    j = 0
+    for i in range(vs.shape[0]):
+      if np.arccos(vs[i,:].dot(north)) <= 120*np.pi/180.:
+        vs[j,:] = vs[i,:]
+        j+=1
+    self.vertices = np.copy(vs[:j,:])
+    n_vertices = self.vertices.shape[0]
+    print self.vertices.shape
+      
     # Tada: all of the vertices are unit length and hence \in S^3
-#    print np.sqrt((vs**2).sum(axis=1))
+#    print np.sqrt((self.vertices**2).sum(axis=1))
     if False:
       import mayavi.mlab as mlab
       figm = mlab.figure()
-      for i in range(120):
-        qi = Quaternion(vec=vs[i])
+      for i in range(n_vertices):
+        qi = Quaternion(vec=self.vertices[i])
         qi.plot(figm)
       mlab.show(stop=True)
 
-    G = np.ones((120,120)) * 99
-    for i in range(120):
-      for j in range(120):
+    G = np.ones((n_vertices, n_vertices)) * 99
+    for i in range(n_vertices):
+      for j in range(n_vertices):
         if j != i:
-          qi = Quaternion(vec=vs[i])
-          qj = Quaternion(vec=vs[j])
+          qi = Quaternion(vec=self.vertices[i])
+          qj = Quaternion(vec=self.vertices[j])
           G[i,j] = qi.angleTo(qj)
 
     GSorted = np.sort(G, axis=1)
@@ -145,16 +156,16 @@ class S3Grid(object):
       plt.show()
 
     tetra = []
-    for p in combinations(range(120), 4):
+    for p in combinations(range(n_vertices), 4):
       if G[p[0], p[1]] > 0 and G[p[0], p[2]] > 0 and G[p[0], p[3]] > 0 and  \
         G[p[1], p[2]] > 0 and G[p[1], p[3]] > 0 and G[p[2], p[3]] > 0:
         tetra.append(p)
-#    print len(tetra)
+    print len(tetra)
 #    if len(tetra) == 600:
 #      print "Yeaha the 600 cell"
-    self.tetra_levels = [0, 600]
-    self.vertices = vs
+    self.tetra_levels = [0, len(tetra)]
     self.tetra = np.array(tetra)
+          
 
   def SubdivideOnce(self):
       '''
@@ -212,7 +223,6 @@ class S3Grid(object):
         self.vertices[tetra[3],:]
         ], level))
     return tetrahedra
-
 
 if __name__ == "__main__":
   lvls = 4

@@ -7,6 +7,7 @@ from js.geometry.sphere import Sphere
 from discretized4dSphere import S3Grid
 from vMFMM import *
 import mayavi.mlab as mlab
+import matplotlib.pyplot as plt
 
 def near(a, b):
   return np.abs(a-b) < 1e-6
@@ -25,32 +26,41 @@ def FindMaximumQAQ(A, vertices, tetra):
   Q = np.zeros((4,4))
   for i in range(4):
     Q[:,i] = vertices[tetra[i]]
+  # Only one q: 
+  for i in range(4):
+    lambdas.append((Q[:,i]).T.dot(A).dot(Q[:,i]))
   # Full problem:
   A_ = Q.T.dot(A).dot(Q) 
   B_ = Q.T.dot(Q)  
-  e, V = eig(A_, B_)
-  alpha = np.real(V[:,np.argmax(e)])
-  if np.all(alpha >= 0.) or np.all(alpha <= 0.):
-    lambdas.append(np.max(np.real(e)))
+  try: 
+    e, V = eig(A_, B_)
+    alpha = np.real(V[:,np.argmax(e)])
+    if np.all(alpha >= 0.) or np.all(alpha <= 0.):
+      lambdas.append(np.max(np.real(e)))
+  except ValueError:
+    return np.max(np.array(lambdas))
   # Only three qs: 
   for comb in combinations(range(4), 3):
     A__ = np.array([[A_[i,j] for j in comb] for i in comb])
     B__ = np.array([[B_[i,j] for j in comb] for i in comb])
-    e, V = eig(A__, B__)
-    alpha = np.real(V[:,np.argmax(e)])
-    if np.all(alpha >= 0.) or np.all(alpha <= 0.):
-      lambdas.append(np.max(np.real(e)))
+    try: 
+      e, V = eig(A__, B__)
+      alpha = np.real(V[:,np.argmax(e)])
+      if np.all(alpha >= 0.) or np.all(alpha <= 0.):
+        lambdas.append(np.max(np.real(e)))
+    except ValueError:
+      pass
   # Only two qs: 
   for comb in combinations(range(4), 2):
     A__ = np.array([[A_[i,j] for j in comb] for i in comb])
     B__ = np.array([[B_[i,j] for j in comb] for i in comb])
-    e, V = eig(A__, B__)
-    alpha = np.real(V[:,np.argmax(e)])
-    if np.all(alpha >= 0.) or np.all(alpha <= 0.):
-      lambdas.append(np.max(np.real(e)))
-  # Only one q: 
-  for i in range(4):
-    lambdas.append((Q[:,i]).T.dot(A).dot(Q[:,i]))
+    try: 
+      e, V = eig(A__, B__)
+      alpha = np.real(V[:,np.argmax(e)])
+      if np.all(alpha >= 0.) or np.all(alpha <= 0.):
+        lambdas.append(np.max(np.real(e)))
+    except ValueError:
+      pass
   return np.max(np.array(lambdas))
 
 def BuildM(u,v):
@@ -63,7 +73,7 @@ def BuildM(u,v):
     [uj*vi-ui*vj, ui*vk+uk*vi,       uj*vk+uk*vj,       uk*vk-ui*vi-uj*vj]])
   return M
 
-def LowerBound(vMFMM_A, vMFMM_B, vertices, tetra):
+def LowerBound(vMFMM_A, vMFMM_B, vertices, tetra, returnBestRotation = False):
   ''' 
   Compute a lowerbound on the objective by evaluating it at the center
   point of the tetrahedron in 4D
@@ -82,7 +92,10 @@ def LowerBound(vMFMM_A, vMFMM_B, vertices, tetra):
       for k in range(vMFMM_B.GetK()):
         lb[i] += ComputevMFtovMFcost(vMFMM_A,
             vMFMM_B, j, k, qs[i].toRot().R.dot(vMFMM_B.GetvMF(k).GetMu()))
-  return np.max(lb)
+  if not returnBestRotation:
+    return np.max(lb)
+  else:
+    return np.max(lb), qs[np.argmax(lb)]
 
 def UpperBoundConvexity(vMFMM_A, vMFMM_B, vertices, tetra):
   ''' 
@@ -137,20 +150,6 @@ def ComputeExtremaLocationOnGeodesic(mu1, mu2, nu):
 #  print t, mu_star, nu.dot(mu_star)
   return mu_star
 
-#def ComputeClosestLocationOnGeodesic(mu1, mu2, nu):
-##  print mu1, mu2, nu
-#  theta12 = np.arccos(mu1.dot(mu2))
-#  theta1 = np.arccos(mu1.dot(nu))
-#  theta2 = np.arccos(mu2.dot(nu))
-#  if near(theta1, np.pi*0.5) and near(theta2, np.pi*0.5):
-#    # any t is good.
-#    t = 0.5
-#  t = (np.arctan2(np.cos(theta2) - np.cos(theta12)*np.cos(theta1),np.cos(theta1)*np.sin(theta12))) / theta12
-#  t = min(1.0, max(0.0, t))
-#  mu_star = (mu1*np.sin((1.-t)*theta12) + mu2*np.sin(t*theta12))/np.sin(theta12)
-##  print t, mu_star, nu.dot(mu_star)
-#  return mu_star
-
 def FurtestMu(muA, muB, qs, figm = None):
   mus = [q.toRot().R.dot(muB) for q in qs]
   A = np.zeros((3,3))
@@ -202,36 +201,6 @@ def ClosestMu(muA, muB, qs, figm = None):
   dists = np.array([mu.dot(muA) for mu in closestLocations])
   mu_star = closestLocations[np.argmax(dists)]
   return mu_star
-
-#def ClosestMu(muA, muB, qs, figm = None):
-#  mus = np.array([q.toRot().R.dot(muB) for q in qs]).T
-##  print mus.shape, muA.shape
-##  print mus.T.dot(mus), mus.T.dot(muA)
-##  a = np.linalg.solve(mus.T.dot(mus), mus.T.dot(muA))
-##  print a
-##  if np.all(a > 0.):
-##    return muA
-##  else:
-#  mus = mus.T
-#  closestLocations = []
-##  print mus
-#  for i, mu1 in enumerate(mus):
-#    for mu2 in mus[i+1::]:
-#      closestLocations.append(ComputeClosestLocationOnGeodesic(mu1,
-#        mu2, muA)) 
-#  dists = np.array([mu.dot(muA) for mu in closestLocations])
-#  mu_star = closestLocations[np.argmax(dists)]
-##  print mu_star, dists
-#  if not figm is None:
-#    for mu in mus:
-#      mlab.points3d([mu[0]],[mu[1]],[mu[2]], scale_factor=0.1, opacity
-#          = 0.5)
-#    mlab.points3d([mu_star[0]],[mu_star[1]],[mu_star[2]],
-#        scale_factor=0.1, color=(0,1,0), opacity = 0.5, mode="2dcross")
-#    mlab.points3d([muA[0]],[muA[1]],[muA[2]],
-#        scale_factor=0.1, color=(1,0,0), opacity = 0.5, mode="2dcircle")
-#    mlab.show(stop=True)
-#  return mu_star
    
 def UpperBound(vMFMM_A, vMFMM_B, vertices, tetra):
   ''' 
@@ -267,19 +236,20 @@ class BB:
     return self.upperBound_(self.vMFMM_A, self.vMFMM_B,
         node.tetrahedron.vertices, node.tetrahedron.tetra)
 
-  def LowerBound(self, node):
+  def LowerBound(self, node, returnBestRotation=False):
     return self.lowerBound_(self.vMFMM_A, self.vMFMM_B,
-        node.tetrahedron.vertices, node.tetrahedron.tetra)
+        node.tetrahedron.vertices, node.tetrahedron.tetra, 
+        returnBestRotation)
 
   def Compute(self, nodes, maxIt, q_gt):
     lb = -1e6
-    ub = -1e6
+    ub = 1e6
     node_star = None
     counter = 0
     lbs = [self.LowerBound(node) for node in nodes]
     ubs = [self.UpperBound(node) for node in nodes]
     eps = np.zeros((maxIt, 3))
-    while counter < maxIt:
+    while counter < maxIt and ub-lb > 1e-6:
       lbs = [lbs[i] for i, ubn in enumerate(ubs) if ubn > lb]
       nodes = [nodes[i] for i, ubn in enumerate(ubs) if ubn > lb]
       ubs = [ubn for ubn in ubs if ubn > lb]
@@ -310,7 +280,7 @@ class BB:
             lbs.append(self.LowerBound(node))
             ubs.append(ubn)
 
-      q_star = Quaternion(vec=node_star.tetrahedron.Center())
+      q_star = self.LowerBound(node_star, True)[1]
       dAng = np.zeros(self.vMFMM_A.GetK())
       for j, vMF_A in enumerate(self.vMFMM_A.vMFs):
         dAngs = np.zeros(self.vMFMM_B.GetK())
@@ -337,8 +307,8 @@ if __name__ == "__main__":
   R = q.toRot().R
   print "q True: ", q.q, np.sqrt((q.q**2).sum())
 
-  vMFs_A = [vMF(np.array([1.,0.,0.]), 10.), vMF(np.array([0.,1.,0.]), 10.)]
-  vMFs_B = [vMF(R.dot(np.array([1.,0.,0.])), 10.),
+  vMFs_A = [vMF(np.array([1.,0.,0.]), 1.), vMF(np.array([0.,1.,0.]), 10.)]
+  vMFs_B = [vMF(R.dot(np.array([1.,0.,0.])), 1.),
       vMF(R.dot(np.array([0.,1.,0.])), 10.)]
   vMFMM_A = vMFMM(np.array([0.5, 0.5]), vMFs_A)
   vMFMM_B = vMFMM(np.array([0.5, 0.5]), vMFs_B)
@@ -348,11 +318,11 @@ if __name__ == "__main__":
 
   nodes = [Node(tetrahedron) for tetrahedron in tetrahedra]
   bb = BB(vMFMM_A, vMFMM_B, LowerBound, UpperBound)
-  eps = bb.Compute(nodes, 3000, q)
+  eps = bb.Compute(nodes, 2000, q)
 
   nodes = [Node(tetrahedron) for tetrahedron in tetrahedra]
   bb = BB(vMFMM_A, vMFMM_B, LowerBound, UpperBoundConvexity)
-  epsC = bb.Compute(nodes, 3000, q)
+  epsC = bb.Compute(nodes, 2000, q)
 
   fig = plt.figure()
   plt.ylabel("Sum over angular deviation between closest vMF means.")
