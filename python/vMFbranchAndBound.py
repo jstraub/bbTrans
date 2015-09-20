@@ -15,6 +15,20 @@ def near(a, b):
 def ToDeg(theta):
   return theta*180./np.pi
 
+def ComputeCostFunction(vMFMM_A, vMFMM_B, R):
+  C = 0.
+  for j in range(vMFMM_A.GetK()):
+    for k in range(vMFMM_B.GetK()):
+      tau_A = vMFMM_A.GetvMF(j).GetTau()
+      tau_B = vMFMM_B.GetvMF(k).GetTau()
+      mu_A = vMFMM_A.GetvMF(j).GetMu()
+      mu_B = vMFMM_B.GetvMF(k).GetMu()
+      z = np.sqrt(((tau_A * mu_A + tau_B * R.dot(mu_B))**2).sum())
+      D = 2. * np.pi * vMFMM_A.GetPi(j) * vMFMM_B.GetPi(k) * \
+        vMFMM_A.GetvMF(j).GetZ() * vMFMM_B.GetvMF(k).GetZ() 
+      C += D * ComputeF(z)
+  return C
+
 def ComputeF(z):
   if np.abs(z) < 1e-6:
     return 2.
@@ -246,7 +260,7 @@ class BB:
     counter = 0
     lbs = [self.LowerBound(node) for node in nodes]
     ubs = [self.UpperBound(node) for node in nodes]
-    eps = np.zeros((maxIt, 3))
+    eps = np.zeros((maxIt, 4))
     while counter < maxIt and ub-lb > 1e-6:
       lbs = [lbs[i] for i, ubn in enumerate(ubs) if ubn > lb]
       nodes = [nodes[i] for i, ubn in enumerate(ubs) if ubn > lb]
@@ -292,7 +306,8 @@ class BB:
 #      for k, vMF_B in enumerate(self.vMFMM_B.vMFs):
 #        print "B", k, q_star.rotate(vMF_B.GetMu())
       eps[counter,:2] = dAng 
-      eps[counter,2] = ToDeg(q_gt.angleTo(q_star))
+      eps[counter,2] = ComputeCostFunction(self.vMFMM_A, self.vMFMM_A, q_star.toRot().R)
+      eps[counter,3] = ToDeg(q_gt.angleTo(q_star))
       counter += 1
     return eps
 

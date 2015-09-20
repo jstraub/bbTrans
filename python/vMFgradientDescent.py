@@ -34,7 +34,7 @@ def ComputeGradient(vMFMM_A, vMFMM_B, R):
       D = 2. * np.pi * vMFMM_A.GetPi(j) * vMFMM_B.GetPi(k) * \
         vMFMM_A.GetvMF(j).GetZ() * vMFMM_B.GetvMF(k).GetZ() 
       mu_B_x = skew(R.dot(mu_B))
-      J += mu_A.T.dot(mu_B_x) * D*(-(tau_A * tau_B)/(np.sqrt(z))) * ComputedF(z)
+      J += -mu_A.T.dot(mu_B_x) * D*(-(tau_A * tau_B)/(np.sqrt(z))) * ComputedF(z)
       C += D * ComputeF(z)
   return J, C
 
@@ -79,10 +79,11 @@ class GradientDescent:
   def Compute(self, R0, maxIt, R_gt, figm=None ):
     R = np.copy(R0)
     counter = 0
-    eps = np.zeros((maxIt, 5))
+    eps = np.zeros((maxIt, self.vMFMM_A.GetK()+2))
     J = np.ones(3)
     while counter < maxIt: # and J.sum() > 1e-6:
       J, C = ComputeGradient(self.vMFMM_A, self.vMFMM_B, R)
+      J *= -1. # Gradient ascent!
       alpha = ComputeArmijoStepSize(self.vMFMM_A, self.vMFMM_B, R, J)
       dR = Rot3(np.eye(3))
 #      alpha = 1.
@@ -94,11 +95,11 @@ class GradientDescent:
         for k, vMF_B in enumerate(self.vMFMM_B.vMFs):
           dAngs[k] = ToDeg(np.arccos(vMF_A.GetMu().dot(R.dot(vMF_B.GetMu()))))
         dAng[j] = np.min(dAngs)
-      eps[counter,:3] = dAng 
-      eps[counter,3] = C
+      eps[counter,:self.vMFMM_A.GetK()] = dAng 
+      eps[counter,self.vMFMM_A.GetK()] = C
 #      eps[counter,3] = ToDeg(Rot3(R.T.dot(R_gt)).toQuat().toAxisAngle()[0])
 #      eps[counter,4] = ToDeg(Rot3(R).toQuat().angleTo(Rot3(R_gt).toQuat()))
-      eps[counter,4] = ToDeg(np.sqrt(((Rot3(R.dot(R_gt)).logMap())**2).sum()))
+      eps[counter,self.vMFMM_A.GetK()+1] = ToDeg(np.sqrt(((Rot3(R.dot(R_gt)).logMap())**2).sum()))
       print counter, C, J, alpha
       for j, vMF_A in enumerate(self.vMFMM_A.vMFs):
         print "A", j, vMF_A.GetMu()
