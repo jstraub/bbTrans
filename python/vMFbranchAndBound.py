@@ -111,12 +111,10 @@ def UpperBoundConvexity(vMFMM_A, vMFMM_B, vertices, tetra):
           vMFMM_B.GetvMF(k).GetMu(), qs, None) #figm)
       mu_L = FurtestMu(vMFMM_A.GetvMF(j).GetMu(),
           vMFMM_B.GetvMF(k).GetMu(), qs, None) # figm)
-      U = np.sqrt(((vMFMM_A.GetvMF(j).GetTau() *
-        vMFMM_A.GetvMF(j).GetMu() + vMFMM_B.GetvMF(k).GetTau() *
+      U = np.sqrt(((tau_A * vMFMM_A.GetvMF(j).GetMu() + tau_B *
         mu_U)**2).sum())
       L = np.sqrt(((vMFMM_A.GetvMF(j).GetTau() *
-        vMFMM_A.GetvMF(j).GetMu() + vMFMM_B.GetvMF(k).GetTau() *
-        mu_L)**2).sum())
+        vMFMM_A.GetvMF(j).GetMu() + tau_B * mu_L)**2).sum())
       fUfLoU2L2 = 0.
       L2fUU2fLoU2L2 = 0.
       if np.abs(U-L) < 1e-6:
@@ -130,7 +128,7 @@ def UpperBoundConvexity(vMFMM_A, vMFMM_B, vertices, tetra):
         L2fUU2fLoU2L2 = ((U**2*f_L - L**2*f_U)/(U**2-L**2))
       M = BuildM(vMFMM_A.GetvMF(j).GetMu(), vMFMM_B.GetvMF(k).GetMu())
       D = 2. * np.pi * vMFMM_A.GetPi(j) * vMFMM_B.GetPi(k) * \
-        vMFMM_A.GetvMF(j).GetZ() * vMFMM_A.GetvMF(k).GetZ() 
+        vMFMM_A.GetvMF(j).GetZ() * vMFMM_B.GetvMF(k).GetZ() 
       A += 2.*tau_A*tau_B*D*fUfLoU2L2 * M
       B += D*(tau_A**2*fUfLoU2L2 + tau_B**2*fUfLoU2L2 + L2fUU2fLoU2L2)
   lambda_max = FindMaximumQAQ(A, vertices, tetra)
@@ -289,10 +287,10 @@ class BB:
         dAng[j] = np.min(dAngs)
       print lb, ub, counter, len(nodes), node_star.tetrahedron.lvl, \
         dAng, ToDeg(q_gt.angleTo(q_star))
-      for j, vMF_A in enumerate(self.vMFMM_A.vMFs):
-        print "A", j, vMF_A.GetMu()
-      for k, vMF_B in enumerate(self.vMFMM_B.vMFs):
-        print "B", k, q_star.rotate(vMF_B.GetMu())
+#      for j, vMF_A in enumerate(self.vMFMM_A.vMFs):
+#        print "A", j, vMF_A.GetMu()
+#      for k, vMF_B in enumerate(self.vMFMM_B.vMFs):
+#        print "B", k, q_star.rotate(vMF_B.GetMu())
       eps[counter,:2] = dAng 
       eps[counter,2] = ToDeg(q_gt.angleTo(q_star))
       counter += 1
@@ -329,11 +327,13 @@ if __name__ == "__main__":
   plt.plot(eps[:,:2].sum(axis=1), label="UpperBound")
   plt.plot(epsC[:,:2].sum(axis=1), label="UpperBoundConvexity")
   plt.legend()
+  plt.savefig("./vMFMM_BoundComparison_residuals.png")
   fig = plt.figure()
   plt.ylabel("Angle between GT and inferred rotation.")
   plt.plot(eps[:,2], label="UpperBound")
   plt.plot(epsC[:,2], label="UpperBoundConvexity")
   plt.legend()
+  plt.savefig("./vMFMM_BoundComparison_angleToGT.png")
   plt.show()
 
   print tetras.shape
