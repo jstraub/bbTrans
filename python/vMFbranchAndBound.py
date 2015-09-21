@@ -33,7 +33,8 @@ def ComputeF(z):
   if np.abs(z) < 1e-6:
     return 2.
   else:
-    return (np.exp(z) - np.exp(-z)) / z
+    return 2.*np.sinh(z) / z
+#    return (np.exp(z) - np.exp(-z)) / z
 
 def FindMaximumQAQ(A, vertices, tetra):
   lambdas = []

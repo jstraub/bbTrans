@@ -12,7 +12,7 @@ class vMF(object):
   def GetZ(self):
     return self.Z
   def ComputePartitionFunction(self):
-    return self.tau / (2.*np.pi*(np.exp(self.tau) - np.exp(-self.tau)))
+    return self.tau / (2.*np.pi*(np.sinh(self.tau)))
 
 class vMFMM(object):
   def __init__(self, pis, vMFs):
@@ -34,6 +34,6 @@ def ComputevMFtovMFcost(vMFMM_A, vMFMM_B, j, k, nu):
   if np.abs(z_jk) < 1e-6:
     C *= 2.
   else:
-    C *= (np.exp(z_jk) - np.exp(-z_jk)) / z_jk
+    C *= (np.sinh(z_jk)) / z_jk
 #  C *= (np.exp(z_jk) - np.exp(-z_jk)) / z_jk
   return C
