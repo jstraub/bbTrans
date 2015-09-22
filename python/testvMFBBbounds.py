@@ -239,7 +239,7 @@ def UpperBoundConvexity(vMFMM_A, vMFMM_B, vertices, tetra):
 #          ToLeftQuaternionProductMatrix(vMFMM_B.GetvMF(k).GetMu()))
       M = BuildM(vMFMM_A.GetvMF(j).GetMu(), vMFMM_B.GetvMF(k).GetMu())
       D = 2. * np.pi * vMFMM_A.GetPi(j) * vMFMM_B.GetPi(k) * \
-        vMFMM_A.GetvMF(j).GetZ() * vMFMM_A.GetvMF(k).GetZ() 
+        vMFMM_A.GetvMF(j).GetZ() * vMFMM_B.GetvMF(k).GetZ() 
       A += 2.*tau_A*tau_B*D*fUfLoU2L2 * M
       B += D*(tau_A**2*fUfLoU2L2 + tau_B**2*fUfLoU2L2 + L2fUU2fLoU2L2)
   #print A, B
@@ -453,7 +453,7 @@ if __name__ == "__main__":
     print "---- UpperBoundConvexity"
     ubC[i], ubCB[i], ubCL[i] = UpperBoundConvexityLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
     ubC_noLog[i], _, _ = UpperBoundConvexity(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
-#    print ubC[i], ubC_i
+    print ubC[i], ubC_noLog[i]
 
     if lb[i] > ubC[i] + 1e-6 and False:
       print i, lb[i], ub[i], ubC[i]
@@ -488,6 +488,8 @@ if __name__ == "__main__":
   print lb.T
   print ub.T
   print ubC.T
+  print ubC_noLog.T
+  print ubC.T - ubC_noLog.T
   print np.all(ub > lb)
   print np.sum(ub > lb)
   print np.sum(ubC > lb)
@@ -518,8 +520,8 @@ if __name__ == "__main__":
   plt.plot(ub, label = "ub")
   plt.plot(ubC, label="ub convex")
   plt.plot(ubC_noLog, label="ub convex no Log")
-#  plt.plot(ubCB, label="B")
-#  plt.plot(ubCL, label="lambda_max")
+  plt.plot(ubCB, label="B")
+  plt.plot(ubCL, label="lambda_max")
   plt.legend()
 
 #  plt.figure()
