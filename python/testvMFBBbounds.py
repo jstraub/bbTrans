@@ -63,7 +63,6 @@ def LowerBound(vMFMM_A, vMFMM_B, vertices, tetra):
         if np.isnan(lb[i]):
           import ipdb
           ipdb.set_trace()
-           
   return np.max(lb)
 
 def FindMaximumQAQ(A, vertices, tetra):

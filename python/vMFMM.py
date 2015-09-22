@@ -36,9 +36,9 @@ class vMF(object):
     return self.logZ
   def ComputePartitionFunction(self):
 #    return self.tau / (2.*np.pi*(np.sinh(self.tau)))
-    return 1./(np.pi*Compute2SinhOverZ(self.tau))
+    return 1./(2.*np.pi*Compute2SinhOverZ(self.tau))
   def ComputeLogPartitionFunction(self):
-    return -ComputeLog2SinhOverZ(self.tau) - np.log(np.pi)
+    return -ComputeLog2SinhOverZ(self.tau) - np.log(2.*np.pi)
 
 class vMFMM(object):
   def __init__(self, pis, vMFs):
