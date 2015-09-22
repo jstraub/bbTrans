@@ -38,7 +38,7 @@ def LowerBoundLog(vMFMM_A, vMFMM_B, vertices, tetra):
         lbElem[j,k] = ComputeLogvMFtovMFcost(vMFMM_A,
             vMFMM_B, j, k, qs[i].toRot().R.dot(vMFMM_B.GetvMF(k).GetMu()))
     print lbElem
-    lb[i] = LogSumExp(lbElem)
+    lb[i] = np.exp(LogSumExp(lbElem))
   return np.max(lb)
 
 def LowerBound(vMFMM_A, vMFMM_B, vertices, tetra):
@@ -392,8 +392,10 @@ def UpperBoundLog(vMFMM_A, vMFMM_B, vertices, tetra):
       mu_star = ClosestMu(vMFMM_A.GetvMF(j).GetMu(),
           vMFMM_B.GetvMF(k).GetMu(), qs, None)
       ubElem[j,k] = ComputeLogvMFtovMFcost(vMFMM_A, vMFMM_B, j, k, mu_star)
-  print ubElem
-  return LogSumExp(ubElem)
+  print "ubElem", ubElem
+  print (LogSumExp(ubElem))
+  print np.exp(LogSumExp(ubElem))
+  return np.exp(LogSumExp(ubElem))
 
 if __name__ == "__main__":
   if False:
@@ -431,8 +433,10 @@ if __name__ == "__main__":
   s3 = S3Grid(0)
   print s3.tetra_levels
 
-  vMFs_A = [vMF(np.array([1.,0.,0.]), 1.), vMF(np.array([0.,1.,0.]), 10.)]
-  vMFs_B = [vMF(np.array([1.,0.,0.]), 1.), vMF(np.array([0.,0.,1.]), 10.)]
+  vMFs_A = [vMF(np.array([1.,0.,0.]), 10000.), vMF(np.array([0.,1.,0.]),
+    1000.)]
+  vMFs_B = [vMF(np.array([1.,0.,0.]), 10000.),
+      vMF(np.array([0.,0.,1.]), 1000.)]
   vMFMM_A = vMFMM(np.array([0.5, 0.5]), vMFs_A)
   vMFMM_B = vMFMM(np.array([0.5, 0.5]), vMFs_B)
 
@@ -449,9 +453,12 @@ if __name__ == "__main__":
     lb[i] = LowerBoundLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
     print "---- UpperBound"
     ub[i] = UpperBoundLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
+    try:
+      ubC_noLog[i], _, _ = UpperBoundConvexity(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
+    except ValueError:
+      ub[i] = np.nan
     print "---- UpperBoundConvexity"
     ubC[i], ubCB[i], ubCL[i] = UpperBoundConvexityLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
-    ubC_noLog[i], _, _ = UpperBoundConvexity(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
     print ubC[i], ubC_noLog[i]
 
     if lb[i] > ubC[i] + 1e-6 and False:
@@ -484,10 +491,10 @@ if __name__ == "__main__":
               scale_factor=0.1, color=(1,0,0), opacity = 0.5, mode="2dcircle")
           mlab.show(stop=True)
 
-  print lb.T
-  print ub.T
-  print ubC.T
-  print ubC_noLog.T
+  print "lb", lb.T
+  print "ub", ub.T
+  print "ubC", ubC.T
+  print "ubC_noLog", ubC_noLog.T
   print ubC.T - ubC_noLog.T
   print np.all(ub > lb)
   print np.sum(ub > lb)
@@ -519,11 +526,10 @@ if __name__ == "__main__":
   plt.plot(ub, label = "ub")
   plt.plot(ubC, label="ub convex")
   plt.plot(ubC_noLog, label="ub convex no Log")
-  plt.plot(ubCB, label="B")
-  plt.plot(ubCL, label="lambda_max")
+#  plt.plot(ubCB, label="B")
+#  plt.plot(ubCL, label="lambda_max")
   plt.legend()
 
 #  plt.figure()
 #  plt.hist((ubC-lb)/(ub-lb), 100)
   plt.show()
-
