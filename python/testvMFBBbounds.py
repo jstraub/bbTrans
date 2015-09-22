@@ -456,7 +456,7 @@ if __name__ == "__main__":
     try:
       ubC_noLog[i], _, _ = UpperBoundConvexity(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
     except ValueError:
-      ub[i] = np.nan
+      ubC_noLog[i] = np.nan
     print "---- UpperBoundConvexity"
     ubC[i], ubCB[i], ubCL[i] = UpperBoundConvexityLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
     print ubC[i], ubC_noLog[i]
