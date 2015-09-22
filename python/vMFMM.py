@@ -1,18 +1,44 @@
 import numpy as np
 
+def Compute2SinhOverZ(z):
+  '''
+  compute (exp(z) - exp(-z)) / z
+  '''
+  if np.abs(z) < 1e-6:
+    return 2.
+  else:
+    return (np.exp(z) - np.exp(-z)) / z
+
+def ComputeLog2SinhOverZ(z):
+  '''
+  compute log((exp(z) - exp(-z)) / z)
+  '''
+  if np.abs(z) < 1e-6:
+    return np.log(2.)
+  elif z < 50.:
+    return - np.log(z) + np.log(np.exp(2.*z) -1) - z
+  else:
+    return - np.log(z) + z
+
 class vMF(object):
   def __init__(self, mu, tau):
     self.mu = np.copy(mu)
     self.tau = tau
     self.Z = self.ComputePartitionFunction()
+    self.logZ = self.ComputeLogPartitionFunction()
   def GetTau(self):
     return self.tau
   def GetMu(self):
     return self.mu
   def GetZ(self):
     return self.Z
+  def GetLogZ(self):
+    return self.logZ
   def ComputePartitionFunction(self):
-    return self.tau / (2.*np.pi*(np.sinh(self.tau)))
+#    return self.tau / (2.*np.pi*(np.sinh(self.tau)))
+    return 1./(np.pi*Compute2SinhOverZ(self.tau))
+  def ComputeLogPartitionFunction(self):
+    return -ComputeLog2SinhOverZ(self.tau) - np.log(np.pi)
 
 class vMFMM(object):
   def __init__(self, pis, vMFs):
@@ -27,13 +53,25 @@ class vMFMM(object):
 
 def ComputevMFtovMFcost(vMFMM_A, vMFMM_B, j, k, nu):
   C = 2. * np.pi * vMFMM_A.GetPi(j) * vMFMM_B.GetPi(k) * \
-      vMFMM_A.GetvMF(j).GetZ() * vMFMM_A.GetvMF(k).GetZ() 
+      vMFMM_A.GetvMF(j).GetZ() * vMFMM_B.GetvMF(k).GetZ() 
   z_jk = np.sqrt(((vMFMM_A.GetvMF(j).GetTau() *
     vMFMM_A.GetvMF(j).GetMu() + vMFMM_B.GetvMF(k).GetTau() *
     nu)**2).sum())
-  if np.abs(z_jk) < 1e-6:
-    C *= 2.
-  else:
-    C *= (np.sinh(z_jk)) / z_jk
+  C *= Compute2SinhOverZ(z_jk)
+#  if np.abs(z_jk) < 1e-6:
+#    C *= 2.
+#  else:
+#    C *= (np.sinh(z_jk)) / z_jk
 #  C *= (np.exp(z_jk) - np.exp(-z_jk)) / z_jk
+  return C
+
+def ComputeLogvMFtovMFcost(vMFMM_A, vMFMM_B, j, k, nu):
+  C = np.log(2. * np.pi) + np.log(vMFMM_A.GetPi(j)) + \
+    np.log(vMFMM_B.GetPi(k)) + vMFMM_A.GetvMF(j).GetLogZ() + \
+    vMFMM_B.GetvMF(k).GetLogZ() 
+  z_jk = np.sqrt(((vMFMM_A.GetvMF(j).GetTau() * \
+    vMFMM_A.GetvMF(j).GetMu() + vMFMM_B.GetvMF(k).GetTau() * \
+    nu)**2).sum())
+#  print "--", C, z_jk
+  C += ComputeLog2SinhOverZ(z_jk)
   return C
