@@ -15,6 +15,12 @@ def near(a, b):
 def ToDeg(theta):
   return theta*180./np.pi
 
+def LogSumExp(A, signs = None):
+  if signs is None:
+    return np.log(np.sum(np.exp(A-A.max()))) + A.max()
+  else:
+    return np.log(np.sum(signs*np.exp(A-A.max()))) + A.max()
+
 def ComputeCostFunction(vMFMM_A, vMFMM_B, R):
   C = 0.
   for j in range(vMFMM_A.GetK()):
@@ -111,6 +117,31 @@ def LowerBound(vMFMM_A, vMFMM_B, vertices, tetra, returnBestRotation = False):
     return np.max(lb)
   else:
     return np.max(lb), qs[np.argmax(lb)]
+def LowerBoundLog(vMFMM_A, vMFMM_B, vertices, tetra, returnBestRotation = False):
+  ''' 
+  Compute a lowerbound on the objective by evaluating it at the center
+  point of the tetrahedron in 4D
+  '''
+  center = 0.25*vertices[tetra[0]] + 0.25*vertices[tetra[1]] + \
+    0.25*vertices[tetra[2]] +  0.25*vertices[tetra[3]]
+  center /= np.sqrt((center**2).sum())
+  qs = [Quaternion(vec=center),
+      Quaternion(vec=vertices[tetra[0]]),
+      Quaternion(vec=vertices[tetra[1]]),
+      Quaternion(vec=vertices[tetra[2]]),
+      Quaternion(vec=vertices[tetra[3]])]
+  lb = np.zeros(5)
+  for i in range(5):
+    lbElem = np.zeros((vMFMM_A.GetK(), vMFMM_B.GetK()))
+    for j in range(vMFMM_A.GetK()):
+      for k in range(vMFMM_B.GetK()):
+        lbElem[j,k] = ComputeLogvMFtovMFcost(vMFMM_A,
+            vMFMM_B, j, k, qs[i].toRot().R.dot(vMFMM_B.GetvMF(k).GetMu()))
+    lb[i] = np.exp(LogSumExp(lbElem))
+  if not returnBestRotation:
+    return np.max(lb)
+  else:
+    return np.max(lb), qs[np.argmax(lb)]
 
 def UpperBoundConvexity(vMFMM_A, vMFMM_B, vertices, tetra):
   ''' 
@@ -146,6 +177,69 @@ def UpperBoundConvexity(vMFMM_A, vMFMM_B, vertices, tetra):
         vMFMM_A.GetvMF(j).GetZ() * vMFMM_B.GetvMF(k).GetZ() 
       A += 2.*tau_A*tau_B*D*fUfLoU2L2 * M
       B += D*(tau_A**2*fUfLoU2L2 + tau_B**2*fUfLoU2L2 + L2fUU2fLoU2L2)
+  lambda_max = FindMaximumQAQ(A, vertices, tetra)
+  return B + lambda_max #, B, lambda_max
+def UpperBoundConvexityLog(vMFMM_A, vMFMM_B, vertices, tetra):
+  ''' 
+  '''
+  qs = [Quaternion(vec=vertices[tetra[i]]) for i in range(4)]
+  Melem = [np.zeros((4,4))]*vMFMM_A.GetK()*vMFMM_B.GetK()
+  Aelem = np.zeros(vMFMM_A.GetK()*vMFMM_B.GetK())
+  Belem = np.zeros((vMFMM_A.GetK()*vMFMM_B.GetK(), 4))
+  BelemSign = np.zeros((vMFMM_A.GetK()*vMFMM_B.GetK(), 4))
+  for j in range(vMFMM_A.GetK()):
+    for k in range(vMFMM_B.GetK()):
+      tau_A = vMFMM_A.GetvMF(j).GetTau()
+      tau_B = vMFMM_B.GetvMF(k).GetTau()
+      mu_U = ClosestMu(vMFMM_A.GetvMF(j).GetMu(),
+          vMFMM_B.GetvMF(k).GetMu(), qs, None) #figm)
+      mu_L = FurtestMu(vMFMM_A.GetvMF(j).GetMu(),
+          vMFMM_B.GetvMF(k).GetMu(), qs, None) # figm)
+      U = np.sqrt(((vMFMM_A.GetvMF(j).GetTau() *
+        vMFMM_A.GetvMF(j).GetMu() + vMFMM_B.GetvMF(k).GetTau() *
+        mu_U)**2).sum())
+      L = np.sqrt(((vMFMM_A.GetvMF(j).GetTau() *
+        vMFMM_A.GetvMF(j).GetMu() + vMFMM_B.GetvMF(k).GetTau() *
+        mu_L)**2).sum())
+#      print "U,L", U, L
+      fUfLoU2L2 = 0.
+      L2fUU2fLoU2L2 = 0.
+      if np.abs(U-L) < 1e-6:
+        # TODO
+        # Assymptotics for U-L -> 0
+        fUfLoU2L2 = (1. + U - np.exp(2.*U) + U * np.exp(2.*U))/(2.*U**3*np.exp(U))
+        L2fUU2fLoU2L2 = -(3+U-3*np.exp(2.*U) + U*np.exp(2.*U))/(2.*U*np.exp(U))
+        raw_input()
+      else:
+        f_U = ComputeLog2SinhOverZ(U)
+        f_L = ComputeLog2SinhOverZ(L)
+#        print "fU, fL", f_U, f_L
+        fUfLoU2L2 = - np.log(U - L) - np.log(U + L)
+        if f_U > f_L:
+          fUfLoU2L2 += np.log(1. - np.exp(f_L-f_U)) + f_U
+        else:
+          fUfLoU2L2 += np.log(np.exp(f_U-f_L) - 1.) + f_L
+        L2fUU2fLoU2L2 = - np.log(U - L) - np.log(U + L)
+        LfU = 2.*np.log(L)+f_U + L2fUU2fLoU2L2
+        UfL = 2.*np.log(U)+f_L + L2fUU2fLoU2L2
+#        print "LfU, UfL", LfU, UfL
+      Melem[j*vMFMM_B.GetK()+k] = BuildM(vMFMM_A.GetvMF(j).GetMu(),
+        vMFMM_B.GetvMF(k).GetMu())
+      D = np.log(2. * np.pi) + np.log(vMFMM_A.GetPi(j)) + \
+        np.log(vMFMM_B.GetPi(k)) + vMFMM_A.GetvMF(j).GetLogZ() + \
+        vMFMM_B.GetvMF(k).GetLogZ() 
+      Aelem[j*vMFMM_B.GetK()+k] = np.log(2) + np.log(tau_A) + np.log(tau_B)\
+        + D + fUfLoU2L2
+      b = np.array([2.*np.log(tau_A) + fUfLoU2L2, 2.*np.log(tau_B)+fUfLoU2L2, 
+        LfU, UfL])
+      Belem[j*vMFMM_B.GetK()+k, :] = b+D #, 
+      BelemSign[j*vMFMM_B.GetK()+k, :] = np.array([1.,1.,-1.,1.])
+  A = np.zeros((4,4))
+  for j in range(4):
+    for k in range(4):
+      M_jk_elem = np.array([Mel[j,k] for Mel in Melem])
+      A[j,k] = (np.sum(M_jk_elem*np.exp(Aelem-Aelem.max()))) * np.exp(Aelem.max())
+  B = (BelemSign*np.exp(Belem-Belem.max())).sum() * np.exp(Belem.max())
   lambda_max = FindMaximumQAQ(A, vertices, tetra)
   return B + lambda_max #, B, lambda_max
 
@@ -229,6 +323,21 @@ def UpperBound(vMFMM_A, vMFMM_B, vertices, tetra):
           vMFMM_B.GetvMF(k).GetMu(), qs, None)
       ub += ComputevMFtovMFcost(vMFMM_A, vMFMM_B, j, k, mu_star)
   return ub
+def UpperBoundLog(vMFMM_A, vMFMM_B, vertices, tetra):
+  ''' 
+  '''
+  qs = [Quaternion(vec=vertices[tetra[i]]) for i in range(4)]
+  ub = 0.
+  ubElem = np.zeros((vMFMM_A.GetK(), vMFMM_B.GetK()))
+  for j in range(vMFMM_A.GetK()):
+    for k in range(vMFMM_B.GetK()):
+#      figm = mlab.figure(bgcolor=(1,1,1))
+#      s = Sphere(2)
+#      s.plotFanzy(figm, 1)
+      mu_star = ClosestMu(vMFMM_A.GetvMF(j).GetMu(),
+          vMFMM_B.GetvMF(k).GetMu(), qs, None)
+      ubElem[j,k] = ComputeLogvMFtovMFcost(vMFMM_A, vMFMM_B, j, k, mu_star)
+  return np.exp(LogSumExp(ubElem))
 
 class Node(object):
   def __init__(self, tetrahedron):
@@ -261,7 +370,7 @@ class BB:
     counter = 0
     lbs = [self.LowerBound(node) for node in nodes]
     ubs = [self.UpperBound(node) for node in nodes]
-    eps = np.zeros((maxIt, 4))
+    eps = np.zeros((maxIt, self.vMFMM_A.GetK()+2))
     while counter < maxIt and ub-lb > 1e-6:
       lbs = [lbs[i] for i, ubn in enumerate(ubs) if ubn > lb]
       nodes = [nodes[i] for i, ubn in enumerate(ubs) if ubn > lb]
@@ -306,9 +415,9 @@ class BB:
 #        print "A", j, vMF_A.GetMu()
 #      for k, vMF_B in enumerate(self.vMFMM_B.vMFs):
 #        print "B", k, q_star.rotate(vMF_B.GetMu())
-      eps[counter,:2] = dAng 
-      eps[counter,2] = ComputeCostFunction(self.vMFMM_A, self.vMFMM_A, q_star.toRot().R)
-      eps[counter,3] = ToDeg(q_gt.angleTo(q_star))
+      eps[counter,:self.vMFMM_A.GetK()] = dAng 
+      eps[counter, self.vMFMM_A.GetK()] = ComputeCostFunction(self.vMFMM_A, self.vMFMM_A, q_star.toRot().R)
+      eps[counter, self.vMFMM_A.GetK()+1] = ToDeg(q_gt.angleTo(q_star))
       counter += 1
     return eps
 

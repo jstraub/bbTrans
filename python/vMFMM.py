@@ -58,11 +58,6 @@ def ComputevMFtovMFcost(vMFMM_A, vMFMM_B, j, k, nu):
     vMFMM_A.GetvMF(j).GetMu() + vMFMM_B.GetvMF(k).GetTau() *
     nu)**2).sum())
   C *= Compute2SinhOverZ(z_jk)
-#  if np.abs(z_jk) < 1e-6:
-#    C *= 2.
-#  else:
-#    C *= (np.sinh(z_jk)) / z_jk
-#  C *= (np.exp(z_jk) - np.exp(-z_jk)) / z_jk
   return C
 
 def ComputeLogvMFtovMFcost(vMFMM_A, vMFMM_B, j, k, nu):
@@ -72,6 +67,5 @@ def ComputeLogvMFtovMFcost(vMFMM_A, vMFMM_B, j, k, nu):
   z_jk = np.sqrt(((vMFMM_A.GetvMF(j).GetTau() * \
     vMFMM_A.GetvMF(j).GetMu() + vMFMM_B.GetvMF(k).GetTau() * \
     nu)**2).sum())
-#  print "--", C, z_jk
   C += ComputeLog2SinhOverZ(z_jk)
   return C

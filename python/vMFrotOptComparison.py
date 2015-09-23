@@ -38,12 +38,12 @@ if __name__ == "__main__":
 
   print "UpperBound"
   nodes = [Node(tetrahedron) for tetrahedron in tetrahedra]
-  bb = BB(vMFMM_A, vMFMM_B, LowerBound, UpperBound)
+  bb = BB(vMFMM_A, vMFMM_B, LowerBoundLog, UpperBoundLog)
   eps = bb.Compute(nodes, maxIter, q)
 
   print "UpperBoundConvexity"
   nodes = [Node(tetrahedron) for tetrahedron in tetrahedra]
-  bb = BB(vMFMM_A, vMFMM_B, LowerBound, UpperBoundConvexity)
+  bb = BB(vMFMM_A, vMFMM_B, LowerBoundLog, UpperBoundConvexityLog)
   epsC = bb.Compute(nodes, maxIter, q)
 
   plt.subplot(2,1,1)
@@ -62,7 +62,7 @@ if __name__ == "__main__":
 #  plt.plot(epsC[:,2], 'g-', label="UpperBoundConvexity")
 #  plt.legend()
 
-  for i in range(10):
+  for i in range(1):
     gd = GradientDescent(vMFMM_A, vMFMM_B)
     q.setToRandom()
     R0 = q.toRot().R

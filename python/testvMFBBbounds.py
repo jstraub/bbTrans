@@ -40,7 +40,6 @@ def LowerBoundLog(vMFMM_A, vMFMM_B, vertices, tetra):
     print lbElem
     lb[i] = np.exp(LogSumExp(lbElem))
   return np.max(lb)
-
 def LowerBound(vMFMM_A, vMFMM_B, vertices, tetra):
   ''' 
   Compute a lowerbound on the objective by evaluating it at the center
@@ -120,14 +119,10 @@ def UpperBoundConvexityLog(vMFMM_A, vMFMM_B, vertices, tetra):
     for k in range(vMFMM_B.GetK()):
       tau_A = vMFMM_A.GetvMF(j).GetTau()
       tau_B = vMFMM_B.GetvMF(k).GetTau()
-#      s = Sphere(3)
-#      figm = mlab.figure(bgcolor=(1,1,1))
-#      s.plotFanzy(figm, 1.)
       mu_U = ClosestMu(vMFMM_A.GetvMF(j).GetMu(),
           vMFMM_B.GetvMF(k).GetMu(), qs, None) #figm)
       mu_L = FurtestMu(vMFMM_A.GetvMF(j).GetMu(),
           vMFMM_B.GetvMF(k).GetMu(), qs, None) # figm)
-#      mlab.show(stop=True)
       U = np.sqrt(((vMFMM_A.GetvMF(j).GetTau() *
         vMFMM_A.GetvMF(j).GetMu() + vMFMM_B.GetvMF(k).GetTau() *
         mu_U)**2).sum())
@@ -147,25 +142,15 @@ def UpperBoundConvexityLog(vMFMM_A, vMFMM_B, vertices, tetra):
         f_U = ComputeLog2SinhOverZ(U)
         f_L = ComputeLog2SinhOverZ(L)
         print "fU, fL", f_U, f_L
-#        fUfLoU2L2 = ((f_U-f_L)/(U**2 - L**2))
         fUfLoU2L2 = - np.log(U - L) - np.log(U + L)
         if f_U > f_L:
           fUfLoU2L2 += np.log(1. - np.exp(f_L-f_U)) + f_U
         else:
           fUfLoU2L2 += np.log(np.exp(f_U-f_L) - 1.) + f_L
-
-#        L2fUU2fLoU2L2 = ((U**2*f_L - L**2*f_U)/(U**2-L**2))
         L2fUU2fLoU2L2 = - np.log(U - L) - np.log(U + L)
         LfU = 2.*np.log(L)+f_U + L2fUU2fLoU2L2
         UfL = 2.*np.log(U)+f_L + L2fUU2fLoU2L2
         print "LfU, UfL", LfU, UfL
-#        if LfU > UfL:
-#          L2fUU2fLoU2L2 += np.log(np.exp(-LfU+UfL) - 1.) + LfU
-#        else:
-##          fUfLoU2L2 += np.log(np.exp(f_U-f_L) - 1.)
-#          L2fUU2fLoU2L2 += np.log(1. - np.exp(-UfL+LfU)) + UfL
-#      M = ToRightQuaternionProductMatrix(vMFMM_A.GetvMF(j).GetMu()).T.dot(\
-#          ToLeftQuaternionProductMatrix(vMFMM_B.GetvMF(k).GetMu()))
       Melem[j*vMFMM_B.GetK()+k] = BuildM(vMFMM_A.GetvMF(j).GetMu(),
         vMFMM_B.GetvMF(k).GetMu())
       D = np.log(2. * np.pi) + np.log(vMFMM_A.GetPi(j)) + \
@@ -175,27 +160,15 @@ def UpperBoundConvexityLog(vMFMM_A, vMFMM_B, vertices, tetra):
         + D + fUfLoU2L2
       b = np.array([2.*np.log(tau_A) + fUfLoU2L2, 2.*np.log(tau_B)+fUfLoU2L2, 
         LfU, UfL])
-#        L2fUU2fLoU2L2])
       Belem[j*vMFMM_B.GetK()+k, :] = b+D #, 
       BelemSign[j*vMFMM_B.GetK()+k, :] = np.array([1.,1.,-1.,1.])
   A = np.zeros((4,4))
-  print Aelem
-  print Melem
   for j in range(4):
     for k in range(4):
       M_jk_elem = np.array([Mel[j,k] for Mel in Melem])
-#      A[j,k] = LogSumExp(Aelem, M_jk_elem)
       A[j,k] = (np.sum(M_jk_elem*np.exp(Aelem-Aelem.max()))) * np.exp(Aelem.max())
-#  print Belem, BelemSign
-#  print (Belem-Belem.max()).ravel()
-#  print np.exp(Belem-Belem.max()).ravel()
-#  print (BelemSign*np.exp(Belem-Belem.max())).ravel()
-#  print (BelemSign*np.exp(Belem-Belem.max())).sum()
-  #B = np.exp(LogSumExp(Belem.ravel(), BelemSign.ravel()))
   B = (BelemSign*np.exp(Belem-Belem.max())).sum() * np.exp(Belem.max())
-  print A, B
   lambda_max = FindMaximumQAQ(A, vertices, tetra)
-  print "--", B, lambda_max
   return B + lambda_max, B, lambda_max
 def UpperBoundConvexity(vMFMM_A, vMFMM_B, vertices, tetra):
   ''' 
@@ -392,9 +365,6 @@ def UpperBoundLog(vMFMM_A, vMFMM_B, vertices, tetra):
       mu_star = ClosestMu(vMFMM_A.GetvMF(j).GetMu(),
           vMFMM_B.GetvMF(k).GetMu(), qs, None)
       ubElem[j,k] = ComputeLogvMFtovMFcost(vMFMM_A, vMFMM_B, j, k, mu_star)
-  print "ubElem", ubElem
-  print (LogSumExp(ubElem))
-  print np.exp(LogSumExp(ubElem))
   return np.exp(LogSumExp(ubElem))
 
 if __name__ == "__main__":
@@ -503,29 +473,16 @@ if __name__ == "__main__":
   print np.argmax(lb), np.argmax(ub), np.argmax(ubC)
   print np.max(lb), np.max(ub), np.max(ubC)
   
-#  vertices = s3.vertices
-#  tetraMax = tetras[np.argmax(lb),:] 
-#  center = 0.25*vertices[tetraMax[0],:] + 0.25*vertices[tetraMax[1],:] + \
-#    0.25*vertices[tetraMax[2],:] +  0.25*vertices[tetraMax[3],:]
-#  center /= np.sqrt((center**2).sum())
-#  q = Quaternion(vec=center)
-#  print "UB", center
-#  print q.toRot().R
-#
-#  tetraMax = tetras[np.argmax(ub),:] 
-#  center = 0.25*vertices[tetraMax[0],:] + 0.25*vertices[tetraMax[1],:] + \
-#    0.25*vertices[tetraMax[2],:] +  0.25*vertices[tetraMax[3],:]
-#  center /= np.sqrt((center**2).sum())
-#  q = Quaternion(vec=center)
-#  print "LB", center
-#  print q.toRot().R
-
   import matplotlib.pyplot as plt
   plt.figure()
+  plt.subplot(2,1,1)
   plt.plot(lb, label = "lb")
   plt.plot(ub, label = "ub")
   plt.plot(ubC, label="ub convex")
   plt.plot(ubC_noLog, label="ub convex no Log")
+  plt.subplot(2,1,2)
+  plt.plot(ub-lb, label = "ub-lb")
+  plt.plot(ubC-lb, label="ub convex - lb")
 #  plt.plot(ubCB, label="B")
 #  plt.plot(ubCL, label="lambda_max")
   plt.legend()
