@@ -1,5 +1,16 @@
 import numpy as np
 
+def LoadvMFMM(path):
+  param = np.loadtxt(path)
+  vMFs = []
+  pi = param[4,:] / param[4,:].sum()
+  print pi
+  for k in range(param.shape[1]):
+    vMFs.append(vMF(param[:3,k], param[3,k]))
+    print param[:3,k]
+    print param[3,k]
+  return vMFMM(pi, vMFs)
+
 def Compute2SinhOverZ(z):
   '''
   compute (exp(z) - exp(-z)) / z
@@ -19,6 +30,18 @@ def ComputeLog2SinhOverZ(z):
     return - np.log(z) + np.log(np.exp(2.*z) -1) - z
   else:
     return - np.log(z) + z
+
+def ComputeLogDeriv2SinhOverZ(z):
+  '''
+  compute d/dz (log((exp(z) - exp(-z)) / z))
+    = ((np.exp(z)+np.exp(-z))/z) - ((np.exp(z)-np.exp(-z))/z**2)
+  '''
+#  if np.abs(z) < 1e-6:
+#    return np.log(2.)
+  if z < 50.:
+    return np.log((z-1.)*np.exp(2.*z) + z + 1.) -z - 2.*np.log(z)
+  else:
+    return z + np.log(z-1.) + 2.*np.log(z)
 
 class vMF(object):
   def __init__(self, mu, tau):

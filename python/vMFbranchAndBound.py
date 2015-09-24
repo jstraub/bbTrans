@@ -19,7 +19,11 @@ def LogSumExp(A, signs = None):
   if signs is None:
     return np.log(np.sum(np.exp(A-A.max()))) + A.max()
   else:
-    return np.log(np.sum(signs*np.exp(A-A.max()))) + A.max()
+    sumSignExp = np.sum(signs*np.exp(A-A.max()))
+    if sumSignExp > 0.0:
+      return np.log(sumSignExp) + A.max()
+    else:
+      return np.log(sumSignExp) + A.max(), -1.
 
 def ComputeCostFunction(vMFMM_A, vMFMM_B, R):
   C = 0.
@@ -207,9 +211,20 @@ def UpperBoundConvexityLog(vMFMM_A, vMFMM_B, vertices, tetra):
       if np.abs(U-L) < 1e-6:
         # TODO
         # Assymptotics for U-L -> 0
-        fUfLoU2L2 = (1. + U - np.exp(2.*U) + U * np.exp(2.*U))/(2.*U**3*np.exp(U))
-        L2fUU2fLoU2L2 = -(3+U-3*np.exp(2.*U) + U*np.exp(2.*U))/(2.*U*np.exp(U))
-        raw_input()
+#        fUfLoU2L2 = (1. + U - np.exp(2.*U) + U * np.exp(2.*U))/(2.*U**3*np.exp(U))
+#        L2fUU2fLoU2L2 = -(3+U-3*np.exp(2.*U) + U*np.exp(2.*U))/(2.*U*np.exp(U))
+        if U > 50.:
+          fUfLoU2L2 = np.log(U-1.) + 2.*U - np.log(2.) - 3.*np.log(U) - U
+          LfU = np.log(U) + 2.*U - np.log(2.) - np.log(U) - U
+        else:
+          LfU = np.log(3+U+U*np.exp(2.*U)) - np.log(2.) - np.log(U) - U
+          fUfLoU2L2 = np.log(1. + U + (U-1.) * np.exp(2.*U)) \
+            - np.log(2.) - 3.*np.log(U) - U
+#        LfU = np.log(3+U) - np.log(2.) - np.log(U) - U
+        UfL = np.log(3.) + 2.*U - np.log(2.) - np.log(U) - U
+#        L2fUU2fLoU2L2 = np.log(-3-U+(3.-U)*np.exp(2.*U)) \
+#            - np.log(2.) - np.log(U) - U
+#        raw_input()
       else:
         f_U = ComputeLog2SinhOverZ(U)
         f_L = ComputeLog2SinhOverZ(L)
@@ -245,13 +260,17 @@ def UpperBoundConvexityLog(vMFMM_A, vMFMM_B, vertices, tetra):
 
 def ComputeExtremaLocationOnGeodesic(mu1, mu2, nu):
 #  print mu1, mu2, nu
-  theta12 = np.arccos(mu1.dot(mu2))
-  theta1 = np.arccos(mu1.dot(nu))
-  theta2 = np.arccos(mu2.dot(nu))
+  theta12 = np.arccos(min(1.0, max(-1., mu1.dot(mu2))))
+  theta1 = np.arccos(min(1.0, max(-1., mu1.dot(nu))))
+  theta2 = np.arccos(min(1.0, max(-1., mu2.dot(nu))))
   if near(theta1, np.pi*0.5) and near(theta2, np.pi*0.5):
     # any t is good.
     t = 0.5
-  t = (np.arctan2(np.cos(theta2) - np.cos(theta12)*np.cos(theta1),np.cos(theta1)*np.sin(theta12))) / theta12
+  elif near(theta12, 0.):
+    # mu1 = mu2 -> extremum is one of the two.
+    return np.copy(mu1)
+  t = (np.arctan2(np.cos(theta2) - np.cos(theta12)*np.cos(theta1),\
+    np.cos(theta1)*np.sin(theta12))) / theta12
   t = min(1.0, max(0.0, t))
   mu_star = (mu1*np.sin((1.-t)*theta12) + mu2*np.sin(t*theta12))/np.sin(theta12)
 #  print t, mu_star, nu.dot(mu_star)
@@ -371,10 +390,13 @@ class BB:
     lbs = [self.LowerBound(node) for node in nodes]
     ubs = [self.UpperBound(node) for node in nodes]
     eps = np.zeros((maxIt, self.vMFMM_A.GetK()+2))
-    while counter < maxIt and ub-lb > 1e-6:
+    while counter < maxIt and ub-lb > 1e-6 and len(nodes) >= 1:
       lbs = [lbs[i] for i, ubn in enumerate(ubs) if ubn > lb]
       nodes = [nodes[i] for i, ubn in enumerate(ubs) if ubn > lb]
       ubs = [ubn for ubn in ubs if ubn > lb]
+
+      i_star = np.argmax(lbs)
+      q_star = self.LowerBound(nodes[i_star], True)[1]
 
       i = len(nodes) - 1
       i = np.argmax(np.array(ubs))
@@ -402,7 +424,6 @@ class BB:
             lbs.append(self.LowerBound(node))
             ubs.append(ubn)
 
-      q_star = self.LowerBound(node_star, True)[1]
       dAng = np.zeros(self.vMFMM_A.GetK())
       for j, vMF_A in enumerate(self.vMFMM_A.vMFs):
         dAngs = np.zeros(self.vMFMM_B.GetK())
@@ -419,7 +440,13 @@ class BB:
       eps[counter, self.vMFMM_A.GetK()] = ComputeCostFunction(self.vMFMM_A, self.vMFMM_A, q_star.toRot().R)
       eps[counter, self.vMFMM_A.GetK()+1] = ToDeg(q_gt.angleTo(q_star))
       counter += 1
-    return eps
+    if True:
+      plt.figure()
+      idx = np.argsort(lbs)
+      plt.plot(lbs)
+      plt.plot(ubs)
+      plt.show()
+    return eps, q_star
 
 if __name__ == "__main__":
   s3 = S3Grid(0)
