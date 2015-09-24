@@ -11,12 +11,22 @@ if __name__ == "__main__":
   R_gt = q.toRot().R
   print "q True: ", q.q, np.sqrt((q.q**2).sum())
   
-  path = ["../data/middle_cRmf.csv", "../data/left_cRmf.csv"]
-  pathRGBD = ["../data/middle_rgb", "../data/left_rgb"]
   path = ["../data/middle_cRmf.csv", "../data/middle_cRmf.csv"]
   pathRGBD = ["../data/middle_rgb", "../data/middle_rgb"]
   path = ["../data/middle_cRmf.csv", "../data/right_cRmf.csv"]
   pathRGBD = ["../data/middle_rgb", "../data/right_rgb"]
+  path = ["../data/middle_cRmf.csv", "../data/left_cRmf.csv"]
+  pathRGBD = ["../data/middle_rgb", "../data/left_rgb"]
+
+  path = ["../data/middleStraightOn_cRmf.csv",
+      "../data/rightStraightOn_cRmf.csv"]
+  pathRGBD = ["../data/middleStraightOn_rgb",
+      "../data/rightStraightOn_rgb"]
+
+  path = ["../data/boardLevel_cRmf.csv",
+      "../data/boardUp_cRmf.csv"]
+  pathRGBD = ["../data/boardLevel_rgb",
+      "../data/boardUp_rgb"]
   if path is None:
     vMFs_A = [vMF(np.array([1.,0.,0.]), 1.), vMF(np.array([0.,1.,0.]), 10.)]
     vMFs_B = [vMF(R_gt.dot(np.array([1.,0.,0.])), 1.),
@@ -27,15 +37,15 @@ if __name__ == "__main__":
     vMFMM_A = LoadvMFMM(path[0])
     vMFMM_B = LoadvMFMM(path[1])
 
-  rgbdA = RgbdFrame(460.) 
+  rgbdA = RgbdFrame(540.) 
   rgbdA.load(pathRGBD[0])
-  rgbdB = RgbdFrame(460.) 
+  rgbdB = RgbdFrame(540.) 
   rgbdB.load(pathRGBD[1])
 
   tetras = s3.GetTetras(0)
   tetrahedra = s3.GetTetrahedra(0)
 
-  maxIter = 500
+  maxIter = 2000
   fig = plt.figure()
 
   print "UpperBoundConvexity"
