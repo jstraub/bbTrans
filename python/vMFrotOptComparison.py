@@ -27,6 +27,9 @@ if __name__ == "__main__":
       "../data/boardUp_cRmf.csv"]
   pathRGBD = ["../data/boardLevel_rgb",
       "../data/boardUp_rgb"]
+
+  path = ["../data/middleL50_cRmf.csv", "../data/leftL50_cRmf.csv"]
+  pathRGBD = ["../data/middle_rgb", "../data/left_rgb"]
   if path is None:
     vMFs_A = [vMF(np.array([1.,0.,0.]), 1.), vMF(np.array([0.,1.,0.]), 10.)]
     vMFs_B = [vMF(R_gt.dot(np.array([1.,0.,0.])), 1.),
@@ -45,7 +48,7 @@ if __name__ == "__main__":
   tetras = s3.GetTetras(0)
   tetrahedra = s3.GetTetrahedra(0)
 
-  maxIter = 2000
+  maxIter = 200
   fig = plt.figure()
 
   print "UpperBoundConvexity"
