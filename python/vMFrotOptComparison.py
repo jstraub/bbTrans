@@ -7,9 +7,9 @@ import mayavi.mlab as mlab
 if __name__ == "__main__":
   s3 = S3Grid(0)
   q = Quaternion()
-  q.setToRandom()
-  R_gt = q.toRot().R
-  print "q True: ", q.q, np.sqrt((q.q**2).sum())
+#  q.setToRandom()
+#  R_gt = q.toRot().R
+#  print "q True: ", q.q, np.sqrt((q.q**2).sum())
   
   path = ["../data/middle_cRmf.csv", "../data/middle_cRmf.csv"]
   pathRGBD = ["../data/middle_rgb", "../data/middle_rgb"]
@@ -48,13 +48,16 @@ if __name__ == "__main__":
   tetras = s3.GetTetras(0)
   tetrahedra = s3.GetTetrahedra(0)
 
-  maxIter = 200
+  maxIter = 10
   fig = plt.figure()
 
   print "UpperBoundConvexity"
   nodes = [Node(tetrahedron) for tetrahedron in tetrahedra]
   bb = BB(vMFMM_A, vMFMM_B, LowerBoundLog, UpperBoundConvexityLog)
   epsC, q_star = bb.Compute(nodes, maxIter, q)
+  
+  T = bb.GetTree(1)
+  T.draw("bbTree.png", prog="dot")
 
   figm = mlab.figure(bgcolor=(1,1,1)) 
   rgbdA.showPc(figm=figm)
@@ -83,7 +86,6 @@ if __name__ == "__main__":
   nodes = [Node(tetrahedron) for tetrahedron in tetrahedra]
   bb = BB(vMFMM_A, vMFMM_B, LowerBoundLog, UpperBoundLog)
   eps, q_star = bb.Compute(nodes, maxIter, q)
-
 
   plt.subplot(2,1,1)
   plt.ylabel("Sum over angular deviation between closest vMF means.")

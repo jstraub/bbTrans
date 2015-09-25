@@ -6,10 +6,11 @@ def normed(a):
   return a/np.sqrt((a**2).sum())
 
 class Tetrahedron(object):
-  def __init__(self, vertices, lvl):
+  def __init__(self, vertices, lvl, ids):
     self.vertices = vertices
     self.tetra = np.arange(4)
     self.lvl = lvl
+    self.ids = [i for i in ids]
   def Center(self):
     center = 0.25*self.vertices[self.tetra[0]] \
       + 0.25*self.vertices[self.tetra[1]] + \
@@ -34,42 +35,42 @@ class Tetrahedron(object):
       normed(self.vertices[0]), 
       normed(vertices[0,:]),
       normed(vertices[2,:]),
-      normed(vertices[3,:])], self.lvl+1))
+      normed(vertices[3,:])], self.lvl+1, self.ids + [0]))
     tetrahedra.append(Tetrahedron([
       normed(self.vertices[1]), 
       normed(vertices[0,:]),
       normed(vertices[1,:]),
-      normed(vertices[4,:])], self.lvl+1))
+      normed(vertices[4,:])], self.lvl+1, self.ids + [1]))
     tetrahedra.append(Tetrahedron([
       normed(self.vertices[2]), 
       normed(vertices[1,:]),
       normed(vertices[2,:]),
-      normed(vertices[5,:])], self.lvl+1))
+      normed(vertices[5,:])], self.lvl+1, self.ids + [2]))
     tetrahedra.append(Tetrahedron([
       normed(self.vertices[3]), 
       normed(vertices[3,:]),
       normed(vertices[4,:]),
-      normed(vertices[5,:])], self.lvl+1))
+      normed(vertices[5,:])], self.lvl+1, self.ids + [3]))
     tetrahedra.append(Tetrahedron([
       normed(vertices[0,:]), 
       normed(vertices[4,:]),
       normed(vertices[3,:]),
-      normed(vertices[2,:])], self.lvl+1))
+      normed(vertices[2,:])], self.lvl+1, self.ids + [4]))
     tetrahedra.append(Tetrahedron([
       normed(vertices[0,:]), 
       normed(vertices[1,:]),
       normed(vertices[4,:]),
-      normed(vertices[2,:])], self.lvl+1))
+      normed(vertices[2,:])], self.lvl+1, self.ids + [5]))
     tetrahedra.append(Tetrahedron([
       normed(vertices[5,:]), 
       normed(vertices[2,:]),
       normed(vertices[1,:]),
-      normed(vertices[4,:])], self.lvl+1))
+      normed(vertices[4,:])], self.lvl+1, self.ids + [6]))
     tetrahedra.append(Tetrahedron([
       normed(vertices[5,:]), 
       normed(vertices[3,:]),
       normed(vertices[2,:]),
-      normed(vertices[4,:])], self.lvl+1))
+      normed(vertices[4,:])], self.lvl+1, self.ids + [7]))
     return tetrahedra
 
 class S3Grid(object):
@@ -215,13 +216,13 @@ class S3Grid(object):
   def GetTetrahedra(self, level):
     tetras = self.GetTetras(level)
     tetrahedra = []
-    for tetra in tetras:
+    for i,tetra in enumerate(tetras):
       tetrahedra.append(Tetrahedron([
         self.vertices[tetra[0],:],
         self.vertices[tetra[1],:],
         self.vertices[tetra[2],:],
         self.vertices[tetra[3],:]
-        ], level))
+        ], level, [i]))
     return tetrahedra
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@ from discretized4dSphere import S3Grid
 from vMFMM import *
 import mayavi.mlab as mlab
 import matplotlib.pyplot as plt
+import pygraphviz as pgh
 
 def near(a, b):
   return np.abs(a-b) < 1e-6
@@ -387,22 +388,23 @@ class BB:
     ub = 1e6
     node_star = None
     counter = 0
-    lbs = [self.LowerBound(node) for node in nodes]
-    ubs = [self.UpperBound(node) for node in nodes]
+    self.nodes = [node for node in nodes]
+    lbs = [self.LowerBound(node) for node in self.nodes]
+    ubs = [self.UpperBound(node) for node in self.nodes]
     eps = np.zeros((maxIt, self.vMFMM_A.GetK()+2))
-    while counter < maxIt and ub-lb > 1e-6 and len(nodes) >= 1:
+    while counter < maxIt and ub-lb > 1e-6 and len(self.nodes) >= 1:
       lbs = [lbs[i] for i, ubn in enumerate(ubs) if ubn > lb]
-      nodes = [nodes[i] for i, ubn in enumerate(ubs) if ubn > lb]
+      self.nodes = [self.nodes[i] for i, ubn in enumerate(ubs) if ubn > lb]
       ubs = [ubn for ubn in ubs if ubn > lb]
 
       i_star = np.argmax(lbs)
-      q_star = self.LowerBound(nodes[i_star], True)[1]
+      q_star = self.LowerBound(self.nodes[i_star], True)[1]
 
-      i = len(nodes) - 1
+      i = len(self.nodes) - 1
       i = np.argmax(np.array(ubs))
       #i = np.argmax(np.array(lbs))
       #i = 0
-      node = nodes.pop(i)
+      node = self.nodes.pop(i)
       lbn = lbs.pop(i)
       ubn = ubs.pop(i)
       if lbn > lb:
@@ -410,7 +412,7 @@ class BB:
         ub = ubn
         node_star = node
 
-        nodes.append(node_star)
+        self.nodes.append(node_star)
         lbs.append(lb)
         ubs.append(ub)
       else:
@@ -420,7 +422,7 @@ class BB:
           if ubn > lb:
             # Upper bound of the node is greater than the global lower
             # bound. So keep the node arround.
-            nodes.append(n)
+            self.nodes.append(n)
             lbs.append(self.LowerBound(node))
             ubs.append(ubn)
 
@@ -430,7 +432,7 @@ class BB:
         for k, vMF_B in enumerate(self.vMFMM_B.vMFs):
           dAngs[k] = ToDeg(np.arccos(vMF_A.GetMu().dot(q_star.rotate(vMF_B.GetMu()))))
         dAng[j] = np.min(dAngs)
-      print lb, ub, counter, len(nodes), node_star.tetrahedron.lvl, \
+      print lb, ub, counter, len(self.nodes), node_star.tetrahedron.lvl, \
         dAng, ToDeg(q_gt.angleTo(q_star))
 #      for j, vMF_A in enumerate(self.vMFMM_A.vMFs):
 #        print "A", j, vMF_A.GetMu()
@@ -440,13 +442,25 @@ class BB:
       eps[counter, self.vMFMM_A.GetK()] = ComputeCostFunction(self.vMFMM_A, self.vMFMM_A, q_star.toRot().R)
       eps[counter, self.vMFMM_A.GetK()+1] = ToDeg(q_gt.angleTo(q_star))
       counter += 1
-    if True:
+    if False:
       plt.figure()
       idx = np.argsort(lbs)
       plt.plot(lbs)
       plt.plot(ubs)
       plt.show()
     return eps, q_star
+  def GetTree(self, minLvl = 1):
+    G = pgh.AGraph()
+    for node in self.nodes:
+      if node.tetrahedron.lvl >= minLvl:
+        nodeName = "{}".format(node.tetrahedron.ids[0])
+#        print node.tetrahedron.ids
+        for i in node.tetrahedron.ids[1:]:
+#          print i, nodeName, nodeName+"{}".format(i)
+          G.add_node(nodeName)
+          G.add_edge(nodeName, nodeName+"{}".format(i))
+          nodeName = nodeName +"{}".format(i)
+    return G
 
 if __name__ == "__main__":
   s3 = S3Grid(0)
