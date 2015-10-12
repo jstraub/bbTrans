@@ -442,12 +442,15 @@ class BB:
       counter += 1
     if True:
       plt.figure()
-      plt.subplot(3,1,2)
+      plt.subplot(4,1,2)
       plt.plot(lbs, label="lower bound")
       plt.plot(ubs, label="upper bound")
       plt.legend()
-      plt.subplot(3,1,3)
+      plt.subplot(4,1,3)
       plt.plot([node.tetrahedron.lvl for node in nodes], label="subdivision level")
+      plt.legend()
+      plt.subplot(4,1,4)
+      plt.plot([node.tetrahedron.ids[0] for node in nodes], label="root node id")
       plt.legend()
 
       dAngNodes = np.zeros((len(nodes), len(nodes)))
@@ -457,11 +460,10 @@ class BB:
           qB = Quaternion(vec=nodeB.tetrahedron.Center())
           dAngNodes[i,j] = ToDeg(qA.angleTo(qB))
 
-      plt.subplot(3,1,1)
+      plt.subplot(4,1,1)
       plt.imshow(dAngNodes, interpolation="nearest")
       plt.colorbar()
-      plt.title("pairwise angular deviation between leaf nodes in
-      graph [deg]")
+      plt.title("pairwise angular deviation between leaf nodes in graph [deg]")
       plt.show()
 
     return eps, q_star
