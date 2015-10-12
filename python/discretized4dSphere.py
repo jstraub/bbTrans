@@ -16,6 +16,14 @@ class Tetrahedron(object):
       + 0.25*self.vertices[self.tetra[1]] + \
       0.25*self.vertices[self.tetra[2]] + 0.25*self.vertices[self.tetra[3]]
     return normed(center)
+  def GeMinMaxVertexDotProduct(self):
+    dots = np.zeros(6)
+    for i, p in enumerate(combinations(range(4), 2)):
+      print i,p, p[0], p[1]
+      print self.vertices[p[0]]
+      dots[i] = self.vertices[p[0]].dot(self.vertices[p[1]])
+    return np.min(dots), np.max(dots)
+
   def Subdivide(self):
     '''
     Subdivide the tetraheadron 
@@ -25,52 +33,105 @@ class Tetrahedron(object):
     '''
     tetrahedra = []
     vertices = np.zeros((6, 4))
-    vertices[0, :] = 0.5 * (self.vertices[0] + self.vertices[1]) 
-    vertices[1, :] = 0.5 * (self.vertices[1] + self.vertices[2]) 
-    vertices[2, :] = 0.5 * (self.vertices[2] + self.vertices[0]) 
-    vertices[3, :] = 0.5 * (self.vertices[0] + self.vertices[3]) 
-    vertices[4, :] = 0.5 * (self.vertices[1] + self.vertices[3]) 
-    vertices[5, :] = 0.5 * (self.vertices[2] + self.vertices[3]) 
+    vertices[0, :] = normed(self.vertices[0] + self.vertices[1]) 
+    vertices[1, :] = normed(self.vertices[1] + self.vertices[2]) 
+    vertices[2, :] = normed(self.vertices[2] + self.vertices[0]) 
+    vertices[3, :] = normed(self.vertices[0] + self.vertices[3]) 
+    vertices[4, :] = normed(self.vertices[1] + self.vertices[3]) 
+    vertices[5, :] = normed(self.vertices[2] + self.vertices[3]) 
+    # Corner tetrahedron at 0th corner of parent.
     tetrahedra.append(Tetrahedron([
-      normed(self.vertices[0]), 
-      normed(vertices[0,:]),
-      normed(vertices[2,:]),
-      normed(vertices[3,:])], self.lvl+1, self.ids + [0]))
+      self.vertices[0],
+      vertices[0,:],
+      vertices[2,:],
+      vertices[3,:]], self.lvl+1, self.ids + [0]))
+    # Corner tetrahedron at 1th corner of parent.
     tetrahedra.append(Tetrahedron([
-      normed(self.vertices[1]), 
-      normed(vertices[0,:]),
-      normed(vertices[1,:]),
-      normed(vertices[4,:])], self.lvl+1, self.ids + [1]))
+      self.vertices[1],
+      vertices[0,:],
+      vertices[1,:],
+      vertices[4,:]], self.lvl+1, self.ids + [1]))
+    # Corner tetrahedron at 2th corner of parent.
     tetrahedra.append(Tetrahedron([
-      normed(self.vertices[2]), 
-      normed(vertices[1,:]),
-      normed(vertices[2,:]),
-      normed(vertices[5,:])], self.lvl+1, self.ids + [2]))
+      self.vertices[2],
+      vertices[1,:],
+      vertices[2,:],
+      vertices[5,:]], self.lvl+1, self.ids + [2]))
+    # Corner tetrahedron at 3th corner of parent.
     tetrahedra.append(Tetrahedron([
-      normed(self.vertices[3]), 
-      normed(vertices[3,:]),
-      normed(vertices[4,:]),
-      normed(vertices[5,:])], self.lvl+1, self.ids + [3]))
-    tetrahedra.append(Tetrahedron([
-      normed(vertices[0,:]), 
-      normed(vertices[4,:]),
-      normed(vertices[3,:]),
-      normed(vertices[2,:])], self.lvl+1, self.ids + [4]))
-    tetrahedra.append(Tetrahedron([
-      normed(vertices[0,:]), 
-      normed(vertices[1,:]),
-      normed(vertices[4,:]),
-      normed(vertices[2,:])], self.lvl+1, self.ids + [5]))
-    tetrahedra.append(Tetrahedron([
-      normed(vertices[5,:]), 
-      normed(vertices[2,:]),
-      normed(vertices[1,:]),
-      normed(vertices[4,:])], self.lvl+1, self.ids + [6]))
-    tetrahedra.append(Tetrahedron([
-      normed(vertices[5,:]), 
-      normed(vertices[3,:]),
-      normed(vertices[2,:]),
-      normed(vertices[4,:])], self.lvl+1, self.ids + [7]))
+      self.vertices[3],
+      vertices[3,:],
+      vertices[4,:],
+      vertices[5,:]], self.lvl+1, self.ids + [3]))
+    # Check which skew edge is the shortest.
+    dots = np.zeros(3)
+    dots[0] = vertices[0,:].dot(vertices[5,:])
+    dots[1] = vertices[2,:].dot(vertices[4,:])
+    dots[2] = vertices[3,:].dot(vertices[1,:])
+    skewEdgeId = np.argmax(dots)
+    if skewEdgeId == 0:
+      tetrahedra.append(Tetrahedron([
+        vertices[0,:], 
+        vertices[5,:],
+        vertices[3,:],
+        vertices[2,:]], self.lvl+1, self.ids + [4]))
+      tetrahedra.append(Tetrahedron([
+        vertices[0,:], 
+        vertices[5,:],
+        vertices[4,:],
+        vertices[3,:]], self.lvl+1, self.ids + [5]))
+      tetrahedra.append(Tetrahedron([
+        vertices[5,:], 
+        vertices[0,:],
+        vertices[1,:],
+        vertices[4,:]], self.lvl+1, self.ids + [6]))
+      tetrahedra.append(Tetrahedron([
+        vertices[5,:], 
+        vertices[0,:],
+        vertices[1,:],
+        vertices[2,:]], self.lvl+1, self.ids + [7]))
+    elif skewEdgeId == 1:
+      tetrahedra.append(Tetrahedron([
+        vertices[0,:], 
+        vertices[4,:],
+        vertices[3,:],
+        vertices[2,:]], self.lvl+1, self.ids + [4]))
+      tetrahedra.append(Tetrahedron([
+        vertices[0,:], 
+        vertices[1,:],
+        vertices[4,:],
+        vertices[2,:]], self.lvl+1, self.ids + [5]))
+      tetrahedra.append(Tetrahedron([
+        vertices[5,:], 
+        vertices[2,:],
+        vertices[1,:],
+        vertices[4,:]], self.lvl+1, self.ids + [6]))
+      tetrahedra.append(Tetrahedron([
+        vertices[5,:], 
+        vertices[3,:],
+        vertices[2,:],
+        vertices[4,:]], self.lvl+1, self.ids + [7]))
+    elif skewEdgeId == 2:
+      tetrahedra.append(Tetrahedron([
+        vertices[3,:], 
+        vertices[1,:],
+        vertices[0,:],
+        vertices[2,:]], self.lvl+1, self.ids + [4]))
+      tetrahedra.append(Tetrahedron([
+        vertices[3,:], 
+        vertices[1,:],
+        vertices[4,:],
+        vertices[0,:]], self.lvl+1, self.ids + [5]))
+      tetrahedra.append(Tetrahedron([
+        vertices[3,:], 
+        vertices[1,:],
+        vertices[5,:],
+        vertices[4,:]], self.lvl+1, self.ids + [6]))
+      tetrahedra.append(Tetrahedron([
+        vertices[1,:], 
+        vertices[3,:],
+        vertices[2,:],
+        vertices[5,:]], self.lvl+1, self.ids + [7]))
     return tetrahedra
 
 class S3Grid(object):
