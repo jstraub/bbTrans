@@ -33,14 +33,13 @@ dotMaxPred2[0] = tetras[0].GeMinMaxVertexDotProduct()[1]
 for lvl in range(1,lvls):
   dotMaxPred2[lvl] = (3.*dotMaxPred2[lvl-1]+1.)/(2.*(1. +dotMaxPred2[lvl-1]))
 
-dotMax = [-1.]*20
-
+dotMax = [1.]*20
 for i in range(600):
   tetra = tetras[np.random.randint(0,len(tetras),1)]
-  dotMax[0] = max(dotMax[0], tetra.GeMinMaxVertexDotProduct()[1])
+  dotMax[0] = min(dotMax[0], tetra.GeMinMaxVertexDotProduct()[0])
   for lvl in range(1,lvls):
     tetra = tetra.Subdivide()[np.random.randint(0,6,1)]
-    dotMax[lvl] = max(dotMax[lvl], tetra.GeMinMaxVertexDotProduct()[1])
+    dotMax[lvl] = min(dotMax[lvl], tetra.GeMinMaxVertexDotProduct()[0])
 
 dotMaxPred = [ToDeg(np.arccos(dotMaxPred_i)) for dotMaxPred_i in dotMaxPred]
 dotMaxPredSqrt = [ToDeg(np.arccos(dotMaxPredSqrt_i)) for dotMaxPredSqrt_i in dotMaxPredSqrt]

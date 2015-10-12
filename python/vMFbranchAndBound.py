@@ -442,27 +442,27 @@ class BB:
       eps[counter, self.vMFMM_A.GetK()] = ComputeCostFunction(self.vMFMM_A, self.vMFMM_A, q_star.toRot().R)
       eps[counter, self.vMFMM_A.GetK()+1] = ToDeg(q_gt.angleTo(q_star))
       counter += 1
-    if False:
+    if True:
       plt.figure()
-      plt.subplot(4,1,2)
+      plt.subplot(3,1,1)
       plt.plot(lbs, label="lower bound")
       plt.plot(ubs, label="upper bound")
       plt.legend()
-      plt.subplot(4,1,3)
-      plt.plot([node.tetrahedron.lvl for node in nodes], label="subdivision level")
+      plt.subplot(3,1,2)
+      plt.plot([node.tetrahedron.lvl for node in self.nodes], label="subdivision level")
       plt.legend()
-      plt.subplot(4,1,4)
-      plt.plot([node.tetrahedron.ids[0] for node in nodes], label="root node id")
+      plt.subplot(3,1,3)
+      plt.plot([node.tetrahedron.ids[0] for node in self.nodes], label="root node id")
       plt.legend()
 
-      dAngNodes = np.zeros((len(nodes), len(nodes)))
-      for i,nodeA in enumerate(nodes):
-        for j,nodeB in enumerate(nodes):
+      dAngNodes = np.zeros((len(self.nodes), len(self.nodes)))
+      for i,nodeA in enumerate(self.nodes):
+        for j,nodeB in enumerate(self.nodes):
           qA = Quaternion(vec=nodeA.tetrahedron.Center())
           qB = Quaternion(vec=nodeB.tetrahedron.Center())
           dAngNodes[i,j] = ToDeg(qA.angleTo(qB))
 
-      plt.subplot(4,1,1)
+      plt.figure()
       plt.imshow(dAngNodes, interpolation="nearest")
       plt.colorbar()
       plt.title("pairwise angular deviation between leaf nodes in graph [deg]")

@@ -11,8 +11,6 @@ if __name__ == "__main__":
 #  R_gt = q.toRot().R
 #  print "q True: ", q.q, np.sqrt((q.q**2).sum())
   
-  path = ["../data/middle_cRmf.csv", "../data/middle_cRmf.csv"]
-  pathRGBD = ["../data/middle_rgb", "../data/middle_rgb"]
   path = ["../data/middle_cRmf.csv", "../data/right_cRmf.csv"]
   pathRGBD = ["../data/middle_rgb", "../data/right_rgb"]
   path = ["../data/middle_cRmf.csv", "../data/left_cRmf.csv"]
@@ -30,6 +28,12 @@ if __name__ == "__main__":
 
   path = ["../data/middleL50_cRmf.csv", "../data/leftL50_cRmf.csv"]
   pathRGBD = ["../data/middle_rgb", "../data/left_rgb"]
+
+  path = ["../data/middleStraightOn_cRmf.csv",
+      "../data/rightStraightOn_cRmf.csv"]
+  pathRGBD = ["../data/middleStraightOn_rgb",
+      "../data/rightStraightOn_rgb"]
+
   if path is None:
     vMFs_A = [vMF(np.array([1.,0.,0.]), 1.), vMF(np.array([0.,1.,0.]), 10.)]
     vMFs_B = [vMF(R_gt.dot(np.array([1.,0.,0.])), 1.),
@@ -48,7 +52,7 @@ if __name__ == "__main__":
   tetras = s3.GetTetras(0)
   tetrahedra = s3.GetTetrahedra(0)
 
-  maxIter = 10
+  maxIter = 200
   fig = plt.figure()
 
   print "UpperBoundConvexity"
@@ -56,7 +60,7 @@ if __name__ == "__main__":
   bb = BB(vMFMM_A, vMFMM_B, LowerBoundLog, UpperBoundConvexityLog)
   epsC, q_star = bb.Compute(nodes, maxIter, q)
   
-  T = bb.GetTree(1)
+  T = bb.GetTree(0)
   T.draw("bbTree.png", prog="dot")
 
   figm = mlab.figure(bgcolor=(1,1,1)) 
