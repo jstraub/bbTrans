@@ -442,10 +442,28 @@ class BB:
       counter += 1
     if True:
       plt.figure()
-      idx = np.argsort(lbs)
-      plt.plot(lbs)
-      plt.plot(ubs)
+      plt.subplot(3,1,2)
+      plt.plot(lbs, label="lower bound")
+      plt.plot(ubs, label="upper bound")
+      plt.legend()
+      plt.subplot(3,1,3)
+      plt.plot([node.tetrahedron.lvl for node in nodes], label="subdivision level")
+      plt.legend()
+
+      dAngNodes = np.zeros((len(nodes), len(nodes)))
+      for i,nodeA in enumerate(nodes):
+        for j,nodeB in enumerate(nodes):
+          qA = Quaternion(vec=nodeA.tetrahedron.Center())
+          qB = Quaternion(vec=nodeB.tetrahedron.Center())
+          dAngNodes[i,j] = ToDeg(qA.angleTo(qB))
+
+      plt.subplot(3,1,1)
+      plt.imshow(dAngNodes, interpolation="nearest")
+      plt.colorbar()
+      plt.title("pairwise angular deviation between leaf nodes in
+      graph [deg]")
       plt.show()
+
     return eps, q_star
 
 if __name__ == "__main__":
