@@ -33,6 +33,9 @@ dotMaxPred2[0] = tetras[0].GeMinMaxVertexDotProduct()[1]
 for lvl in range(1,lvls):
   dotMaxPred2[lvl] = (3.*dotMaxPred2[lvl-1]+1.)/(2.*(1. +dotMaxPred2[lvl-1]))
 
+print np.array(dotMaxPredSqrt) - np.array(dotMaxPred2)
+raw_input()
+
 dotMax = [1.]*20
 for i in range(600):
   tetra = tetras[np.random.randint(0,len(tetras),1)]
@@ -48,6 +51,7 @@ dotMax = [ToDeg(np.arccos(dotMax_i)) for dotMax_i in dotMax]
 
 print dotMaxPred
 print dotMax
+
 
 fig = plt.figure(figsize = figSize, dpi = 80, facecolor="w",
     edgecolor="k")
