@@ -41,33 +41,39 @@ for lvl in range(1,lvls):
   b = a - 0.5
   dotMinPred[lvl] = ((1.+b)/(1.+a))*((1.+a*dotMinPred[lvl-1])/(1.+b*dotMinPred[lvl-1]))
 
-dotMax = [1.]*lvls
+dotMax = [-1.]*lvls
 for i in range(600):
   tetra = tetras[np.random.randint(0,len(tetras),1)]
-  dotMax[0] = min(dotMax[0], tetra.GeMinMaxVertexDotProduct()[0])
+  dotMax[0] = max(dotMax[0], tetra.GeMinMaxVertexDotProduct()[1])
   for lvl in range(1,lvls):
     tetra = tetra.Subdivide()[np.random.randint(0,6,1)]
-    dotMax[lvl] = min(dotMax[lvl], tetra.GeMinMaxVertexDotProduct()[0])
+    dotMax[lvl] = max(dotMax[lvl], tetra.GeMinMaxVertexDotProduct()[1])
+
+dotMin = [1.]*lvls
+for i in range(600):
+  tetra = tetras[np.random.randint(0,len(tetras),1)]
+  dotMin[0] = min(dotMin[0], tetra.GeMinMaxVertexDotProduct()[0])
+  for lvl in range(1,lvls):
+    tetra = tetra.Subdivide()[np.random.randint(0,6,1)]
+    dotMin[lvl] = min(dotMin[lvl], tetra.GeMinMaxVertexDotProduct()[0])
 
 dotMaxPred = [ToDeg(np.arccos(dotMaxPred_i)) for dotMaxPred_i in dotMaxPred]
 dotMaxPredSqrt = [ToDeg(np.arccos(dotMaxPredSqrt_i)) for dotMaxPredSqrt_i in dotMaxPredSqrt]
 dotMaxPred2 = [ToDeg(np.arccos(dotMaxPred2_i)) for dotMaxPred2_i in dotMaxPred2]
 dotMax = [ToDeg(np.arccos(dotMax_i)) for dotMax_i in dotMax]
+dotMin = [ToDeg(np.arccos(dotMin_i)) for dotMin_i in dotMin]
 dotMinPred = [ToDeg(np.arccos(dotMinPred_i)) for dotMinPred_i in dotMinPred]
-
-print dotMaxPred
-print dotMax
-
 
 fig = plt.figure(figsize = figSize, dpi = 80, facecolor="w",
     edgecolor="k")
 plt.fill_between(np.arange(20), dotMinPred, dotMaxPred,
   facecolor="orange", alpha=0.3)
-plt.plot(dotMinPred,"-", color="orange", label="lower bound")
-plt.plot(dotMaxPred,'-', color="orange", label="upper bound")
-plt.plot(dotMax,"-", color="black", label="actual")
+plt.plot(dotMaxPredSqrt,"-", color="orange", label="upper/lower bound")
+plt.plot(dotMaxPred,'-', color="orange")
+plt.plot(dotMax,"--", color="red", label="actual min")
+plt.plot(dotMin,"--", color="green", label="actual max")
 plt.xlabel("subdivision level of the tetrahedron")
-plt.ylabel("max. angle between any two vertices [deg]")
+plt.ylabel("angle between any two vertices [deg]")
 plt.legend()
 plt.savefig("../subdivisionVsMinAngle_ActualAndBound.png", figure=fig)
 
@@ -75,14 +81,15 @@ fig = plt.figure(figsize = figSize, dpi = 80, facecolor="w",
     edgecolor="k")
 plt.fill_between(np.arange(20), dotMinPred, dotMaxPred,
   facecolor="orange", alpha=0.3)
-plt.plot(dotMinPred,"-", color="orange", label="lower bound")
-plt.plot(dotMaxPred2, 'r--', label=r"$\frac{1+3\gamma}{2(1+\gamma)}$")
-plt.plot(dotMaxPredSqrt,'g--', label=r"$\sqrt{\frac{1+\gamma}{2}}$")
-plt.plot(dotMaxPred,'-', color="orange", label="upper bound")
+plt.plot(dotMaxPredSqrt,"-", color="orange", label="upper/lower bound")
+plt.plot(dotMaxPred2, 'c--', label=r"$\frac{1+3\gamma}{2(1+\gamma)}$")
+#plt.plot(dotMaxPredSqrt,'g--', label=r"$\sqrt{\frac{1+\gamma}{2}}$")
+plt.plot(dotMaxPred,'-', color="orange")
 #plt.plot(dotMaxPred,'-', color="orange", label=r"$\frac{2\gamma}{1+\gamma}$")
-plt.plot(dotMax,"-", color="black", label="actual")
+plt.plot(dotMax,"--", color="red", label="actual min")
+plt.plot(dotMin,"--", color="green", label="actual max")
 plt.xlabel("subdivision level of the tetrahedron")
-plt.ylabel("max. angle between any two vertices [deg]")
+plt.ylabel("angle between any two vertices [deg]")
 plt.legend()
 #plt.tight_layout()
 plt.savefig("../subdivisionVsMinAngle_ActualAndBound_allBounds.png", figure=fig)
