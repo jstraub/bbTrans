@@ -1,6 +1,10 @@
-#include "tetrahedron.h"
+/* Copyright (c) 2015, Julian Straub <jstraub@csail.mit.edu> Licensed
+ * under the MIT license. See the license file LICENSE.
+ */
 
-Vector4d normed(const Vector4d& x) {
+#include "optRot/tetrahedron.h"
+
+Eigen::Vector4d normed(const Eigen::Vector4d& x) {
   return x / x.norm();
 }
 
@@ -13,8 +17,8 @@ Tetrahedron4D::Tetrahedron4D(const Eigen::Vector4d& a, const
   vertices_ << a, b, c, d;
 }
 
-Vector4d Tetrahedron4D::GetCenter() {
-  return normed(vertices_.rowwise().sum()) 
+Eigen::Vector4d Tetrahedron4D::GetCenter() {
+  return normed(vertices_.rowwise().sum());
 }
 
 std::vector<Tetrahedron4D> Tetrahedron4D::Subdivide() {

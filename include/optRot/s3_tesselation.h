@@ -1,3 +1,6 @@
+/* Copyright (c) 2015, Julian Straub <jstraub@csail.mit.edu> Licensed
+ * under the MIT license. See the license file LICENSE.
+ */
 
 #include <Eigen/Dense>
 
@@ -59,6 +62,6 @@ std::vector<Tetrahedron4D> TesselateS3() {
     if (acos(north.transpose() * vertices.col(i)) <= 120.*M_PI/180.){
       vertices.col(j++) = vertices.col(i); 
     }
-
+  
   return tetrahedra;
 }
