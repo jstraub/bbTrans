@@ -3,14 +3,14 @@
  */
 #pragma once
 
-#include <iostream>
 #include <Eigen/Dense>
-#include <Eigen/Geometry>
-#include "optRot/combinations.h"
-#include "optRot/tetrahedron.h"
 
 namespace OptRot {
 
-std::vector<Tetrahedron4D> TessellateS3();
+double LogSumExp(const Eigen::VectorXd& x);
+double SumExp(const Eigen::VectorXd& x);
+
+/// Compute log((exp(z) - exp(-z)) / z)
+double ComputeLog2SinhOverZ(double z);
 
 }

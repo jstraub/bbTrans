@@ -4,6 +4,8 @@
 
 #include "optRot/tetrahedron.h"
 
+namespace OptRot {
+
 Eigen::Vector4d normed(const Eigen::Vector4d& x) {
   return x / x.norm();
 }
@@ -17,11 +19,15 @@ Tetrahedron4D::Tetrahedron4D(const Eigen::Vector4d& a, const
   vertices_ << a, b, c, d;
 }
 
-Eigen::Vector4d Tetrahedron4D::GetCenter() {
+Eigen::Vector4d Tetrahedron4D::GetCenter() const {
   return normed(vertices_.rowwise().sum());
 }
 
-std::vector<Tetrahedron4D> Tetrahedron4D::Subdivide() {
+Eigen::Vector4d Tetrahedron4D::GetVertex(uint32_t i) const {
+  return vertices_.col(i);
+}
+
+std::vector<Tetrahedron4D> Tetrahedron4D::Subdivide() const {
   std::vector<Tetrahedron4D> tetrahedra;  
   tetrahedra.reserve(8);
   // Compute new vertices and "pop" them out to the sphere.
@@ -79,4 +85,6 @@ std::vector<Tetrahedron4D> Tetrahedron4D::Subdivide() {
         vertices.col(5), vertices.col(2)));
   }
   return tetrahedra;
+}
+
 }

@@ -1,9 +1,12 @@
 /* Copyright (c) 2015, Julian Straub <jstraub@csail.mit.edu> Licensed
  * under the MIT license. See the license file LICENSE.
  */
+#pragma once
 
 #include <stdint.h>
 #include <vector>
+
+namespace OptRot {
 
 /// Compute all combinations of n numbers when taking k at a time
 /// (nCk).  Inspired by
@@ -11,3 +14,4 @@
 void Combinations(std::vector<uint32_t>& comb_current, uint32_t start,
     uint32_t k_current, uint32_t n, uint32_t k, std::vector<uint32_t>*
     combinations);
+}

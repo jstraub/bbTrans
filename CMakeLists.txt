@@ -39,8 +39,13 @@ include_directories(
 
 add_library(optRot SHARED
   ./src/tetrahedron.cpp
+  ./src/node.cpp
   ./src/combinations.cpp
   ./src/s3_tessellation.cpp
+  ./src/numeric_helpers.cpp
+  ./src/lower_bound_log.cpp
+  ./src/upper_bound_log.cpp
+  ./src/upper_bound_convexity_log.cpp
   )
 
 add_executable(testCombinations ./test/combinations.cpp)
@@ -49,9 +54,20 @@ target_link_libraries(testCombinations optRot)
 add_executable(testS3Tessellation ./test/s3_tessellation.cpp)
 target_link_libraries(testS3Tessellation optRot)
 
+add_executable(testBounds ./test/bounds.cpp)
+target_link_libraries(testBounds optRot)
+
 pods_install_libraries(optRot)
 pods_install_headers(
   ./include/optRot/s3_tessellation.h
   ./include/optRot/tetrahedron.h
   ./include/optRot/combinations.h
+  ./include/optRot/bound.h
+  ./include/optRot/lower_bound_log.h
+  ./include/optRot/upper_bound_log.h
+  ./include/optRot/upper_bound_convexity_log.h
+  ./include/optRot/numeric_helpers.h
+  ./include/optRot/vmf.h
+  ./include/optRot/vmf_mm.h
+  ./include/optRot/vmf_mm_impl.h
   DESTINATION optRot)

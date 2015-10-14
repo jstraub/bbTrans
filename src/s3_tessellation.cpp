@@ -3,6 +3,8 @@
  */
 #include "optRot/s3_tessellation.h" 
 
+namespace OptRot {
+
 std::vector<Tetrahedron4D> TessellateS3() {
   std::vector<Tetrahedron4D> tetrahedra;
   tetrahedra.reserve(600);
@@ -100,4 +102,5 @@ std::vector<Tetrahedron4D> TessellateS3() {
     }
   }
   return tetrahedra;
+}
 }

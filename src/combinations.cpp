@@ -5,6 +5,8 @@
 #include <iostream>
 #include "optRot/combinations.h"
 
+namespace OptRot {
+
 void Combinations(std::vector<uint32_t>& comb_current, uint32_t start,
     uint32_t k_current, uint32_t n, uint32_t k, std::vector<uint32_t>*
     combinations) {
@@ -20,4 +22,6 @@ void Combinations(std::vector<uint32_t>& comb_current, uint32_t start,
     comb_current[k_current] = i;
     Combinations(comb_current, i+1, k_current+1, n, k, combinations);
   }
+}
+
 }

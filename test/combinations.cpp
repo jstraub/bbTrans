@@ -5,6 +5,8 @@
 #include <iostream>
 #include "optRot/combinations.h"
 
+using namespace OptRot;
+
 int main(int argc, char** argv) {
   
   uint32_t k = 4;
