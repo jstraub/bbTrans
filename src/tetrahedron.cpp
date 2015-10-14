@@ -78,4 +78,5 @@ std::vector<Tetrahedron4D> Tetrahedron4D::Subdivide() {
     tetrahedra.push_back(Tetrahedron4D(vertices.col(3), vertices.col(1),
         vertices.col(5), vertices.col(2)));
   }
+  return tetrahedra;
 }

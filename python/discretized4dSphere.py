@@ -185,6 +185,7 @@ class S3Grid(object):
     self.vertices = np.copy(vs[:j,:])
     n_vertices = self.vertices.shape[0]
     print self.vertices.shape
+    print "# north-filtered vertices:", n_vertices
       
     # Tada: all of the vertices are unit length and hence \in S^3
 #    print np.sqrt((self.vertices**2).sum(axis=1))
@@ -204,12 +205,16 @@ class S3Grid(object):
           qj = Quaternion(vec=self.vertices[j])
           G[i,j] = qi.angleTo(qj)
 
+    print np.unique(G) *180./np.pi
     GSorted = np.sort(G, axis=1)
 #    print GSorted[0,:] * 180. / np.pi
 
     minAngle = GSorted[0, 1] 
     G[G < minAngle - 1e-6] = -1.
     G[G > minAngle + 1e-6] = -1.
+
+    print "Min angle for tetrahedra construction: ", minAngle * 180./np.pi
+    print "# edges:", G[G>0.].shape
 
     if False:
       import matplotlib.pyplot as plt

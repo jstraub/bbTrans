@@ -17,6 +17,7 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF()
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+set( CMAKE_EXPORT_COMPILE_COMMANDS 1 )
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set (CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "default install path" FORCE )
@@ -39,19 +40,18 @@ include_directories(
 add_library(optRot SHARED
   ./src/tetrahedron.cpp
   ./src/combinations.cpp
+  ./src/s3_tessellation.cpp
   )
 
-add_executable(testCombinations
-  ./test/combinations.cpp
-  )
+add_executable(testCombinations ./test/combinations.cpp)
+target_link_libraries(testCombinations optRot)
 
-target_link_libraries(testCombinations
-  optRot
-  )
+add_executable(testS3Tessellation ./test/s3_tessellation.cpp)
+target_link_libraries(testS3Tessellation optRot)
 
 pods_install_libraries(optRot)
 pods_install_headers(
-  ./include/optRot/s3_tesselation.h
+  ./include/optRot/s3_tessellation.h
   ./include/optRot/tetrahedron.h
   ./include/optRot/combinations.h
   DESTINATION optRot)

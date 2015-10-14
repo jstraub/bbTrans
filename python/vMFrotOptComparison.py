@@ -26,13 +26,14 @@ if __name__ == "__main__":
   pathRGBD = ["../data/boardLevel_rgb",
       "../data/boardUp_rgb"]
 
-  path = ["../data/middleL50_cRmf.csv", "../data/leftL50_cRmf.csv"]
-  pathRGBD = ["../data/middle_rgb", "../data/left_rgb"]
 
   path = ["../data/middleStraightOn_cRmf.csv",
       "../data/rightStraightOn_cRmf.csv"]
   pathRGBD = ["../data/middleStraightOn_rgb",
       "../data/rightStraightOn_rgb"]
+
+  path = ["../data/middleL50_cRmf.csv", "../data/leftL50_cRmf.csv"]
+  pathRGBD = ["../data/middle_rgb", "../data/left_rgb"]
 
   if path is None:
     vMFs_A = [vMF(np.array([1.,0.,0.]), 1.), vMF(np.array([0.,1.,0.]), 10.)]
