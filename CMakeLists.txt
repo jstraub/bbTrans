@@ -46,6 +46,7 @@ add_library(optRot SHARED
   ./src/lower_bound_log.cpp
   ./src/upper_bound_log.cpp
   ./src/upper_bound_convexity_log.cpp
+  ./src/branch_and_bound.cpp
   )
 
 add_executable(testCombinations ./test/combinations.cpp)
@@ -56,6 +57,9 @@ target_link_libraries(testS3Tessellation optRot)
 
 add_executable(testBounds ./test/bounds.cpp)
 target_link_libraries(testBounds optRot)
+
+add_executable(testBranchAndBound ./test/branch_and_bound.cpp)
+target_link_libraries(testBranchAndBound optRot)
 
 pods_install_libraries(optRot)
 pods_install_headers(

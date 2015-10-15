@@ -4,25 +4,20 @@
 #pragma once
 
 #include <vector>
+#include <list>
 #include "optRot/node.h"
 #include "optRot/bound.h"
 
 namespace OptRot {
 
-class UpperBoundLog : public Bound {
-
-};
-
-class UpperBoundConvexityLog : public Bound {
-
-};
-
 class BranchAndBound {
  public:
-  BranchAndBound();
+  BranchAndBound(Bound& lower_bound, Bound& upper_bound);
   ~BranchAndBound() = default;
+  Node Compute(std::list<Node>& nodes);
  private:
-  
+  Bound& lower_bound_;
+  Bound& upper_bound_;
 };
 
 }
