@@ -15,7 +15,7 @@ def ToDeg(rad):
   return rad/np.pi*180.
 
 eta0 = ToRad(72.)
-eta = ToRad(np.linspace(0.001,180.,1000))
+eta = ToRad(np.exp(np.linspace(np.log(0.001), np.log(180.),1000)))
 
 a = np.cos(eta0)
 b = np.cos(eta*0.5)
