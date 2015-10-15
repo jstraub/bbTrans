@@ -13,7 +13,6 @@
 
 namespace OptRot {
 
-
 class LowerBoundLog : public Bound {
  public:
   LowerBoundLog(const vMFMM<3>& vmf_mm_A, const vMFMM<3>& vmf_mm_B);
@@ -23,7 +22,5 @@ class LowerBoundLog : public Bound {
   const vMFMM<3>& vmf_mm_A_;
   const vMFMM<3>& vmf_mm_B_;
 };
-
-Eigen::Vector3d ClosestPointInTetrahedron() {
 
 }

@@ -81,15 +81,14 @@ std::vector<Tetrahedron4D> TessellateS3() {
   std::cout << G.cast<uint32_t>().sum() << std::endl;
 
   // Compute all combinations "n_vertices choose 4"
-  std::vector<uint32_t> comb_work(4);
-  std::vector<uint32_t> combinations;
-  Combinations(comb_work, 0, 0, n_vertices, 4, &combinations);
+  Combinations combinations(n_vertices, 4);
   // Find tetrahedra by looking at all possible vertex combinations and
   // selecting only the ones which have edges of the correct length
   // between them.
-  std::cout << "Found " << combinations.size()/4 << " combinations." << std::endl;
-  for (i = 0; i < combinations.size()/4; ++i) {
-    Eigen::Map<Eigen::Matrix<uint32_t, 1, 4>> p(&(combinations[i*4]));
+  std::cout << "Found " << combinations.Get().size() 
+    << " combinations." << std::endl;
+  for (i = 0; i < combinations.Get().size(); ++i) {
+    Eigen::Map<const Eigen::Matrix<uint32_t, 1, 4>> p(&(combinations.Get()[i][0]));
     //std::cout << "checking combination: " << p << std::endl;
     if (G(p(0),p(1))==1 && G(p(0),p(2))==1 && G(p(0),p(3))==1 
         && G(p(1),p(2))==1 && G(p(1),p(3))==1 && G(p(2),p(3))==1) {

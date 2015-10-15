@@ -33,11 +33,17 @@ def LowerBoundLog(vMFMM_A, vMFMM_B, vertices, tetra):
   lb = np.zeros(5)
   for i in range(5):
     lbElem = np.zeros((vMFMM_A.GetK(), vMFMM_B.GetK()))
+    print qs[i]
     for j in range(vMFMM_A.GetK()):
+      print vMFMM_A.GetvMF(j).GetMu(), vMFMM_A.GetvMF(j).GetTau(), vMFMM_A.GetPi(j)
       for k in range(vMFMM_B.GetK()):
+        print vMFMM_B.GetvMF(k).GetMu(), vMFMM_B.GetvMF(k).GetTau(), vMFMM_B.GetPi(k)
         lbElem[j,k] = ComputeLogvMFtovMFcost(vMFMM_A,
-            vMFMM_B, j, k, qs[i].toRot().R.dot(vMFMM_B.GetvMF(k).GetMu()))
-    print lbElem
+            vMFMM_B, j, k, qs[i].rotate(vMFMM_B.GetvMF(k).GetMu()))
+#            vMFMM_B, j, k, qs[i].toRot().R.dot(vMFMM_B.GetvMF(k).GetMu()))
+        print lbElem[j,k]
+        print "rotated muB", qs[i].rotate(vMFMM_B.GetvMF(k).GetMu())
+    print lbElem.ravel()
     lb[i] = np.exp(LogSumExp(lbElem))
   return np.max(lb)
 def LowerBound(vMFMM_A, vMFMM_B, vertices, tetra):
@@ -402,91 +408,122 @@ if __name__ == "__main__":
 
   s3 = S3Grid(0)
   print s3.tetra_levels
-
+  R = np.array([[0.,0.,1.],[1.,0.,0.],[0.,1.,0.]])
   vMFs_A = [vMF(np.array([1.,0.,0.]), 10000.), vMF(np.array([0.,1.,0.]),
     1000.)]
-  vMFs_B = [vMF(np.array([1.,0.,0.]), 10000.),
-      vMF(np.array([0.,0.,1.]), 1000.)]
-  vMFMM_A = vMFMM(np.array([0.5, 0.5]), vMFs_A)
-  vMFMM_B = vMFMM(np.array([0.5, 0.5]), vMFs_B)
+  vMFs_B = [vMF(R.dot(np.array([1.,0.,0.])), 10000.),
+      vMF(R.dot(np.array([0.,0.,1.])), 1000.)]
+  vMFMM_A = vMFMM(np.array([0.3, 0.7]), vMFs_A)
+  vMFMM_B = vMFMM(np.array([0.3, 0.7]), vMFs_B)
+  print R
 
+  # switch ordeering to make compatible with Eigen 
+  vertices = np.copy(s3.vertices)
+  s3.vertices[:,3] = vertices[:,0]
+  s3.vertices[:,0] = vertices[:,3]
   tetras = s3.GetTetras(0)
   print tetras.shape
-  lb = np.zeros((tetras.shape[0], 1))
-  ub = np.zeros((tetras.shape[0], 1))
-  ubC = np.zeros((tetras.shape[0], 1))
-  ubC_noLog = np.zeros((tetras.shape[0], 1))
-  ubCB = np.zeros((tetras.shape[0], 1))
-  ubCL = np.zeros((tetras.shape[0], 1))
-  for i in range(s3.tetra_levels[-1]):
-    print "---- LowerBound"
-    lb[i] = LowerBoundLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
-    print "---- UpperBound"
-    ub[i] = UpperBoundLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
-    try:
-      ubC_noLog[i], _, _ = UpperBoundConvexity(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
-    except ValueError:
-      ubC_noLog[i] = np.nan
-    print "---- UpperBoundConvexity"
-    ubC[i], ubCB[i], ubCL[i] = UpperBoundConvexityLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
-    print ubC[i], ubC_noLog[i]
 
-    if lb[i] > ubC[i] + 1e-6 and False:
-      print i, lb[i], ub[i], ubC[i]
-      tetra = tetras[i,:]
-      vertices = s3.vertices
-      qs = [Quaternion(vec=vertices[tetra[0],:]),
-          Quaternion(vec=vertices[tetra[1],:]),
-          Quaternion(vec=vertices[tetra[2],:]),
-          Quaternion(vec=vertices[tetra[3],:])]
-      for j in range(vMFMM_A.GetK()):
-        for k in range(vMFMM_B.GetK()):
-          figm = mlab.figure(bgcolor=(1,1,1))
-          s = Sphere(3)
-          s.plotFanzy(figm,1.)
-          muA = vMFMM_A.GetvMF(j).GetMu()
-          muB = vMFMM_B.GetvMF(k).GetMu()
-          print ClosestMu(muA, muB, qs, figm)
-          print FurtestMu(muA, muB, qs, figm)
-          center = 0.25*vertices[tetra[0],:] + 0.25*vertices[tetra[1],:] + \
-            0.25*vertices[tetra[2],:] +  0.25*vertices[tetra[3],:]
-          center /= np.sqrt((center**2).sum())
-          mus = [q.toRot().R.dot(muB) for q in qs]
-          for mu in mus:
-            mlab.points3d([mu[0]],[mu[1]],[mu[2]], scale_factor=0.1, opacity
-                = 0.5)
-#          mlab.points3d([mu_star[0]],[mu_star[1]],[mu_star[2]],
-#              scale_factor=0.1, color=(0,1,0), opacity = 0.5, mode="2dcross")
-          mlab.points3d([muA[0]],[muA[1]],[muA[2]],
-              scale_factor=0.1, color=(1,0,0), opacity = 0.5, mode="2dcircle")
-          mlab.show(stop=True)
+  i = 0
+  print "-- tetrahedron: "
+  print s3.vertices[tetras[i,0],:]
+  print s3.vertices[tetras[i,1],:]
+  print s3.vertices[tetras[i,2],:]
+  print s3.vertices[tetras[i,3],:]
+  print Quaternion(vec=s3.vertices[tetras[i,0],:]).toRotOther().R
+  print Quaternion(vec=s3.vertices[tetras[i,1],:]).toRot().R
+  print Quaternion(vec=s3.vertices[tetras[i,2],:]).toRot().R
+  print Quaternion(vec=s3.vertices[tetras[i,3],:]).toRot().R
+  print "---- LowerBound"
+  print LowerBoundLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
+  print "---- UpperBound"
+  print UpperBoundLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
 
-  print "lb", lb.T
-  print "ub", ub.T
-  print "ubC", ubC.T
-  print "ubC_noLog", ubC_noLog.T
-  print ubC.T - ubC_noLog.T
-  print np.all(ub > lb)
-  print np.sum(ub > lb)
-  print np.sum(ubC > lb)
+  if False:
 
-  print np.argmax(lb), np.argmax(ub), np.argmax(ubC)
-  print np.max(lb), np.max(ub), np.max(ubC)
-  
-  import matplotlib.pyplot as plt
-  plt.figure()
-  plt.subplot(2,1,1)
-  plt.plot(lb, label = "lb")
-  plt.plot(ub, label = "ub")
-  plt.plot(ubC, label="ub convex")
-  plt.plot(ubC_noLog, label="ub convex no Log")
-  plt.subplot(2,1,2)
-  plt.plot(ub-lb, label = "ub-lb")
-  plt.plot(ubC-lb, label="ub convex - lb")
-#  plt.plot(ubCB, label="B")
-#  plt.plot(ubCL, label="lambda_max")
-  plt.legend()
+    lb = np.zeros((tetras.shape[0], 1))
+    ub = np.zeros((tetras.shape[0], 1))
+    ubC = np.zeros((tetras.shape[0], 1))
+    ubC_noLog = np.zeros((tetras.shape[0], 1))
+    ubCB = np.zeros((tetras.shape[0], 1))
+    ubCL = np.zeros((tetras.shape[0], 1))
+    for i in range(s3.tetra_levels[-1]):
+      print "-- tetrahedron: "
+      print s3.vertices[tetras[i,0],:]
+      print s3.vertices[tetras[i,1],:]
+      print s3.vertices[tetras[i,2],:]
+      print s3.vertices[tetras[i,3],:]
+      print "---- LowerBound"
+      lb[i] = LowerBoundLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
+      print lb[i]
+      print "---- UpperBound"
+      ub[i] = UpperBoundLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
+      print ub[i]
+      continue
+      try:
+        ubC_noLog[i], _, _ = UpperBoundConvexity(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
+      except ValueError:
+        ubC_noLog[i] = np.nan
+      print "---- UpperBoundConvexity"
+      ubC[i], ubCB[i], ubCL[i] = UpperBoundConvexityLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
+      print ubC[i], ubC_noLog[i]
 
-#  plt.figure()
-#  plt.hist((ubC-lb)/(ub-lb), 100)
-  plt.show()
+      if lb[i] > ubC[i] + 1e-6 and False:
+        print i, lb[i], ub[i], ubC[i]
+        tetra = tetras[i,:]
+        vertices = s3.vertices
+        qs = [Quaternion(vec=vertices[tetra[0],:]),
+            Quaternion(vec=vertices[tetra[1],:]),
+            Quaternion(vec=vertices[tetra[2],:]),
+            Quaternion(vec=vertices[tetra[3],:])]
+        for j in range(vMFMM_A.GetK()):
+          for k in range(vMFMM_B.GetK()):
+            figm = mlab.figure(bgcolor=(1,1,1))
+            s = Sphere(3)
+            s.plotFanzy(figm,1.)
+            muA = vMFMM_A.GetvMF(j).GetMu()
+            muB = vMFMM_B.GetvMF(k).GetMu()
+            print ClosestMu(muA, muB, qs, figm)
+            print FurtestMu(muA, muB, qs, figm)
+            center = 0.25*vertices[tetra[0],:] + 0.25*vertices[tetra[1],:] + \
+              0.25*vertices[tetra[2],:] +  0.25*vertices[tetra[3],:]
+            center /= np.sqrt((center**2).sum())
+            mus = [q.toRot().R.dot(muB) for q in qs]
+            for mu in mus:
+              mlab.points3d([mu[0]],[mu[1]],[mu[2]], scale_factor=0.1, opacity
+                  = 0.5)
+  #          mlab.points3d([mu_star[0]],[mu_star[1]],[mu_star[2]],
+  #              scale_factor=0.1, color=(0,1,0), opacity = 0.5, mode="2dcross")
+            mlab.points3d([muA[0]],[muA[1]],[muA[2]],
+                scale_factor=0.1, color=(1,0,0), opacity = 0.5, mode="2dcircle")
+            mlab.show(stop=True)
+
+    print "lb", lb.T
+    print "ub", ub.T
+    print "ubC", ubC.T
+    print "ubC_noLog", ubC_noLog.T
+    print ubC.T - ubC_noLog.T
+    print np.all(ub > lb)
+    print np.sum(ub > lb)
+    print np.sum(ubC > lb)
+
+    print np.argmax(lb), np.argmax(ub), np.argmax(ubC)
+    print np.max(lb), np.max(ub), np.max(ubC)
+    
+    import matplotlib.pyplot as plt
+    plt.figure()
+    plt.subplot(2,1,1)
+    plt.plot(lb, label = "lb")
+    plt.plot(ub, label = "ub")
+    plt.plot(ubC, label="ub convex")
+    plt.plot(ubC_noLog, label="ub convex no Log")
+    plt.subplot(2,1,2)
+    plt.plot(ub-lb, label = "ub-lb")
+    plt.plot(ubC-lb, label="ub convex - lb")
+  #  plt.plot(ubCB, label="B")
+  #  plt.plot(ubCL, label="lambda_max")
+    plt.legend()
+
+  #  plt.figure()
+  #  plt.hist((ubC-lb)/(ub-lb), 100)
+    plt.show()

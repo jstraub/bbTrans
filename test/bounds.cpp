@@ -23,7 +23,11 @@ Eigen::Quaterniond RandomRotation() {
 
 int main(int argc, char ** argv) {
 
-  Eigen::Quaterniond q_true = RandomRotation();
+//  Eigen::Quaterniond q_true = RandomRotation();
+  Eigen::Quaterniond q_true(1.,1.,1.,1.);
+  q_true.normalize();
+  std::cout << q_true.toRotationMatrix() << std::endl;
+  
   Eigen::Vector3d muA1, muA2;
   muA1 << 1.,0.,0.;
   muA2 << 0.,1.,0.;
@@ -32,12 +36,12 @@ int main(int argc, char ** argv) {
   muB2 = q_true.toRotationMatrix()*muA2;
 
   std::vector<vMF<3>> vmfs_A;
-  vmfs_A.push_back(vMF<3>(muA1,1.,0.3));
-  vmfs_A.push_back(vMF<3>(muA2,100.,0.7));
+  vmfs_A.push_back(vMF<3>(muA1,10000.,0.3));
+  vmfs_A.push_back(vMF<3>(muA2,1000.,0.7));
 
   std::vector<vMF<3>> vmfs_B;
-  vmfs_B.push_back(vMF<3>(muB1,1.,0.3));
-  vmfs_B.push_back(vMF<3>(muB2,100.,0.7));
+  vmfs_B.push_back(vMF<3>(muB1,10000.,0.3));
+  vmfs_B.push_back(vMF<3>(muB2,1000.,0.7));
   
   vMFMM<3> vmf_mm_A(vmfs_A);
   vMFMM<3> vmf_mm_B(vmfs_B);
@@ -50,14 +54,28 @@ int main(int argc, char ** argv) {
   Eigen::VectorXd ubs(nodes.size());
   Eigen::VectorXd ubCs(nodes.size());
   for (std::size_t i=0; i<nodes.size(); ++i) {
+    std::cout << "---- tetrahedron" << std::endl;
+    std::cout << nodes[i].GetTetrahedron().GetVertex(0).transpose() << std::endl
+      << nodes[i].GetTetrahedron().GetVertex(1).transpose() << std::endl
+      << nodes[i].GetTetrahedron().GetVertex(2).transpose() << std::endl
+      << nodes[i].GetTetrahedron().GetVertex(3).transpose() << std::endl;
+
+    std::cout << nodes[i].GetTetrahedron().GetVertexQuaternion(0).toRotationMatrix() << std::endl
+      << nodes[i].GetTetrahedron().GetVertexQuaternion(1).toRotationMatrix() << std::endl
+      << nodes[i].GetTetrahedron().GetVertexQuaternion(2).toRotationMatrix() << std::endl
+      << nodes[i].GetTetrahedron().GetVertexQuaternion(3).toRotationMatrix() << std::endl;
     lbs[i] = lower_bound.Evaluate(nodes[i]);
+    std::cout << "lower bound: " << lbs[i] << std::endl;
     ubs[i] = upper_bound.Evaluate(nodes[i]);
+    std::cout << "upper bound: " << ubs[i] << std::endl;
     ubCs[i] = upper_bound_convexity.Evaluate(nodes[i]);
   }
   std::cout << "Lower Bounds: " << std::endl;
   std::cout << lbs.transpose() << std::endl;
   std::cout << "Upper Bounds: " << std::endl;
   std::cout << ubs.transpose() << std::endl;
+  std::cout << "# upper < lower " << (ubs.array() < lbs.array()).transpose()
+    << std::endl;
   std::cout << "Upper Bounds Convexity: " << std::endl;
   std::cout << ubCs.transpose() << std::endl;
   return 0;

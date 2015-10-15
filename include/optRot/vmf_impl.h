@@ -10,6 +10,11 @@ double ComputeLogvMFtovMFcost(const vMF<D>& vmf_A, const vMF<D>& vmf_B,
     log(vmf_B.GetPi()) + vmf_A.GetLogZ() + vmf_B.GetLogZ();
   const double z_AB = (vmf_A.GetTau()*vmf_A.GetMu() +
       vmf_B.GetTau()*mu_B_prime).norm();
+//  std::cout << mu_B_prime.transpose() << std::endl;
+//  std::cout << (vmf_A.GetTau()*vmf_A.GetMu() +
+//      vmf_B.GetTau()*mu_B_prime).transpose() << std::endl;
+//  std::cout << C << " z_AB " << z_AB << " C " << (C + ComputeLog2SinhOverZ(z_AB))
+//    << std::endl;
   return C + ComputeLog2SinhOverZ(z_AB);
 };
 
