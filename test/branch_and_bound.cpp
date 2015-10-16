@@ -16,8 +16,8 @@ int main(int argc, char** argv) {
 
   Eigen::Quaterniond q_true(1.,1.,1.,1.);
   q_true.normalize();
-  std::cout << q_true.coeffs().transpose() << std::endl;
-  std::cout << q_true.toRotationMatrix() << std::endl;
+  std::cout << "true quaternion: " << q_true.coeffs().transpose() << std::endl;
+  //std::cout << q_true.toRotationMatrix() << std::endl;
   
   Eigen::Vector3d muA1, muA2;
   muA1 << 1.,0.,0.;
@@ -44,6 +44,10 @@ int main(int argc, char** argv) {
   std::list<Node> nodes(nodes_v.begin(), nodes_v.end());
   
   BranchAndBound bb(lower_bound, upper_bound);
-  bb.Compute(nodes);
+  Node node_star = bb.Compute(nodes);
+
+  std::cout << "optimum quaternion: " 
+    << node_star.GetTetrahedron().GetCenter().transpose()
+    << std::endl;
 }
 

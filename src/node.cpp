@@ -15,7 +15,6 @@ std::vector<Node> Node::Branch() const {
   nodes.reserve(8);
   std::vector<Tetrahedron4D> tetrahedra = tetrahedron_.Subdivide();
   for (uint32_t i=0; i < tetrahedra.size(); ++i) {
-//    std::cout << ids_.size() << std::endl;
     std::vector<uint32_t> ids(ids_.begin(), ids_.end());
     ids.push_back(i);
     nodes.push_back(Node(tetrahedra[i], lvl_+1, ids));

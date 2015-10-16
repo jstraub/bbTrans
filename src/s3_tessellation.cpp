@@ -65,7 +65,7 @@ std::vector<Tetrahedron4D> TessellateS3() {
   }
 
   uint32_t n_vertices = j;
-  std::cout << "Have " << n_vertices << " filtered vertices." << std::endl;
+//  std::cout << "Have " << n_vertices << " filtered vertices." << std::endl;
   // Precompute all pairwise tetrahedron edges based on the known
   // angular distance btween any two: 72 deg.
   Eigen::Matrix<uint8_t, Eigen::Dynamic, Eigen::Dynamic> G(n_vertices, n_vertices);
@@ -78,15 +78,15 @@ std::vector<Tetrahedron4D> TessellateS3() {
         G(i,j) = 0;
       }
     }
-  std::cout << G.cast<uint32_t>().sum() << std::endl;
+//  std::cout << G.cast<uint32_t>().sum() << std::endl;
 
   // Compute all combinations "n_vertices choose 4"
   Combinations combinations(n_vertices, 4);
   // Find tetrahedra by looking at all possible vertex combinations and
   // selecting only the ones which have edges of the correct length
   // between them.
-  std::cout << "Found " << combinations.Get().size() 
-    << " combinations." << std::endl;
+//  std::cout << "Found " << combinations.Get().size() 
+//    << " combinations." << std::endl;
   for (i = 0; i < combinations.Get().size(); ++i) {
     Eigen::Map<const Eigen::Matrix<uint32_t, 1, 4>> p(&(combinations.Get()[i][0]));
     //std::cout << "checking combination: " << p << std::endl;
