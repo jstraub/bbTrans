@@ -24,7 +24,7 @@ class UpperBoundLog : public Bound {
 };
 
 Eigen::Vector3d ClosestPointInTetrahedron(const vMF<3>& vmf_A, const vMF<3>& vmf_B, 
-    const Tetrahedron4D& tetrahedron);
+    const Tetrahedron4D& tetrahedron, bool furthest=false);
 
 Eigen::Vector3d FurthestPointInTetrahedron(const vMF<3>& vmf_A, const
     vMF<3>& vmf_B, const Tetrahedron4D& tetrahedron);

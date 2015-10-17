@@ -75,6 +75,7 @@ def FindMaximumQAQ(A, vertices, tetra):
   Q = np.zeros((4,4))
   for i in range(4):
     Q[:,i] = vertices[tetra[i],:]
+  print "Q", Q
   # Full problem:
   A_ = Q.T.dot(A).dot(Q) 
   B_ = Q.T.dot(Q)  
@@ -101,6 +102,7 @@ def FindMaximumQAQ(A, vertices, tetra):
   # Only one q: 
   for i in range(4):
     lambdas.append((Q[:,i]).T.dot(A).dot(Q[:,i]))
+  print lambdas
   return np.max(np.array(lambdas))
 
 def BuildM(u,v):
@@ -129,6 +131,8 @@ def UpperBoundConvexityLog(vMFMM_A, vMFMM_B, vertices, tetra):
           vMFMM_B.GetvMF(k).GetMu(), qs, None) #figm)
       mu_L = FurtestMu(vMFMM_A.GetvMF(j).GetMu(),
           vMFMM_B.GetvMF(k).GetMu(), qs, None) # figm)
+      print "muU", mu_U
+      print "muL", mu_L
       U = np.sqrt(((vMFMM_A.GetvMF(j).GetTau() *
         vMFMM_A.GetvMF(j).GetMu() + vMFMM_B.GetvMF(k).GetTau() *
         mu_U)**2).sum())
@@ -159,6 +163,8 @@ def UpperBoundConvexityLog(vMFMM_A, vMFMM_B, vertices, tetra):
         print "LfU, UfL", LfU, UfL
       Melem[j*vMFMM_B.GetK()+k] = BuildM(vMFMM_A.GetvMF(j).GetMu(),
         vMFMM_B.GetvMF(k).GetMu())
+      print vMFMM_A.GetvMF(j).GetMu(), vMFMM_B.GetvMF(k).GetMu()
+      print j, k ,Melem[j*vMFMM_B.GetK()+k]
       D = np.log(2. * np.pi) + np.log(vMFMM_A.GetPi(j)) + \
         np.log(vMFMM_B.GetPi(k)) + vMFMM_A.GetvMF(j).GetLogZ() + \
         vMFMM_B.GetvMF(k).GetLogZ() 
@@ -172,9 +178,12 @@ def UpperBoundConvexityLog(vMFMM_A, vMFMM_B, vertices, tetra):
   for j in range(4):
     for k in range(4):
       M_jk_elem = np.array([Mel[j,k] for Mel in Melem])
+      print M_jk_elem
       A[j,k] = (np.sum(M_jk_elem*np.exp(Aelem-Aelem.max()))) * np.exp(Aelem.max())
+  print Aelem
   B = (BelemSign*np.exp(Belem-Belem.max())).sum() * np.exp(Belem.max())
   lambda_max = FindMaximumQAQ(A, vertices, tetra)
+  print A
   return B + lambda_max, B, lambda_max
 def UpperBoundConvexity(vMFMM_A, vMFMM_B, vertices, tetra):
   ''' 
@@ -290,7 +299,12 @@ def FurtestMu(muA, muB, qs, figm = None):
   return mu_star
 
 def ClosestMu(muA, muB, qs, figm = None):
-  mus = [q.toRot().R.dot(muB) for q in qs]
+#  mus = [q.toRot().R.dot(muB) for q in qs]
+  mus = [q.rotate(muB) for q in qs]
+  for q in qs:
+    print q.q, q.rotate(muB)
+  print "muA", muA
+  print "mus", mus
   A = np.zeros((3,3))
   for tri in combinations(range(4),3):
     A[:,0] = mus[tri[0]]
@@ -412,17 +426,17 @@ if __name__ == "__main__":
   vMFs_A = [vMF(np.array([1.,0.,0.]), 10000.), vMF(np.array([0.,1.,0.]),
     1000.)]
   vMFs_B = [vMF(R.dot(np.array([1.,0.,0.])), 10000.),
-      vMF(R.dot(np.array([0.,0.,1.])), 1000.)]
+      vMF(R.dot(np.array([0.,1.,0.])), 1000.)]
   vMFMM_A = vMFMM(np.array([0.3, 0.7]), vMFs_A)
   vMFMM_B = vMFMM(np.array([0.3, 0.7]), vMFs_B)
   print R
 
   # switch ordeering to make compatible with Eigen 
-  vertices = np.copy(s3.vertices)
-  s3.vertices[:,3] = vertices[:,0]
-  s3.vertices[:,0] = vertices[:,3]
+#  vertices = np.copy(s3.vertices)
+#  s3.vertices[:,3] = vertices[:,0]
+#  s3.vertices[:,0] = vertices[:,3]
   tetras = s3.GetTetras(0)
-  print tetras.shape
+#  print tetras.shape
 
   i = 0
   print "-- tetrahedron: "
@@ -434,10 +448,12 @@ if __name__ == "__main__":
   print Quaternion(vec=s3.vertices[tetras[i,1],:]).toRot().R
   print Quaternion(vec=s3.vertices[tetras[i,2],:]).toRot().R
   print Quaternion(vec=s3.vertices[tetras[i,3],:]).toRot().R
-  print "---- LowerBound"
-  print LowerBoundLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
+#  print "---- LowerBound"
+#  print LowerBoundLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
   print "---- UpperBound"
   print UpperBoundLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
+  print "---- UpperBoundConvexity"
+  print UpperBoundConvexityLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
 
   if False:
 
@@ -453,19 +469,19 @@ if __name__ == "__main__":
       print s3.vertices[tetras[i,1],:]
       print s3.vertices[tetras[i,2],:]
       print s3.vertices[tetras[i,3],:]
-      print "---- LowerBound"
-      lb[i] = LowerBoundLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
-      print lb[i]
-      print "---- UpperBound"
-      ub[i] = UpperBoundLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
-      print ub[i]
+#      print "---- LowerBound"
+#      lb[i] = LowerBoundLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
+#      print lb[i]
+#      print "---- UpperBound"
+#      ub[i] = UpperBoundLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
+#      print ub[i]
+      print "---- UpperBoundConvexity"
+      ubC[i], ubCB[i], ubCL[i] = UpperBoundConvexityLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
       continue
       try:
         ubC_noLog[i], _, _ = UpperBoundConvexity(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
       except ValueError:
         ubC_noLog[i] = np.nan
-      print "---- UpperBoundConvexity"
-      ubC[i], ubCB[i], ubCL[i] = UpperBoundConvexityLog(vMFMM_A, vMFMM_B, s3.vertices, tetras[i,:])
       print ubC[i], ubC_noLog[i]
 
       if lb[i] > ubC[i] + 1e-6 and False:

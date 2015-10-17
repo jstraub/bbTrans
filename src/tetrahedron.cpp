@@ -27,6 +27,15 @@ Eigen::Vector4d Tetrahedron4D::GetVertex(uint32_t i) const {
   return vertices_.col(i);
 }
 
+Eigen::Quaterniond Tetrahedron4D::GetCenterQuaternion() const {
+  Eigen::Vector4d q = GetCenter();
+  return Eigen::Quaterniond(q(0), q(1), q(2), q(3));
+}
+Eigen::Quaterniond Tetrahedron4D::GetVertexQuaternion(uint32_t i) const {
+  Eigen::Vector4d q = GetVertex(i);
+  return Eigen::Quaterniond(q(0), q(1), q(2), q(3));
+}
+
 std::vector<Tetrahedron4D> Tetrahedron4D::Subdivide() const {
   std::vector<Tetrahedron4D> tetrahedra;  
   tetrahedra.reserve(8);

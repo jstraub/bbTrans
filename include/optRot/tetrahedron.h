@@ -17,11 +17,9 @@ class Tetrahedron4D {
   ~Tetrahedron4D() = default;
 
   Eigen::Vector4d GetCenter() const;
-  Eigen::Quaterniond GetCenterQuaternion() const
-    {return Eigen::Quaterniond(GetCenter());}
+  Eigen::Quaterniond GetCenterQuaternion() const;
   Eigen::Vector4d GetVertex(uint32_t i) const;
-  Eigen::Quaterniond GetVertexQuaternion(uint32_t i) const
-    {return Eigen::Quaterniond(GetVertex(i));}
+  Eigen::Quaterniond GetVertexQuaternion(uint32_t i) const;
   std::vector<Tetrahedron4D> Subdivide() const;
  private:
   /// One 4D vertex per column. 4 vertices in total to describe the 4D
