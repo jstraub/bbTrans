@@ -74,6 +74,7 @@ pods_install_headers(
   ./include/optRot/upper_bound_convexity_log.h
   ./include/optRot/numeric_helpers.h
   ./include/optRot/vmf.h
+  ./include/optRot/vmf_impl.h
   ./include/optRot/vmf_mm.h
   ./include/optRot/vmf_mm_impl.h
   DESTINATION optRot)
