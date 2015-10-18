@@ -40,10 +40,11 @@ int main(int argc, char** argv) {
   std::vector<Node> nodes_v = GenerateNotesThatTessellateS3();
   LowerBoundLog lower_bound(vmf_mm_A, vmf_mm_B);
   UpperBoundLog upper_bound(vmf_mm_A, vmf_mm_B);
+  UpperBoundConvexityLog upper_bound_convexity(vmf_mm_A, vmf_mm_B);
 
   std::list<Node> nodes(nodes_v.begin(), nodes_v.end());
   
-  BranchAndBound bb(lower_bound, upper_bound);
+  BranchAndBound bb(lower_bound, upper_bound_convexity);
   Node node_star = bb.Compute(nodes);
 
   std::cout << "optimum quaternion: " 

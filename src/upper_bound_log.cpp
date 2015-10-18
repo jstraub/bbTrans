@@ -32,31 +32,31 @@ Eigen::Vector3d ComputeExtremumOnGeodesic(const Eigen::Vector3d& q1,
   const double theta2 = acos(std::min(1., std::max(-1., (q2.transpose()*p)(0))));
   double t = 0.5;
   if (abs(theta1-M_PI*0.5) < 1.e-6 && abs(theta2-M_PI*0.5) < 1.e-6) {
-    std::cout << "  picking middle point. " << std::endl;
+//    std::cout << "  picking middle point. " << std::endl;
     t = 0.5;
   } else if (abs(theta12) < 1.e-6) {
-    std::cout << "  points are equal. " << std::endl;
+//    std::cout << "  points are equal. " << std::endl;
     return (q1+q2)*0.5; // q1 \approx q2;
   }
   t = atan2(cos(theta2) - cos(theta12)*cos(theta1),
       cos(theta1)*sin(theta12)) / theta12;
   t = std::min(1., std::max(0., t));
-  std::cout << "  on geodesic at " << t << std::endl;
+//  std::cout << "  on geodesic at " << t << std::endl;
   return (q1*sin((1.-t)*theta12) + q2*sin(t*theta12))/sin(theta12);
 }
 
 Eigen::Vector3d ClosestPointInTetrahedron(const vMF<3>& vmf_A, const
     vMF<3>& vmf_B, const Tetrahedron4D& tetrahedron, bool furthest) {
   Eigen::Vector3d muA = vmf_A.GetMu();
-  std::cout << " muA " << muA.transpose() << std::endl;
+//  std::cout << " muA " << muA.transpose() << std::endl;
   if (furthest) muA *= -1.;
   std::vector<Eigen::Vector3d> mus(4);
   for (uint32_t i=0; i<4; ++i) {
     mus[i] = tetrahedron.GetVertexQuaternion(i)._transformVector(vmf_B.GetMu());
-    std::cout << " muB " << i << " " 
-      << tetrahedron.GetVertex(i).transpose() << " -> "
-      << tetrahedron.GetVertexQuaternion(i).coeffs().transpose() << " -> "
-      << mus[i].transpose() << std::endl;
+//    std::cout << " muB " << i << " " 
+//      << tetrahedron.GetVertex(i).transpose() << " -> "
+//      << tetrahedron.GetVertexQuaternion(i).coeffs().transpose() << " -> "
+//      << mus[i].transpose() << std::endl;
   }
     
   // Check if muA is in any of the triangles spanned by the rotated
@@ -70,12 +70,12 @@ Eigen::Vector3d ClosestPointInTetrahedron(const vMF<3>& vmf_A, const
     if (qr.rank() == 3) {
       Eigen::Vector3d a = qr.solve(muA);
       if ((a.array() > 0.).all()) {
-        if (furthest)
-          std::cout << " furthest point inside polygone " <<
-            muA.transpose() << std::endl;
-        else 
-          std::cout << " closest point inside polygone " <<
-            muA.transpose() << std::endl;
+//        if (furthest)
+//          std::cout << " furthest point inside polygone " <<
+//            muA.transpose() << std::endl;
+//        else 
+//          std::cout << " closest point inside polygone " <<
+//            muA.transpose() << std::endl;
         return muA;
       }
     }
@@ -96,12 +96,12 @@ Eigen::Vector3d ClosestPointInTetrahedron(const vMF<3>& vmf_A, const
     dots.minCoeff(&id);
   else
     dots.maxCoeff(&id);
-  if (furthest)
-    std::cout << " furthest point on polygone: " << ps.col(id).transpose() 
-    << std::endl;
-  else
-    std::cout << " closest point on polygone: " << ps.col(id).transpose() 
-    << std::endl;
+//  if (furthest)
+//    std::cout << " furthest point on polygone: " << ps.col(id).transpose() 
+//    << std::endl;
+//  else
+//    std::cout << " closest point on polygone: " << ps.col(id).transpose() 
+//    << std::endl;
   return ps.col(id);
 }
 

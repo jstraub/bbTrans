@@ -73,10 +73,10 @@ double FindMaximumQAQ(const Eigen::Matrix4d& A, const Tetrahedron4D&
     if (FindLambda<2>(A__, B__, &lambda))
       lambdas.push_back(lambda);
   }
-  std::cout << "Q" << std::endl << Q << std::endl;
-  for (auto l : lambdas) 
-    std::cout << l << " ";
-  std::cout << std::endl;
+//  std::cout << "Q" << std::endl << Q << std::endl;
+//  for (auto l : lambdas) 
+//    std::cout << l << " ";
+//  std::cout << std::endl;
   return *std::max_element(lambdas.begin(), lambdas.end());
 }
 
@@ -104,7 +104,7 @@ double UpperBoundConvexityLog::Evaluate(const Node& node) {
       double UfL = 0.;
       double fUfLoU2L2 = 0.;
       double L2fUU2fLoU2L2 = 0.;
-      std::cout << "U " << U << " L " << L << std::endl;
+//      std::cout << "U " << U << " L " << L << std::endl;
       if (fabs(U-L) < 1.e-6) {
         if (U > 50.) {
           fUfLoU2L2 = log(U-1.) + 2.*U - log(2.) - 3.*log(U) - U;
@@ -117,7 +117,7 @@ double UpperBoundConvexityLog::Evaluate(const Node& node) {
       } else {
         double f_U = ComputeLog2SinhOverZ(U);
         double f_L = ComputeLog2SinhOverZ(L);
-        std::cout << "f_U " << f_U << " f_L " << f_L << std::endl;
+//        std::cout << "f_U " << f_U << " f_L " << f_L << std::endl;
         fUfLoU2L2 = - log(U - L) - log(U + L);
         if (f_U > f_L) {
           fUfLoU2L2 += log(1. - exp(f_L-f_U)) + f_U;
@@ -130,8 +130,8 @@ double UpperBoundConvexityLog::Evaluate(const Node& node) {
       }
       uint32_t K = vmf_mm_B_.GetK();
       Melem[j*K+k] = BuildM(vmf_A.GetMu(), vmf_B.GetMu());
-      std::cout << vmf_A.GetMu().transpose() << " and " << vmf_B.GetMu().transpose() << std::endl;
-      std::cout << j << " k " << k << std::endl << Melem[j*k+k] << std::endl;
+//      std::cout << vmf_A.GetMu().transpose() << " and " << vmf_B.GetMu().transpose() << std::endl;
+//      std::cout << j << " k " << k << std::endl << Melem[j*k+k] << std::endl;
       double D = log(2.*M_PI) + log(vmf_A.GetPi()) + log(vmf_B.GetPi())
         + vmf_A.GetLogZ() + vmf_B.GetLogZ();
       Aelem(j*K+k) = log(2) + log(vmf_A.GetTau()) + log(vmf_B.GetTau())
@@ -142,27 +142,24 @@ double UpperBoundConvexityLog::Evaluate(const Node& node) {
       Belem.row(j*K+k) = (b.array()+D).matrix();
       BelemSign.row(j*K+k) << 1.,1.,-1.,1.;
     }
-  std::cout << BelemSign << std::endl;
   Eigen::Matrix4d A;
   for (uint32_t j=0; j<4; ++j)
     for (uint32_t k=0; k<4; ++k) {
       Eigen::VectorXd M_jk_elem(Melem.size());
       for (uint32_t i=0; i<Melem.size(); ++i)
         M_jk_elem(i) = Melem[i](j,k);
-//      if (j+k == 3) {
-        std::cout << j << " " << k << " " << M_jk_elem.transpose() << std::endl;
-//      }
+//        std::cout << j << " " << k << " " << M_jk_elem.transpose() << std::endl;
       A(j,k) = (M_jk_elem.array()*(Aelem.array() -
             Aelem.maxCoeff()).array().exp()).sum() *
         exp(Aelem.maxCoeff());
     }
-  std::cout << "Aelem " << Aelem.transpose() << std::endl;
+//  std::cout << "Aelem " << Aelem.transpose() << std::endl;
   double B = (BelemSign.array()*(Belem.array() -
         Belem.maxCoeff()).exp()).sum() * exp(Belem.maxCoeff());
-  std::cout << "A " <<  std::endl;
-  std::cout << A << std::endl;
+//  std::cout << "A " <<  std::endl;
+//  std::cout << A << std::endl;
   double lambda_max = FindMaximumQAQ(A, node.GetTetrahedron());
-  std::cout << "B " << B << " lambda_max " << lambda_max << std::endl;
+//  std::cout << "B " << B << " lambda_max " << lambda_max << std::endl;
   return B + lambda_max;
 }
 
