@@ -13,9 +13,9 @@ BranchAndBound::BranchAndBound(Bound& lower_bound, Bound& upper_bound)
 Node BranchAndBound::Compute(std::list<Node>& nodes) {
   double lb = -1.e6;
   double ub = 1.e6;
-  double eps = 1.0e-5 * M_PI / 180.;
+  double eps = 1.0e-3 * M_PI / 180.;
   uint32_t it = 0;
-  uint32_t max_it = 10000;
+  uint32_t max_it = 1000;
   Node node_star = nodes.front();
   for (auto& node : nodes) {
     node.SetLB(lower_bound_.Evaluate(node));
