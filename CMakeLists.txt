@@ -67,6 +67,7 @@ pods_install_headers(
   ./include/optRot/tetrahedron.h
   ./include/optRot/combinations.h
   ./include/optRot/bound.h
+  ./include/optRot/node.h
   ./include/optRot/branch_and_bound.h
   ./include/optRot/lower_bound_log.h
   ./include/optRot/upper_bound_log.h
