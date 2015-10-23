@@ -4,6 +4,7 @@
 #pragma once
 
 #include <Eigen/Dense>
+#include <iostream>
 #include "optRot/numeric_helpers.h"
 
 namespace OptRot {
@@ -19,6 +20,10 @@ class vMF {
   double GetTau() const {return tau_;}
   const Eigen::Matrix<double, D, 1>& GetMu() const {return mu_;}
   double GetLogZ() const;
+  void Print() const {
+    std::cout << "vMF tau= " << tau_ << "\tmu= " << mu_.transpose() 
+      << "\tpi= " << pi_ << std::endl;
+  }
  private:
   Eigen::Matrix<double, D, 1> mu_;
   double tau_;
