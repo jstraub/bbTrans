@@ -14,3 +14,6 @@ global
 rtmf
 rtDDPvMF
 .directory
+results
+data
+pod-build

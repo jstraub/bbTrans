@@ -58,8 +58,11 @@ target_link_libraries(testCombinations optRot)
 add_executable(testS3Tessellation ./test/s3_tessellation.cpp)
 target_link_libraries(testS3Tessellation optRot)
 
-add_executable(testBounds ./test/bounds.cpp)
-target_link_libraries(testBounds optRot)
+add_executable(testBoundsS3 ./test/bounds_S3.cpp)
+target_link_libraries(testBoundsS3 optRot)
+
+add_executable(testBoundsR3 ./test/bounds_R3.cpp)
+target_link_libraries(testBoundsR3 optRot)
 
 add_executable(testBranchAndBoundS3 ./test/branch_and_bound_S3.cpp)
 target_link_libraries(testBranchAndBoundS3 optRot)

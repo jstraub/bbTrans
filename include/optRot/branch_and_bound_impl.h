@@ -32,12 +32,12 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
         LessThanNodeLB<Node>());
     double lbn = node_i->GetLB();
     double ubn = node_i->GetUB();
-    std::cout << "@" << it << " # " << n_nodes << ": cur " 
-      << lbn << " < " << ubn << "\t global "
-      << lb << " < " << ub << " " << " |.| " << fabs(ub - lb) << "\t selected "
-      << node_star.GetLB() << " < " << node_star.GetUB() << " "
-      << node_star.GetLevel() << " " //<< node_star.GetIds()[0] 
-      << std::endl;
+//    std::cout << "@" << it << " # " << n_nodes << ": cur " 
+//      << lbn << " < " << ubn << "\t global "
+//      << lb << " < " << ub << " " << " |.| " << fabs(ub - lb) << "\t selected "
+//      << node_star.GetLB() << " < " << node_star.GetUB() << " "
+//      << node_star.GetLevel() << " " //<< node_star.GetIds()[0] 
+//      << std::endl;
     if (lbn > lb) {
       // Remember this node as the current best.
       lb = lbn;
