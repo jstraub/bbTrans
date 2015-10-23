@@ -74,6 +74,7 @@ pods_install_libraries(optRot)
 pods_install_headers(
   ./include/optRot/s3_tessellation.h
   ./include/optRot/tetrahedron.h
+  ./include/optRot/box.h
   ./include/optRot/combinations.h
   ./include/optRot/bound.h
   ./include/optRot/node.h
