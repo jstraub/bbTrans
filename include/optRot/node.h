@@ -79,5 +79,5 @@ struct LessThanNodeLB {
 };
 
 std::list<NodeS3> GenerateNotesThatTessellateS3();
-
+std::list<NodeR3> GenerateNotesThatTessellateR3(const Eigen::Vector3d& min, const Eigen::Vector3d& max, double max_side_len); 
 }

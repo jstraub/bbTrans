@@ -44,8 +44,8 @@ double Normal<D>::logPdf(const Eigen::Matrix<double,D,D>& scatter,
 }
 
 template<uint32_t D>
-void Normal<D>::print() const {
-  std::cout<<"mu="<<mu_.transpose()<<std::endl;
+void Normal<D>::Print() const {
+  std::cout<< "Normal: pi=" << pi_ << " mu="<<mu_.transpose()<<std::endl;
   std::cout<<Sigma_<<std::endl;
 }
 

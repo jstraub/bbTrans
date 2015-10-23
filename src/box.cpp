@@ -78,4 +78,10 @@ bool Box::IsInside(const Eigen::Vector3d& t) const {
     && (t.array() <= p_max_.array()).all();
 }
 
+Eigen::Vector3d Box::GetSideLengths() const {
+  Eigen::Vector3d ls;
+  ls << edges_.col(0).norm(), edges_.col(1).norm(), edges_.col(2).norm(); 
+  return ls;
+}
+
 }

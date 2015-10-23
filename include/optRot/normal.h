@@ -23,7 +23,7 @@ public:
   double logPdf(const Eigen::Matrix<double,D,D>& scatter, 
       const Eigen::Matrix<double,D,1>& mean, double count) const;
 
-  void print() const;
+  void Print() const;
 
   double GetPi() const 
   {return pi_;};

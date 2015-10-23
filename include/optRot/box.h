@@ -21,6 +21,7 @@ class Box {
   {d = edges_.col(i); e0 = corners_.col(i/3);}
   void GetSide(uint32_t i, Eigen::Vector3d& p0, Eigen::Matrix<double,3,2>& E) const
   {p0 = corners_.col(i/2); E = sides_.middleCols<2>(i*2);}
+  Eigen::Vector3d GetSideLengths() const;
  private:
   Eigen::Matrix<double, 3, 1> p_min_;
   Eigen::Matrix<double, 3, 1> p_max_;
