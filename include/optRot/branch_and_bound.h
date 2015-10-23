@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include <memory>
 #include <vector>
 #include <list>
 #include "optRot/node.h"
@@ -10,14 +11,16 @@
 
 namespace OptRot {
 
+template <class Node>
 class BranchAndBound {
  public:
-  BranchAndBound(Bound& lower_bound, Bound& upper_bound);
+  BranchAndBound(Bound<Node>& lower_bound, Bound<Node>& upper_bound);
   ~BranchAndBound() = default;
-  Node Compute(std::list<Node>& nodes);
+  Node Compute(std::list<Node>& nodes, double eps, uint32_t max_it);
  private:
-  Bound& lower_bound_;
-  Bound& upper_bound_;
+  Bound<Node>& lower_bound_;
+  Bound<Node>& upper_bound_;
 };
 
 }
+#include "optRot/branch_and_bound_impl.h"

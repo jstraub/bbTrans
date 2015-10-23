@@ -37,15 +37,15 @@ int main(int argc, char** argv) {
   vMFMM<3> vmf_mm_A(vmfs_A);
   vMFMM<3> vmf_mm_B(vmfs_B);
 
-  std::vector<Node> nodes_v = GenerateNotesThatTessellateS3();
+  std::list<NodeS3> nodes = GenerateNotesThatTessellateS3();
   LowerBoundLog lower_bound(vmf_mm_A, vmf_mm_B);
   UpperBoundLog upper_bound(vmf_mm_A, vmf_mm_B);
   UpperBoundConvexityLog upper_bound_convexity(vmf_mm_A, vmf_mm_B);
-
-  std::list<Node> nodes(nodes_v.begin(), nodes_v.end());
   
-  BranchAndBound bb(lower_bound, upper_bound_convexity);
-  Node node_star = bb.Compute(nodes);
+  double eps = 1.0e-5 * M_PI / 180.;
+  uint32_t max_it = 1000;
+  BranchAndBound<NodeS3> bb(lower_bound, upper_bound_convexity);
+  NodeS3 node_star = bb.Compute(nodes, eps, max_it);
 
   std::cout << "optimum quaternion: " 
     << node_star.GetTetrahedron().GetCenter().transpose()

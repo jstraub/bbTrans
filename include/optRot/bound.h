@@ -7,11 +7,12 @@
 
 namespace OptRot {
 
+template <class Node>
 class Bound {
  public:
   Bound() = default;
   virtual ~Bound() = default;
-  virtual double Evaluate(const Node& node) = 0; 
+  virtual double Evaluate(const Node& node) { return 0;};
  private:
 };
 }

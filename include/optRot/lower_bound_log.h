@@ -13,11 +13,11 @@
 
 namespace OptRot {
 
-class LowerBoundLog : public Bound {
+class LowerBoundLog : public Bound<NodeS3> {
  public:
   LowerBoundLog(const vMFMM<3>& vmf_mm_A, const vMFMM<3>& vmf_mm_B);
   virtual ~LowerBoundLog() = default;
-  virtual double Evaluate(const Node& node);
+  virtual double Evaluate(const NodeS3& node);
  private:
   const vMFMM<3>& vmf_mm_A_;
   const vMFMM<3>& vmf_mm_B_;

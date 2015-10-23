@@ -40,13 +40,16 @@ include_directories(
 add_library(optRot SHARED
   ./src/tetrahedron.cpp
   ./src/node.cpp
+  ./src/box.cpp
   ./src/combinations.cpp
   ./src/s3_tessellation.cpp
   ./src/numeric_helpers.cpp
   ./src/lower_bound_log.cpp
   ./src/upper_bound_log.cpp
   ./src/upper_bound_convexity_log.cpp
-  ./src/branch_and_bound.cpp
+  ./src/lower_bound_R3.cpp
+  ./src/upper_bound_indep_R3.cpp
+#  ./src/branch_and_bound.cpp
   )
 
 add_executable(testCombinations ./test/combinations.cpp)
@@ -58,8 +61,11 @@ target_link_libraries(testS3Tessellation optRot)
 add_executable(testBounds ./test/bounds.cpp)
 target_link_libraries(testBounds optRot)
 
-add_executable(testBranchAndBound ./test/branch_and_bound.cpp)
-target_link_libraries(testBranchAndBound optRot)
+add_executable(testBranchAndBoundS3 ./test/branch_and_bound_S3.cpp)
+target_link_libraries(testBranchAndBoundS3 optRot)
+
+add_executable(testBranchAndBoundR3 ./test/branch_and_bound_R3.cpp)
+target_link_libraries(testBranchAndBoundR3 optRot)
 
 pods_install_libraries(optRot)
 pods_install_headers(
@@ -69,6 +75,7 @@ pods_install_headers(
   ./include/optRot/bound.h
   ./include/optRot/node.h
   ./include/optRot/branch_and_bound.h
+  ./include/optRot/branch_and_bound_impl.h
   ./include/optRot/lower_bound_log.h
   ./include/optRot/upper_bound_log.h
   ./include/optRot/upper_bound_convexity_log.h
@@ -77,4 +84,8 @@ pods_install_headers(
   ./include/optRot/vmf_impl.h
   ./include/optRot/vmf_mm.h
   ./include/optRot/vmf_mm_impl.h
+  ./include/optRot/normal.h
+  ./include/optRot/normal_impl.h
+  ./include/optRot/lower_bound_R3.h
+  ./include/optRot/upper_bound_indep_R3.h
   DESTINATION optRot)

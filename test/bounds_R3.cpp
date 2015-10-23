@@ -46,35 +46,37 @@ int main(int argc, char ** argv) {
   vMFMM<3> vmf_mm_A(vmfs_A);
   vMFMM<3> vmf_mm_B(vmfs_B);
 
-  std::vector<Node> nodes = GenerateNotesThatTessellateS3();
+  std::list<NodeS3> nodes = GenerateNotesThatTessellateS3();
   LowerBoundLog lower_bound(vmf_mm_A, vmf_mm_B);
   UpperBoundLog upper_bound(vmf_mm_A, vmf_mm_B);
   UpperBoundConvexityLog upper_bound_convexity(vmf_mm_A, vmf_mm_B);
   Eigen::VectorXd lbs(nodes.size());
   Eigen::VectorXd ubs(nodes.size());
   Eigen::VectorXd ubCs(nodes.size());
-  for (std::size_t i=0; i<nodes.size(); ++i) {
+  std::size_t i=0;
+  for (NodeS3& node : nodes) {
     std::cout << "---- tetrahedron" << std::endl;
-    std::cout << nodes[i].GetTetrahedron().GetVertex(0).transpose() << std::endl
-      << nodes[i].GetTetrahedron().GetVertex(1).transpose() << std::endl
-      << nodes[i].GetTetrahedron().GetVertex(2).transpose() << std::endl
-      << nodes[i].GetTetrahedron().GetVertex(3).transpose() << std::endl;
+    std::cout << node.GetTetrahedron().GetVertex(0).transpose() << std::endl
+      << node.GetTetrahedron().GetVertex(1).transpose() << std::endl
+      << node.GetTetrahedron().GetVertex(2).transpose() << std::endl
+      << node.GetTetrahedron().GetVertex(3).transpose() << std::endl;
 
-//    std::cout << nodes[i].GetTetrahedron().GetVertexQuaternion(0).toRotationMatrix() << std::endl
-//      << nodes[i].GetTetrahedron().GetVertexQuaternion(1).toRotationMatrix() << std::endl
-//      << nodes[i].GetTetrahedron().GetVertexQuaternion(2).toRotationMatrix() << std::endl
-//      << nodes[i].GetTetrahedron().GetVertexQuaternion(3).toRotationMatrix() << std::endl;
+//    std::cout << node.GetTetrahedron().GetVertexQuaternion(0).toRotationMatrix() << std::endl
+//      << node.GetTetrahedron().GetVertexQuaternion(1).toRotationMatrix() << std::endl
+//      << node.GetTetrahedron().GetVertexQuaternion(2).toRotationMatrix() << std::endl
+//      << node.GetTetrahedron().GetVertexQuaternion(3).toRotationMatrix() << std::endl;
     std::cout << " ------ " << std::endl;
-    lbs[i] = lower_bound.Evaluate(nodes[i]);
+    lbs[i] = lower_bound.Evaluate(node);
     std::cout << "lower bound: " << lbs[i] << std::endl;
 //    std::cout << " ------ " << std::endl;
-    ubCs[i] = upper_bound_convexity.Evaluate(nodes[i]);
+    ubCs[i] = upper_bound_convexity.Evaluate(node);
     std::cout << "upper bound C: " << ubCs[i] << std::endl;
     if (ubCs[i] - lbs[i] < -1.) 
       std::cout << " !! large deviation !!" << std::endl;
 //    std::cout << " ------ " << std::endl;
-    ubs[i] = upper_bound.Evaluate(nodes[i]);
+    ubs[i] = upper_bound.Evaluate(node);
     std::cout << "upper bound: " << ubs[i] << std::endl;
+    ++i;
   }
   std::cout << "Lower Bounds: " << std::endl;
   std::cout << lbs.transpose() << std::endl;

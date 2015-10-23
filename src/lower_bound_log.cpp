@@ -11,7 +11,7 @@ LowerBoundLog::LowerBoundLog(const vMFMM<3>& vmf_mm_A, const vMFMM<3>&
   : vmf_mm_A_(vmf_mm_A), vmf_mm_B_(vmf_mm_B)
 {}
 
-double LowerBoundLog::Evaluate(const Node& node) {
+double LowerBoundLog::Evaluate(const NodeS3& node) {
   Eigen::VectorXd lbs(5); 
   std::vector<Eigen::Quaterniond> qs(5);
   qs[0] = node.GetTetrahedron().GetCenterQuaternion();

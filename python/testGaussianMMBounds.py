@@ -209,11 +209,13 @@ def CostFunction(gmmT, t):
 import matplotlib.pyplot as plt
 
 t = np.ones((2,1))
-gmmA = [Gaussian(np.array([[0.],[0.]]), np.eye(2)*0.001, 0.4),
-  Gaussian(np.array([[0.],[1.]]), np.eye(2)*0.01, 0.6)]
+gmmA = [Gaussian(np.array([[0.],[0.]]), np.eye(2)*0.001, 0.3),
+  Gaussian(np.array([[1.],[0.]]), np.eye(2)*0.01, 0.3),
+  Gaussian(np.array([[0.],[1.]]), np.eye(2)*0.01, 0.4)]
 
-gmmB = [Gaussian(np.array([[0.],[0.]])+t, np.eye(2)*0.001, 0.4),
-  Gaussian(np.array([[0.],[1.]])+t, np.eye(2)*0.01, 0.6)]
+gmmB = [Gaussian(np.array([[0.],[0.]])+t, np.eye(2)*0.001, 0.3),
+  Gaussian(np.array([[1.],[0.]])+t, np.eye(2)*0.01, 0.3),
+  Gaussian(np.array([[0.],[1.]])+t, np.eye(2)*0.01, 0.4)]
 
 box = Box(np.array([[0.],[0.]]),
     np.array([[2.],[2.]]))

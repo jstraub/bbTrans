@@ -80,7 +80,7 @@ double FindMaximumQAQ(const Eigen::Matrix4d& A, const Tetrahedron4D&
   return *std::max_element(lambdas.begin(), lambdas.end());
 }
 
-double UpperBoundConvexityLog::Evaluate(const Node& node) {
+double UpperBoundConvexityLog::Evaluate(const NodeS3& node) {
 
   std::vector<Eigen::Matrix4d> Melem(vmf_mm_A_.GetK()*vmf_mm_B_.GetK());
   Eigen::VectorXd Aelem(vmf_mm_A_.GetK()*vmf_mm_B_.GetK());
