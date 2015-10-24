@@ -20,11 +20,15 @@ Tetrahedron4D::Tetrahedron4D(const Eigen::Vector4d& a, const
 }
 
 Eigen::Vector4d Tetrahedron4D::GetCenter() const {
-  return normed(vertices_.rowwise().sum());
+  Eigen::Vector4d c = normed(vertices_.rowwise().sum());
+//  c.bottomRows<3>() *= -1;
+  return c;
 }
 
 Eigen::Vector4d Tetrahedron4D::GetVertex(uint32_t i) const {
-  return vertices_.col(i);
+  Eigen::Vector4d v = vertices_.col(i);
+//  v.bottomRows<3>() *= -1;
+  return v;
 }
 
 Eigen::Quaterniond Tetrahedron4D::GetCenterQuaternion() const {

@@ -70,6 +70,9 @@ target_link_libraries(testBranchAndBoundS3 optRot)
 add_executable(testBranchAndBoundR3 ./test/branch_and_bound_R3.cpp)
 target_link_libraries(testBranchAndBoundR3 optRot)
 
+add_executable(testBranchAndBoundT3 ./test/branch_and_bound_T3.cpp)
+target_link_libraries(testBranchAndBoundT3 optRot)
+
 pods_install_libraries(optRot)
 pods_install_headers(
   ./include/optRot/s3_tessellation.h
