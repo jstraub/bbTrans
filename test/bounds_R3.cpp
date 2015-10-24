@@ -36,8 +36,8 @@ int main(int argc, char ** argv) {
 
   Eigen::Matrix3d Sigma1 = Eigen::Matrix3d::Identity();
   Eigen::Matrix3d Sigma2 = Eigen::Matrix3d::Identity();
-  Sigma1 *= 0.01;
-  Sigma2 *= 0.001;
+  Sigma1 *= 0.1;
+  Sigma2 *= 0.01;
 
   std::vector<Normal<3>> gmmA;
   gmmA.push_back(Normal<3>(muA1,Sigma1,0.3));
@@ -80,9 +80,9 @@ int main(int argc, char ** argv) {
     std::cout << " ------ " << std::endl;
     ubCs[i] = upper_bound_convex.Evaluate(node);
     std::cout << "upper bound C: " << ubCs[i] << std::endl;
-//    if (ubCs[i] - lbs[i] < -1.) 
-//      std::cout << " !! large deviation !!" << std::endl;
-//    std::cout << " ------ " << std::endl;
+    if (ubCs[i] - lbs[i] > 1e3) 
+      std::cout << " !! large deviation !!" << std::endl;
+    std::cout << " ------ " << std::endl;
     ubs[i] = upper_bound.Evaluate(node);
     std::cout << "upper bound: " << ubs[i] << std::endl;
     ++i;
@@ -95,7 +95,7 @@ int main(int argc, char ** argv) {
     << std::endl;
   std::cout << "Upper Bounds Convexity: " << std::endl;
   std::cout << ubCs.transpose() << std::endl;
-  std::cout << "# upperC < lower " << (ubCs.array() < lbs.array()).transpose()
+  std::cout << "# lower < upperC " << (ubCs.array() > lbs.array()).transpose()
     << std::endl;
   std::cout << "# upperC < upper " << (ubCs.array() < ubs.array()).transpose()
     << std::endl;
