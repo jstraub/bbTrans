@@ -31,19 +31,19 @@ double UpperBoundConvexR3::Evaluate(const NodeR3& node) {
     A -= 0.5*D*g*gT.GetOmega();
     b += D*g*gT.GetXi();
     c += D*(h-0.5*g*(gT.GetMu().transpose()*gT.GetXi())(0));
-    std::cout << "-- L<U: " << L << " " << U << std::endl;
-    std::cout << "-- g,h: " << g << " " << h << std::endl;
+//    std::cout << "-- L<U: " << L << " " << U << std::endl;
+//    std::cout << "-- g,h: " << g << " " << h << std::endl;
   }
-  std::cout << "- A: \n" << A << std::endl;
-  std::cout << "- b: " << b.transpose() << std::endl;
-  std::cout << "- c: " << c << std::endl;
+//  std::cout << "- A: \n" << A << std::endl;
+//  std::cout << "- b: " << b.transpose() << std::endl;
+//  std::cout << "- c: " << c << std::endl;
   Eigen::Vector3d t = FindMinTranslationInNode(-A, 0.5*b, node);
-  std::cout << "- t: " << t.transpose() << std::endl;
+//  std::cout << "- t: " << t.transpose() << std::endl;
   double ub = (t.transpose()*A*t)(0) + (b.transpose()*t)(0) + c;
-  std::cout << "- tAt: " <<  (t.transpose()*A*t)(0) 
-    << " bt: " << (b.transpose()*t)(0) << " c: " << c 
-    << " UB: " << ub
-    << std::endl;
+//  std::cout << "- tAt: " <<  (t.transpose()*A*t)(0) 
+//    << " bt: " << (b.transpose()*t)(0) << " c: " << c 
+//    << " UB: " << ub
+//    << std::endl;
   return ub;
 }
 
