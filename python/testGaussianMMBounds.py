@@ -79,6 +79,20 @@ def LowerBound(gmmT, box):
   lb = 0;
   for gT in gmmT:
     lb += gT.pi * gT.pdf(box.GetMiddle())
+  lbs = np.zeros(len(gmmT))
+  for k,gT in enumerate(gmmT):
+    lbs[k] = np.log(gT.pi) + gT.logPdf(box.GetMiddle())
+  print "LB", lb, np.exp(lbs-lbs.max()).sum()*np.exp(lbs.max())
+  if False: 
+    print '--', t.ravel()
+    plt.figure()
+    for i in range(4):
+      a,_ = box.GetEdge(i)
+      plt.plot(a[0],a[1],'ro')
+    plt.plot(box.GetMiddle()[0],box.GetMiddle()[1],'bx')
+    plt.xlim([-0.1,2.1])
+    plt.ylim([-0.1,2.1])
+    plt.show()
   return lb
 
 def JensenLowerBound(gmmT, box):
@@ -119,12 +133,12 @@ def UpperBound(gmmT, box):
       plt.show()
   return ubs.sum()
 
-def FindMinTinBox(A,b,box):
-  t = solve(A,b)
+def FindMinTinBox(A,b,box,All=False):
+  ts = []
+  vals =[]
+  t = solve(A, b)
   #print A,b,t
   if not box.Inside(t):
-    vals =[]
-    ts = []
     # check the sides for the min
     for i in range(4):
       a, d = box.GetEdge(i)
@@ -148,19 +162,21 @@ def FindMinTinBox(A,b,box):
   if not box.Inside(t):
     print "WARNING sth is wrong here - computed t outside of given box."
     print t
+  if All:
+    return t, ts, vals
   return t
 
 def FindMaxTinBox(A,b,box):
-  # check the corners for the min
+  # check the corners for the max
   vals = []
   ts = []
   for i in range(4):
     t,_ = box.GetEdge(i)
     ts.append(t)
     vals.append(t.T.dot(A).dot(t) -2.*t.T.dot(b))
-  i_min = np.argmax(vals)
-  t = ts[i_min]
-  return ts[i_min]
+  i_max = np.argmax(vals)
+  t = ts[i_max]
+  return ts[i_max]
 
 def UpperBound2(gmmT, A, b, Gamma_jk, box):
   ''' log inequality '''
@@ -200,6 +216,83 @@ def UpperBound2(gmmT, A, b, Gamma_jk, box):
     plt.show()
   return np.exp(ubs.sum()) * len(gmmT)
 
+def UpperBoundConvexity(gmmT, box):
+  ''' log inequality '''
+  A_=np.zeros((2,2))
+  b_=np.zeros((2,1))
+  c_ = 0
+  for k,gT in enumerate(gmmT):
+    A, b = inv(gT.Sigma), solve(gT.Sigma, gT.mu)
+    tU = FindMinTinBox(A, b, box)
+    tL = FindMaxTinBox(A, b, box)
+    L = -0.5*(tL-gT.mu).T.dot(solve(gT.Sigma, tL-gT.mu))
+    U = -0.5*(tU-gT.mu).T.dot(solve(gT.Sigma, tU-gT.mu))
+    g = (1.-np.exp(L-U))*np.exp(U)/(U-L)
+    h = (np.exp(L-U)*U-L)*np.exp(U)/(U-L)
+    print 'L,U', L,U, g, h
+    D = gT.pi * (2.*np.pi)**(-1.) / np.sqrt(det(gT.Sigma))
+    A_ -= 0.5*D*g*A
+    b_ += D*g*b
+    c_ += D*(h-0.5*g*gT.mu.T.dot(b))
+#    print g, h, -0.5*D*g,D*g, D*(h-0.5*g*gT.mu.T.dot(b))
+    if False:
+      plt.figure()
+      for i in range(4):
+        a,_ = box.GetEdge(i)
+        plt.plot(a[0],a[1],'ro', ms=6.)
+      plt.plot(tU[0],tU[1],'bx', ms=20.)
+      plt.plot(tL[0],tL[1],'gx', ms=20.)
+      plt.plot(gT.mu[0],gT.mu[1],'bo', ms=20.)
+      plt.xlim([-0.1,2.1])
+      plt.ylim([-0.1,2.1])
+      plt.show()
+  # Not this one?
+  t,ts,vals = FindMinTinBox(-A_,0.5*b_,box, True)
+  ub1 = t.T.dot(A_.dot(t)) + b_.T.dot(t) + c_
+  print 'ub', ub1, t.T.dot(A_.dot(t)), b_.T.dot(t), c_
+  print -0.25*b_.T.dot(solve(A_,b_)) + c_
+#  ubs = np.zeros(len(gmmT))
+#  for k,gT in enumerate(gmmT):
+#    A, b = inv(gT.Sigma), solve(gT.Sigma, gT.mu)
+#    tL = FindMaxTinBox(A, b, box)
+#    tU = FindMinTinBox(A, b, box)
+#    L = -0.5*(tL-gT.mu).T.dot(solve(gT.Sigma, tL-gT.mu))
+#    U = -0.5*(tU-gT.mu).T.dot(solve(gT.Sigma, tU-gT.mu))
+##    print L,U
+#    g = (1.-np.exp(L-U))*np.exp(U)/(U-L)
+#    h = (np.exp(L-U)*U-L)*np.exp(U)/(U-L)
+##    print g, h
+#    D = gT.pi * (2.*np.pi)**(-1.5) / det(gT.Sigma)
+##    print D*g
+#    A_ = -0.5*D*g*A
+#    b_ = D*g*b
+#    c_ = D*(h-0.5*g*gT.mu.T.dot(b))
+#    ubs[k] = t.T.dot(A_.dot(t)) + b_.T.dot(t) + c_
+#  print ubs
+#  print ub, ub1
+  if False:
+    plt.figure()
+    for i in range(4):
+      a,d = box.GetEdge(i)
+      plt.plot(a[0],a[1],'ro')
+      plt.plot([a[0], a[0]+d[0]],[a[1],a[1]+d[1]],'r-')
+#      print a
+    m = solve(A_,-0.5*b_)
+    M = solve(-A_, 0.5*b_)
+    print "m", m.ravel(), M.ravel()
+    print vals
+    plt.plot(t[0],t[1],'bx',ms=6)
+    plt.plot(m[0],m[1],'bo',ms=11)
+    plt.plot(M[0],M[1],'rx',ms=15)
+    for ti in ts:
+      plt.plot(ti[0],ti[1],'bx',ms=3)
+    for k,gT in enumerate(gmmT):
+      plt.plot(gT.mu[0],gT.mu[1],'go', ms=8.)
+    plt.xlim([-0.1,2.1])
+    plt.ylim([-0.1,2.1])
+    plt.show()
+  return ub1
+
 def CostFunction(gmmT, t):
   c = 0.
   for i,gT in enumerate(gmmT):
@@ -225,7 +318,7 @@ gmmT, A, b, Gamma_jk = ComputeGmmForT(gmmA, gmmB, \
 print Gamma_jk
 
 plt.figure()
-for res in [180]:
+for res in [5]:
 #for res in [11, 45,180]:
 #for res in [10]:
   ubs = np.zeros((res,res))
@@ -240,7 +333,8 @@ for res in [180]:
       box = Box(np.array([[tx-1./res],[ty-1./res]]),
           np.array([[tx+1./res],[ty+1./res]]))
       ubs[i,j] = UpperBound(gmmT, box)
-      ubs2[i,j] = UpperBound2(gmmT, A, b, Gamma_jk, box)
+      ubs2[i,j] = UpperBoundConvexity(gmmT, box)
+#      ubs2[i,j] = UpperBound2(gmmT, A, b, Gamma_jk, box)
       lbs[i,j] = LowerBound(gmmT, box)
       cs[i,j] = CostFunction(gmmT, box.GetMiddle())
       
