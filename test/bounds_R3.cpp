@@ -3,11 +3,13 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include <random>
 #include <vector>
 #include "optRot/node.h"
 #include "optRot/lower_bound_R3.h"
 #include "optRot/upper_bound_indep_R3.h"
+#include "optRot/upper_bound_convex_R3.h"
 
 using namespace OptRot;
 
@@ -62,6 +64,7 @@ int main(int argc, char ** argv) {
 
   LowerBoundR3 lower_bound(gmmA, gmmB, q);
   UpperBoundIndepR3 upper_bound(gmmA, gmmB, q);
+  UpperBoundConvexR3 upper_bound_convex(gmmA, gmmB, q);
   
   Eigen::VectorXd lbs(nodes.size());
   Eigen::VectorXd ubs(nodes.size());
@@ -74,9 +77,9 @@ int main(int argc, char ** argv) {
     std::cout << " ------ " << std::endl;
     lbs[i] = lower_bound.Evaluate(node);
     std::cout << "lower bound: " << lbs[i] << std::endl;
-//    std::cout << " ------ " << std::endl;
-//    ubCs[i] = upper_bound_convexity.Evaluate(node);
-//    std::cout << "upper bound C: " << ubCs[i] << std::endl;
+    std::cout << " ------ " << std::endl;
+    ubCs[i] = upper_bound_convex.Evaluate(node);
+    std::cout << "upper bound C: " << ubCs[i] << std::endl;
 //    if (ubCs[i] - lbs[i] < -1.) 
 //      std::cout << " !! large deviation !!" << std::endl;
 //    std::cout << " ------ " << std::endl;
@@ -90,13 +93,24 @@ int main(int argc, char ** argv) {
   std::cout << ubs.transpose() << std::endl;
   std::cout << "# upper < lower " << (ubs.array() < lbs.array()).transpose()
     << std::endl;
-//  std::cout << "Upper Bounds Convexity: " << std::endl;
-//  std::cout << ubCs.transpose() << std::endl;
-//  std::cout << "# upper < lower " << (ubCs.array() < lbs.array()).transpose()
+  std::cout << "Upper Bounds Convexity: " << std::endl;
+  std::cout << ubCs.transpose() << std::endl;
+  std::cout << "# upperC < lower " << (ubCs.array() < lbs.array()).transpose()
+    << std::endl;
+  std::cout << "# upperC < upper " << (ubCs.array() < ubs.array()).transpose()
+    << std::endl;
+//  std::cout << "# upperC < lower " << (ubCs.array() < lbs.array()-1e-6).transpose()
 //    << std::endl;
-//  std::cout << "# upper < lower " << (ubCs.array() < lbs.array()-1e-6).transpose()
+//  std::cout << "# upperC - lower " << (ubCs.array() - lbs.array()).transpose()
 //    << std::endl;
-//  std::cout << "# upper - lower " << (ubCs.array() - lbs.array()).transpose()
-//    << std::endl;
+
+  std::ofstream out("./testBound.csv");
+  for (uint32_t i=0; i<lbs.size()-1; ++i) {
+    out << lbs(i) << " " << ubs(i) << " " << ubCs(i) << std::endl;
+  }
+  out << lbs(lbs.size()-1) << " " << ubs(lbs.size()-1) 
+      << " " << ubCs(lbs.size()-1) << std::endl;
+  out.close();
+
   return 0;
 }

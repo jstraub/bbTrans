@@ -8,6 +8,7 @@
 #include "optRot/node.h"
 #include "optRot/lower_bound_R3.h"
 #include "optRot/upper_bound_indep_R3.h"
+#include "optRot/upper_bound_convex_R3.h"
 #include "optRot/branch_and_bound.h"
 
 using namespace OptRot;
@@ -58,14 +59,22 @@ int main(int argc, char** argv) {
 
   LowerBoundR3 lower_bound(gmmA, gmmB, q);
   UpperBoundIndepR3 upper_bound(gmmA, gmmB, q); 
-//  UpperBoundConvexityLog upper_bound_convexity(gmmA, gmmB);
+  UpperBoundConvexR3 upper_bound_convex(gmmA, gmmB, q);
   
   double eps = 1.e-4;
   uint32_t max_it = 1000;
-  BranchAndBound<NodeR3> bb(lower_bound, upper_bound);
-  NodeR3 node_star = bb.Compute(nodes, eps, max_it);
+  BranchAndBound<NodeR3> bb1(lower_bound, upper_bound);
+  NodeR3 node_star = bb1.Compute(nodes, eps, max_it);
 
-  std::cout << "optimum translation: " 
+  std::cout << "optimum translation (indep UB): " 
+    << node_star.GetBox().GetCenter().transpose()
+    << std::endl;
+
+  nodes = GenerateNotesThatTessellateR3(min, max, 0.3);
+  BranchAndBound<NodeR3> bb2(lower_bound, upper_bound_convex);
+  node_star = bb2.Compute(nodes, eps, max_it);
+
+  std::cout << "optimum translation (convex UB): " 
     << node_star.GetBox().GetCenter().transpose()
     << std::endl;
 }

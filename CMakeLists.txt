@@ -49,6 +49,7 @@ add_library(optRot SHARED
   ./src/upper_bound_convexity_log.cpp
   ./src/lower_bound_R3.cpp
   ./src/upper_bound_indep_R3.cpp
+  ./src/upper_bound_convex_R3.cpp
 #  ./src/branch_and_bound.cpp
   )
 
@@ -73,6 +74,9 @@ target_link_libraries(testBranchAndBoundR3 optRot)
 add_executable(testBranchAndBoundT3 ./test/branch_and_bound_T3.cpp)
 target_link_libraries(testBranchAndBoundT3 optRot)
 
+add_executable(testMinMaxInBox ./test/min_max_in_box.cpp)
+target_link_libraries(testMinMaxInBox optRot)
+
 pods_install_libraries(optRot)
 pods_install_headers(
   ./include/optRot/s3_tessellation.h
@@ -95,4 +99,5 @@ pods_install_headers(
   ./include/optRot/normal_impl.h
   ./include/optRot/lower_bound_R3.h
   ./include/optRot/upper_bound_indep_R3.h
+  ./include/optRot/upper_bound_convex_R3.h
   DESTINATION optRot)
