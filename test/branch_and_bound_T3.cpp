@@ -110,7 +110,7 @@ int main(int argc, char** argv) {
   UpperBoundIndepR3 upper_boundR3(gmmA, gmmB, q); 
   UpperBoundConvexR3 upper_bound_convex_R3(gmmA, gmmB, q);
   
-  eps = 1.e-30;
+  eps = 1.e-8;
   max_it = 5000;
   BranchAndBound<NodeR3> bbR3(lower_boundR3, upper_bound_convex_R3);
   NodeR3 node_starR3 = bbR3.Compute(nodesR3, eps, max_it);
@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
     << (R.transpose()*(muB1)).transpose() << std::endl
     << (R.transpose()*(muB2)).transpose() << std::endl;
 
-  if (((muA1.array() - (R.transpose()*(muB1)).array()).abs() < 1e-6).all()) {
+  if (((muA1.array() - (R.transpose()*(muB1)).array()).abs() < 1e-3).all()) {
     std::cout << " Rotation is correct according to surface normal distributions!."
       << std::endl;
   } else {
@@ -147,7 +147,7 @@ int main(int argc, char** argv) {
     << (R.transpose()*(mB1-t)).transpose() << std::endl
     << (R.transpose()*(mB2-t)).transpose() << std::endl;
 
-  if (((mA1.array() - (R.transpose()*(mB1-t)).array()).abs() < 1e-6).all()) {
+  if (((mA1.array() - (R.transpose()*(mB1-t)).array()).abs() < 1e-3).all()) {
     std::cout << " Rotation and translation is correct according to point distributions!."
       << std::endl;
   } else {
