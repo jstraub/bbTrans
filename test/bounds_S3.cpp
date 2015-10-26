@@ -3,6 +3,7 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include <random>
 #include <vector>
 #include "optRot/node.h"
@@ -92,5 +93,20 @@ int main(int argc, char ** argv) {
     << std::endl;
   std::cout << "# upper - lower " << (ubCs.array() - lbs.array()).transpose()
     << std::endl;
+
+  std::vector<NodeS3> nodes_v(nodes.begin(), nodes.end());
+  std::vector<size_t> idx(nodes.size());
+  for (size_t i=0; i<idx.size(); ++i) idx[i] = i;
+  std::sort(idx.begin(), idx.end(), [&nodes_v,&q_true](size_t i1, size_t i2) {
+      return nodes_v[i1].GetTetrahedron().GetCenterQuaternion().angularDistance(q_true)
+      < nodes_v[i2].GetTetrahedron().GetCenterQuaternion().angularDistance(q_true);});
+
+  std::ofstream out("./testBound.csv");
+  for (uint32_t i=0; i<lbs.size()-1; ++i) {
+    out << lbs(idx[i]) << " " << ubs(idx[i]) << " " << ubCs(idx[i]) 
+      << " " << nodes_v[idx[i]].GetTetrahedron().GetCenterQuaternion().angularDistance(q_true)*180./M_PI
+      << std::endl;
+  }
+  out.close();
   return 0;
 }

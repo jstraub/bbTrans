@@ -13,6 +13,15 @@
 
 using namespace OptRot;
 
+Eigen::Quaterniond RandomRotation() {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::normal_distribution<> N(0,1);
+  Eigen::Quaterniond q(N(gen), N(gen), N(gen), N(gen));
+  q.normalize();
+  return q;
+}
+
 Eigen::Vector3d RandomTranslation() {
   std::random_device rd;
   std::mt19937 gen(rd());
@@ -25,7 +34,7 @@ int main(int argc, char ** argv) {
   Eigen::Vector3d t_true;
   t_true << 1.,1.,1.;
   Eigen::Quaterniond q;
-  q.setIdentity();
+  q = RandomRotation();
 
   Eigen::Vector3d muA1, muA2;
   muA1 << 1.,0.,0.;
@@ -60,7 +69,7 @@ int main(int argc, char ** argv) {
   Eigen::Vector3d min, max;
   min << 0.,0.,0.;
   max << 2.,2.,2.;
-  std::list<NodeR3> nodes = GenerateNotesThatTessellateR3(min, max, 0.3);
+  std::list<NodeR3> nodes = GenerateNotesThatTessellateR3(min, max, 0.1);
 
   LowerBoundR3 lower_bound(gmmA, gmmB, q);
   UpperBoundIndepR3 upper_bound(gmmA, gmmB, q);
@@ -103,13 +112,20 @@ int main(int argc, char ** argv) {
 //    << std::endl;
 //  std::cout << "# upperC - lower " << (ubCs.array() - lbs.array()).transpose()
 //    << std::endl;
+  std::vector<NodeR3> nodes_v(nodes.begin(), nodes.end());
+  std::vector<size_t> idx(nodes.size());
+  for (size_t i=0; i<idx.size(); ++i) idx[i] = i;
+  std::sort(idx.begin(), idx.end(), [&nodes_v](size_t i1, size_t i2) {
+      return (nodes_v[i1].GetBox().GetCenter()-Eigen::Vector3d::Ones()).norm()
+      < (nodes_v[i2].GetBox().GetCenter()-Eigen::Vector3d::Ones()).norm();});
 
   std::ofstream out("./testBound.csv");
-  for (uint32_t i=0; i<lbs.size()-1; ++i) {
-    out << lbs(i) << " " << ubs(i) << " " << ubCs(i) << std::endl;
+  for (uint32_t i=0; i<lbs.size(); ++i) {
+    out << lbs(idx[i]) << " " << ubs(idx[i]) << " " << ubCs(idx[i])
+      << " " 
+      << (nodes_v[idx[i]].GetBox().GetCenter()-Eigen::Vector3d::Ones()).norm()
+      << std::endl;
   }
-  out << lbs(lbs.size()-1) << " " << ubs(lbs.size()-1) 
-      << " " << ubCs(lbs.size()-1) << std::endl;
   out.close();
 
   return 0;

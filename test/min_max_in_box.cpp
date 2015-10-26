@@ -90,4 +90,50 @@ int main(int argc, char ** argv) {
     std::cout << "- error: " << t.transpose() << std::endl;
   else
     std::cout << "- ok: " << t.transpose() << std::endl;
+
+  // Test branching.
+  std::vector<NodeR3> nodes = node.Branch();
+  Eigen::Vector3d c,cP,c0;
+  std::cout << "Parent" << std::endl;
+  for (uint32_t i=0; i<8; ++i) {
+    node.GetBox().GetCorner(i, c);
+    std::cout << " corner " << i << ": " << c.transpose() 
+      << " " << node.GetBox().GetCenter().transpose()
+      << std::endl;
+  }
+  for (uint32_t k=0; k<8; ++k) {
+    std::cout << "Child " << k << ": " << std::endl;
+    nodes[k].GetBox().GetCorner(0, c0);
+    for (uint32_t i=0; i<8; ++i) {
+      nodes[k].GetBox().GetCorner(i, c);
+      std::cout << " corner " << i << ": " << c.transpose()
+        << "\t" << nodes[k].GetBox().GetCenter().transpose();
+      node.GetBox().GetCorner(i, cP);
+      if (((2.*(c-c0)-cP).array() < 1e-6).all()) 
+        std::cout << " OK" << std::endl;
+      else
+        std::cout << " ERROR" << std::endl;
+    }
+  }
+
+  Eigen::Vector3d d;
+  std::cout << "Parent" << std::endl;
+  for (uint32_t i=0; i<12; ++i) {
+    node.GetBox().GetEdge(i, c, d);
+    std::cout << " corner " << i << ": " << c.transpose() 
+      << "\t edge " << d.transpose()
+      << "\t points to " << (c+d).transpose()
+      << std::endl;
+  }
+
+  Eigen::Matrix<double, 3,2> E;
+  std::cout << "Parent" << std::endl;
+  for (uint32_t i=0; i<6; ++i) {
+    node.GetBox().GetSide(i, c, E);
+    std::cout << " corner " << i << ": " << c.transpose() 
+      << "  side\n" << E.transpose()
+      << "  points to\n" << (c+E.col(0)).transpose() << std::endl 
+      << (c+E.col(1)).transpose()
+      << std::endl;
+  }
 }

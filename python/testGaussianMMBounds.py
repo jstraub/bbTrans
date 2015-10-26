@@ -310,6 +310,12 @@ gmmB = [Gaussian(np.array([[0.],[0.]])+t, np.eye(2)*0.001, 0.3),
   Gaussian(np.array([[1.],[0.]])+t, np.eye(2)*0.01, 0.3),
   Gaussian(np.array([[0.],[1.]])+t, np.eye(2)*0.01, 0.4)]
 
+gmmA = [Gaussian(np.array([[0.],[0.]]), np.eye(2)*0.1, 0.3),
+  Gaussian(np.array([[0.],[1.]]), np.eye(2)*0.01, 0.7)]
+
+gmmB = [Gaussian(np.array([[0.],[0.]])+t, np.eye(2)*0.1, 0.3),
+  Gaussian(np.array([[0.],[1.]])+t, np.eye(2)*0.01, 0.7)]
+
 box = Box(np.array([[0.],[0.]]),
     np.array([[2.],[2.]]))
 gmmT, A, b, Gamma_jk = ComputeGmmForT(gmmA, gmmB, \
@@ -318,7 +324,7 @@ gmmT, A, b, Gamma_jk = ComputeGmmForT(gmmA, gmmB, \
 print Gamma_jk
 
 plt.figure()
-for res in [5]:
+for res in [180]:
 #for res in [11, 45,180]:
 #for res in [10]:
   ubs = np.zeros((res,res))
@@ -329,6 +335,7 @@ for res in [5]:
   tx =  np.linspace(0,2,res)[res/2]
   #for i,tx in enumerate(np.linspace(0,2,res)):
   Ty = np.linspace(0,2,res)
+  devs = np.zeros_like(Ty)
   for j,ty in enumerate(Ty):
       box = Box(np.array([[tx-1./res],[ty-1./res]]),
           np.array([[tx+1./res],[ty+1./res]]))
@@ -337,6 +344,9 @@ for res in [5]:
 #      ubs2[i,j] = UpperBound2(gmmT, A, b, Gamma_jk, box)
       lbs[i,j] = LowerBound(gmmT, box)
       cs[i,j] = CostFunction(gmmT, box.GetMiddle())
+      devs[j] = np.sqrt((box.GetMiddle()[0]-1.)**2 +
+          (box.GetMiddle()[1]-1.)**2)
+
       
 #  plt.figure()
 #  plt.subplot(1,2,1)
@@ -346,10 +356,15 @@ for res in [5]:
 #  plt.imshow(lbs, interpolation="nearest")
 #  plt.colorbar()
   print ubs2[res/2,:]
+
+  idx = np.argsort(devs)
 #
-  plt.plot(Ty,ubs[res/2,:], '-', label="ub indep")
-  plt.plot(Ty,ubs2[res/2,:], '--', label="ub joint")
-  plt.plot(Ty,(lbs[res/2,:]), '-.', label="lb")
+  plt.subplot(2,1,1)
+  plt.plot(Ty,ubs[res/2,idx], '-', label="ub indep")
+  plt.plot(Ty,ubs2[res/2,idx], '--', label="ub joint")
+  plt.plot(Ty,(lbs[res/2,idx]), '-.', label="lb")
 #  plt.plot(Ty,np.log(cs[res/2,:]), 'b-', label="c")
   plt.legend()
+  plt.subplot(2,1,2)
+  plt.plot(Ty, devs[idx])
 plt.show()

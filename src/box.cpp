@@ -34,14 +34,16 @@ Box::Box(const Eigen::Vector3d& p_min, const Eigen::Vector3d& p_max)
   sides_.col(1)  = corners_.col(7) - corners_.col(0);
   sides_.col(2)  = corners_.col(4) - corners_.col(0);
   sides_.col(3)  = corners_.col(5) - corners_.col(0);
-  sides_.col(4)  = corners_.col(7) - corners_.col(1);
+
+  sides_.col(4)  = corners_.col(6) - corners_.col(1);
   sides_.col(5)  = corners_.col(4) - corners_.col(1);
   sides_.col(6)  = corners_.col(6) - corners_.col(1);
-  sides_.col(7)  = corners_.col(4) - corners_.col(1);
+  sides_.col(7)  = corners_.col(5) - corners_.col(1);
+
   sides_.col(8)  = corners_.col(6) - corners_.col(2);
   sides_.col(9)  = corners_.col(7) - corners_.col(2);
-  sides_.col(10) = corners_.col(6) - corners_.col(2);
-  sides_.col(10) = corners_.col(5) - corners_.col(2);
+  sides_.col(10) = corners_.col(4) - corners_.col(2);
+  sides_.col(11) = corners_.col(7) - corners_.col(2);
 
 }
 
