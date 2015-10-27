@@ -29,12 +29,6 @@ void ComputeGmmT( const std::vector<Normal<3>>& gmmA, const
   for (auto& gA : gmmA) 
     for (auto& gB : gmmB) {
       gmmT.push_back(
-//          Normal<3>(R*gB.GetMu() + gA.GetMu(),
-//            gA.GetSigma() + R*gB.GetSigma()*R.transpose(), 
-//            gB.GetPi()*gA.GetPi()));
-//          Normal<3>(R.transpose()*gB.GetMu() - gA.GetMu(),
-//            gA.GetSigma() + R.transpose()*gB.GetSigma()*R, 
-//            gB.GetPi()*gA.GetPi()));
           Normal<3>(gB.GetMu() - R*gA.GetMu(),
             R*gA.GetSigma()*R.transpose() + gB.GetSigma(), 
             gB.GetPi()*gA.GetPi()));
