@@ -6,7 +6,7 @@
 #include <vector>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-#include "optRot/node.h"
+#include "optRot/node_R3.h"
 #include "optRot/numeric_helpers.h"
 #include "optRot/normal.h"
 #include "optRot/bound.h"

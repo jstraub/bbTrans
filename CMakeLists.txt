@@ -40,13 +40,15 @@ include_directories(
 add_library(optRot SHARED
   ./src/tetrahedron.cpp
   ./src/node.cpp
+  ./src/node_S3.cpp
+  ./src/node_R3.cpp
   ./src/box.cpp
   ./src/combinations.cpp
   ./src/s3_tessellation.cpp
   ./src/numeric_helpers.cpp
-  ./src/lower_bound_log.cpp
-  ./src/upper_bound_log.cpp
-  ./src/upper_bound_convexity_log.cpp
+  ./src/lower_bound_S3.cpp
+  ./src/upper_bound_indep_S3.cpp
+  ./src/upper_bound_convex_S3.cpp
   ./src/lower_bound_R3.cpp
   ./src/upper_bound_indep_R3.cpp
   ./src/upper_bound_convex_R3.cpp
@@ -85,11 +87,10 @@ pods_install_headers(
   ./include/optRot/combinations.h
   ./include/optRot/bound.h
   ./include/optRot/node.h
+  ./include/optRot/node_S3.h
+  ./include/optRot/node_R3.h
   ./include/optRot/branch_and_bound.h
   ./include/optRot/branch_and_bound_impl.h
-  ./include/optRot/lower_bound_log.h
-  ./include/optRot/upper_bound_log.h
-  ./include/optRot/upper_bound_convexity_log.h
   ./include/optRot/numeric_helpers.h
   ./include/optRot/vmf.h
   ./include/optRot/vmf_impl.h
@@ -100,4 +101,7 @@ pods_install_headers(
   ./include/optRot/lower_bound_R3.h
   ./include/optRot/upper_bound_indep_R3.h
   ./include/optRot/upper_bound_convex_R3.h
+  ./include/optRot/lower_bound_S3.h
+  ./include/optRot/upper_bound_indep_S3.h
+  ./include/optRot/upper_bound_convex_S3.h
   DESTINATION optRot)

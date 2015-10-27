@@ -5,9 +5,9 @@
 #include <iostream>
 #include <vector>
 #include "optRot/node.h"
-#include "optRot/lower_bound_log.h"
-#include "optRot/upper_bound_log.h"
-#include "optRot/upper_bound_convexity_log.h"
+#include "optRot/lower_bound_S3.h"
+#include "optRot/upper_bound_indep_S3.h"
+#include "optRot/upper_bound_convex_S3.h"
 #include "optRot/branch_and_bound.h"
 
 using namespace OptRot;
@@ -38,13 +38,13 @@ int main(int argc, char** argv) {
   vMFMM<3> vmf_mm_B(vmfs_B);
 
   std::list<NodeS3> nodes = GenerateNotesThatTessellateS3();
-  LowerBoundLog lower_bound(vmf_mm_A, vmf_mm_B);
-  UpperBoundLog upper_bound(vmf_mm_A, vmf_mm_B);
-  UpperBoundConvexityLog upper_bound_convexity(vmf_mm_A, vmf_mm_B);
+  LowerBoundS3 lower_bound(vmf_mm_A, vmf_mm_B);
+  UpperBoundIndepS3 upper_bound(vmf_mm_A, vmf_mm_B);
+  UpperBoundConvexS3 upper_bound_convex(vmf_mm_A, vmf_mm_B);
   
   double eps = 1.0e-5 * M_PI / 180.;
   uint32_t max_it = 1000;
-  BranchAndBound<NodeS3> bb(lower_bound, upper_bound_convexity);
+  BranchAndBound<NodeS3> bb(lower_bound, upper_bound_convex);
   NodeS3 node_star = bb.Compute(nodes, eps, max_it);
 
   std::cout << "optimum quaternion: " 

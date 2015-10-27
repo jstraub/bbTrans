@@ -2,11 +2,11 @@
  * under the MIT license. See the license file LICENSE.
  */
 
-#include "optRot/upper_bound_convexity_log.h"
+#include "optRot/upper_bound_convex_S3.h"
 
 namespace OptRot {
 
-UpperBoundConvexityLog::UpperBoundConvexityLog(const vMFMM<3>&
+UpperBoundConvexS3::UpperBoundConvexS3(const vMFMM<3>&
     vmf_mm_A, const vMFMM<3>& vmf_mm_B) 
   : vmf_mm_A_(vmf_mm_A), vmf_mm_B_(vmf_mm_B)
 {}
@@ -80,7 +80,7 @@ double FindMaximumQAQ(const Eigen::Matrix4d& A, const Tetrahedron4D&
   return *std::max_element(lambdas.begin(), lambdas.end());
 }
 
-double UpperBoundConvexityLog::Evaluate(const NodeS3& node) {
+double UpperBoundConvexS3::Evaluate(const NodeS3& node) {
 
   std::vector<Eigen::Matrix4d> Melem(vmf_mm_A_.GetK()*vmf_mm_B_.GetK());
   Eigen::VectorXd Aelem(vmf_mm_A_.GetK()*vmf_mm_B_.GetK());

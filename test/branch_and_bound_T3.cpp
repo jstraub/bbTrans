@@ -9,9 +9,9 @@
 #include "optRot/lower_bound_R3.h"
 #include "optRot/upper_bound_indep_R3.h"
 #include "optRot/upper_bound_convex_R3.h"
-#include "optRot/lower_bound_log.h"
-#include "optRot/upper_bound_log.h"
-#include "optRot/upper_bound_convexity_log.h"
+#include "optRot/lower_bound_S3.h"
+#include "optRot/upper_bound_indep_S3.h"
+#include "optRot/upper_bound_convex_S3.h"
 #include "optRot/branch_and_bound.h"
 
 using namespace OptRot;
@@ -75,14 +75,14 @@ int main(int argc, char** argv) {
 
   // Compute rotation.
   std::list<NodeS3> nodes = GenerateNotesThatTessellateS3();
-  LowerBoundLog lower_bound(vmf_mm_A, vmf_mm_B);
-  UpperBoundLog upper_bound(vmf_mm_A, vmf_mm_B);
-  UpperBoundConvexityLog upper_bound_convexity(vmf_mm_A, vmf_mm_B);
+  LowerBoundS3 lower_bound(vmf_mm_A, vmf_mm_B);
+  UpperBoundIndepS3 upper_bound(vmf_mm_A, vmf_mm_B);
+  UpperBoundConvexS3 upper_bound_convex(vmf_mm_A, vmf_mm_B);
   
   double eps = 1.0e-8;
   uint32_t max_it = 1000;
   BranchAndBound<NodeS3> bb(lower_bound, upper_bound);
-//  BranchAndBound<NodeS3> bb(lower_bound, upper_bound_convexity);
+//  BranchAndBound<NodeS3> bb(lower_bound, upper_bound_convex);
   NodeS3 node_star = bb.Compute(nodes, eps, max_it);
   Eigen::Quaterniond q = node_star.GetTetrahedron().GetCenterQuaternion();
   q = q.inverse();

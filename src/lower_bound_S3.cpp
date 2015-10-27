@@ -2,16 +2,16 @@
  * under the MIT license. See the license file LICENSE.
  */
 
-#include "optRot/lower_bound_log.h"
+#include "optRot/lower_bound_S3.h"
 
 namespace OptRot {
 
-LowerBoundLog::LowerBoundLog(const vMFMM<3>& vmf_mm_A, const vMFMM<3>&
+LowerBoundS3::LowerBoundS3(const vMFMM<3>& vmf_mm_A, const vMFMM<3>&
     vmf_mm_B) 
   : vmf_mm_A_(vmf_mm_A), vmf_mm_B_(vmf_mm_B)
 {}
 
-double LowerBoundLog::Evaluate(const NodeS3& node) {
+double LowerBoundS3::Evaluate(const NodeS3& node) {
   Eigen::VectorXd lbs(5); 
   std::vector<Eigen::Quaterniond> qs(5);
   qs[0] = node.GetTetrahedron().GetCenterQuaternion();
