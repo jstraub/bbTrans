@@ -87,6 +87,7 @@ pods_install_headers(
   ./include/optRot/combinations.h
   ./include/optRot/bound.h
   ./include/optRot/node.h
+  ./include/optRot/node_impl.h
   ./include/optRot/node_S3.h
   ./include/optRot/node_R3.h
   ./include/optRot/branch_and_bound.h

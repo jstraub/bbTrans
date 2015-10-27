@@ -20,6 +20,7 @@ class NodeR3 : public BaseNode {
   virtual ~NodeR3() = default;
   virtual std::vector<NodeR3> Branch() const;
   const Box& GetBox() const { return box_;}
+  uint32_t GetBranchingFactor(uint32_t i) const { return 8;}
  protected:
   Box box_;
 };

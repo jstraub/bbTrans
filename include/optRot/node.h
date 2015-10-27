@@ -5,6 +5,9 @@
 
 #include <stdint.h>
 #include <vector>
+#include <list>
+#include <map>
+#include <iostream>
 
 namespace OptRot {
 
@@ -22,6 +25,8 @@ class BaseNode {
   void SetUB(double ub) { ub_ = ub;}
   void SetLB(double lb) { lb_ = lb;}
   double GetBoundGap() const {return ub_-lb_;}
+  virtual uint32_t GetBranchingFactor(uint32_t i) const = 0;
+  uint64_t GetIdAtLevel(uint32_t lvl) const;
  protected:
   uint32_t lvl_;
   std::vector<uint32_t> ids_;
@@ -51,4 +56,8 @@ struct LessThanNodeLB {
   {return node_a.GetLB() < node_b.GetLB();}
 };
 
+template<class Node>
+std::vector<uint32_t> CountBranchesInTree(const std::list<Node>& nodes);
+
 }
+#include "optRot/node_impl.h"

@@ -20,6 +20,7 @@ class NodeS3 : public BaseNode {
   virtual ~NodeS3() = default;
   virtual std::vector<NodeS3> Branch() const;
   const Tetrahedron4D& GetTetrahedron() const { return tetrahedron_;}
+  uint32_t GetBranchingFactor(uint32_t i) const { return i==0? 600 : 8;}
  protected:
   Tetrahedron4D tetrahedron_;
 };
