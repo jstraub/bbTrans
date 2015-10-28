@@ -27,4 +27,23 @@ template <uint32_t D>
 double vMF<D>::GetLogZ() const {
   return -ComputeLog2SinhOverZ(tau_) - log(2.*M_PI);
 }
+
+template <uint32_t D>
+double vMF<D>::MLEstimateTau(const Eigen::Vector3d& xSum, const
+    Eigen::Vector3d& mu, double count) {
+  double tau = 1.;
+  double prevTau = 0.;
+  double eps = 1e-8;
+  double R = xSum.norm()/count;
+  while (abs(tau - prevTau) > eps) {
+    double inv_tanh_tau = 1./tanh(tau);
+    double inv_tau = 1./tau;
+    double f = -inv_tau + inv_tanh_tau - R;
+    double df = inv_tau*inv_tau - inv_tanh_tau*inv_tanh_tau + 1.;
+    prevTau = tau;
+    tau -= f/df;
+  }
+  return tau;
+};
+
 }

@@ -5,12 +5,12 @@
 
 namespace OptRot {
 
-NodeS3::NodeS3(const Tetrahedron4D& tetrahedron, uint32_t lvl,
-    std::vector<uint32_t> ids) : BaseNode(lvl, ids),
+NodeS3::NodeS3(const Tetrahedron4D& tetrahedron,
+    std::vector<uint32_t> ids) : BaseNode(ids),
   tetrahedron_(tetrahedron) {
 }
 
-NodeS3::NodeS3(const NodeS3& node) : BaseNode(node.GetLevel(), node.GetIds(),
+NodeS3::NodeS3(const NodeS3& node) : BaseNode(node.GetIds(),
     node.GetLB(), node.GetUB()), tetrahedron_(node.GetTetrahedron()) {
 }
 
@@ -21,7 +21,7 @@ std::vector<NodeS3> NodeS3::Branch() const {
   for (uint32_t i=0; i < tetrahedra.size(); ++i) {
     std::vector<uint32_t> ids(this->ids_);
     ids.push_back(i);
-    nodes.push_back(NodeS3(tetrahedra[i], lvl_+1, ids));
+    nodes.push_back(NodeS3(tetrahedra[i], ids));
   }
   return nodes;
 }
@@ -31,7 +31,7 @@ std::list<NodeS3> GenerateNotesThatTessellateS3() {
   std::list<NodeS3> nodes; 
 //  nodes.reserve(tetrahedra.size());
   for (uint32_t i=0; i<tetrahedra.size(); ++i) {
-    nodes.push_back(NodeS3(tetrahedra[i], 0, std::vector<uint32_t>(1,i)));
+    nodes.push_back(NodeS3(tetrahedra[i], std::vector<uint32_t>(1,i)));
   }
   return nodes;
 }

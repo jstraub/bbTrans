@@ -24,6 +24,8 @@ class vMF {
     std::cout << "vMF tau= " << tau_ << "\tmu= " << mu_.transpose() 
       << "\tpi= " << pi_ << std::endl;
   }
+  static double MLEstimateTau(const Eigen::Vector3d& xSum, const
+      Eigen::Vector3d& mu, double count);
  private:
   Eigen::Matrix<double, D, 1> mu_;
   double tau_;
@@ -34,6 +36,8 @@ template<uint32_t D>
 double ComputeLogvMFtovMFcost(const vMF<D>& vmf_A, const vMF<D>& vmF_B, 
   const Eigen::Matrix<double, D, 1>& mu_B_prime);
 
+//double MLEstimateTau(const Eigen::Vector3d& xSum, const
+//    Eigen::Vector3d& mu, double count);
 
 }
 #include "optRot/vmf_impl.h"

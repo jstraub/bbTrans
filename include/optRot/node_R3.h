@@ -14,13 +14,16 @@ namespace OptRot {
 
 class NodeR3 : public BaseNode {
  public:
-  NodeR3(const Box& box, uint32_t lvl,
-      std::vector<uint32_t> ids);
+  NodeR3(const Box& box, std::vector<uint32_t> ids);
   NodeR3(const NodeR3& node);
   virtual ~NodeR3() = default;
   virtual std::vector<NodeR3> Branch() const;
   const Box& GetBox() const { return box_;}
-  uint32_t GetBranchingFactor(uint32_t i) const { return 8;}
+  virtual uint32_t GetBranchingFactor(uint32_t i) const { return 8;}
+  virtual std::string ToString() const {
+    std::stringstream out; out << GetBox().GetCenter().transpose();
+    return out.str();
+  };
  protected:
   Box box_;
 };

@@ -17,7 +17,7 @@ int main(int argc, char ** argv) {
   Eigen::Vector3d min, max;
   min << 0.,0.,0.;
   max << 1.,1.,1.;
-  NodeR3 node(Box(min,max), 0, std::vector<uint32_t>(1,0));
+  NodeR3 node(Box(min,max), std::vector<uint32_t>(1,0));
 
   std::cout << " Testing InSide() " << std::endl;
   Eigen::Vector3d p;
