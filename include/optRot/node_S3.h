@@ -7,6 +7,7 @@
 #include <vector>
 #include <list>
 #include <sstream>
+#include <string>
 #include "optRot/node.h"
 #include "optRot/tetrahedron.h"
 #include "optRot/s3_tessellation.h"
@@ -28,6 +29,7 @@ class NodeS3 : public BaseNode {
     std::stringstream out; out << GetTetrahedron().GetCenter().transpose();
     return out.str();
   };
+  std::string GetSpace() const { return "S3"; }
  protected:
   Tetrahedron4D tetrahedron_;
   Eigen::Quaterniond q_lb_;

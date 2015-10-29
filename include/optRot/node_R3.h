@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <list>
+#include <string>
 #include "optRot/node.h"
 #include "optRot/box.h"
 
@@ -19,12 +20,14 @@ class NodeR3 : public BaseNode {
   virtual ~NodeR3() = default;
   virtual std::vector<NodeR3> Branch() const;
   const Box& GetBox() const { return box_;}
+  const Eigen::Vector3d& GetLbArgument() const {return t_lb_;}
   void SetLbArgument(const Eigen::Vector3d& t) {t_lb_ = t;}
   virtual uint32_t GetBranchingFactor(uint32_t i) const { return 8;}
   virtual std::string ToString() const {
     std::stringstream out; out << GetBox().GetCenter().transpose();
     return out.str();
   };
+  std::string GetSpace() const { return "R3"; }
  protected:
   Box box_;
   Eigen::Vector3d t_lb_;

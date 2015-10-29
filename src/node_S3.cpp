@@ -11,7 +11,8 @@ NodeS3::NodeS3(const Tetrahedron4D& tetrahedron,
 }
 
 NodeS3::NodeS3(const NodeS3& node) : BaseNode(node.GetIds(),
-    node.GetLB(), node.GetUB()), tetrahedron_(node.GetTetrahedron()) {
+    node.GetLB(), node.GetUB()), tetrahedron_(node.GetTetrahedron()),
+  q_lb_(node.GetLbArgument()) {
 }
 
 std::vector<NodeS3> NodeS3::Branch() const {

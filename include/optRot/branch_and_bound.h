@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 #include <list>
+#include <fstream>
 #include "optRot/node.h"
 #include "optRot/bound.h"
 

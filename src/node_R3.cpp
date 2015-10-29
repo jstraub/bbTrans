@@ -9,7 +9,8 @@ NodeR3::NodeR3(const Box& box, std::vector<uint32_t> ids) : BaseNode(ids), box_(
 }
 
 NodeR3::NodeR3(const NodeR3& node) : BaseNode(node.GetIds(),
-    node.GetLB(), node.GetUB()), box_(node.GetBox()) {
+    node.GetLB(), node.GetUB()), box_(node.GetBox()), 
+  t_lb_(node.GetLbArgument()) {
 }
 
 std::vector<NodeR3> NodeR3::Branch() const {
