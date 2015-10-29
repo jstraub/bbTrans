@@ -40,7 +40,9 @@ double LowerBoundS3::Evaluate(const NodeS3& node) {
 //    std::cout << lbElem.transpose() << std::endl;
     lbs(i) = SumExp(lbElem);
   }
-  return lbs.maxCoeff();
+  uint32_t id_max =0;
+  double lb = lbs.maxCoeff(&id_max);
+  return lb;
 }
 
 }
