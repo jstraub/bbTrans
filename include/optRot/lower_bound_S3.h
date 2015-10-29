@@ -20,7 +20,7 @@ class LowerBoundS3 : public Bound<NodeS3> {
   virtual double Evaluate(const NodeS3& node);
   virtual double EvaluateAndSet(NodeS3& node);
  private:
-  void Evaluate(const NodeS3& node std::vector<Eigen::Quaterniond>& qs,
+  void Evaluate(const NodeS3& node, std::vector<Eigen::Quaterniond>& qs,
       Eigen::Matrix<double,5,1>& lbs);
   const vMFMM<3>& vmf_mm_A_;
   const vMFMM<3>& vmf_mm_B_;

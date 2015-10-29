@@ -29,7 +29,7 @@ double LowerBoundS3::EvaluateAndSet(NodeS3& node) {
   return lb;
 }
 
-void LowerBoundS3::Evaluate(const NodeS3& node
+void LowerBoundS3::Evaluate(const NodeS3& node,
   std::vector<Eigen::Quaterniond>& qs, Eigen::Matrix<double,5,1>& lbs) {
   qs[0] = node.GetTetrahedron().GetCenterQuaternion();
   for (uint32_t i=0; i<4; ++i)
@@ -57,9 +57,6 @@ void LowerBoundS3::Evaluate(const NodeS3& node
 //    std::cout << lbElem.transpose() << std::endl;
     lbs(i) = SumExp(lbElem);
   }
-  uint32_t id_max =0;
-  double lb = lbs.maxCoeff(&id_max);
-  return lb;
 }
 
 }

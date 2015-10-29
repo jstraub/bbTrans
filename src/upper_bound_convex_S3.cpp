@@ -163,4 +163,10 @@ double UpperBoundConvexS3::Evaluate(const NodeS3& node) {
   return B + lambda_max;
 }
 
+double UpperBoundConvexS3::EvaluateAndSet(NodeS3& node) {
+  double ub = Evaluate(node);
+  node.SetUB(ub);
+  return ub;
+}
+
 }

@@ -21,6 +21,12 @@ double UpperBoundIndepR3::Evaluate(const NodeR3& node) {
   return ub;
 }
 
+double UpperBoundIndepR3::EvaluateAndSet(NodeR3& node) {
+  double ub = Evaluate(node);
+  node.SetUB(ub);
+  return ub;
+}
+
 Eigen::Vector3d FindMinTranslationInNode(const Eigen::Matrix3d& A, 
     const Eigen::Vector3d& b, const NodeR3& node) {
   // Check if the unconstraint maximum lies inside the node.

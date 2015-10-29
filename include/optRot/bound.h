@@ -13,6 +13,7 @@ class Bound {
   Bound() = default;
   virtual ~Bound() = default;
   virtual double Evaluate(const Node& node) { return 0;};
+  virtual double EvaluateAndSet(Node& node) { return 0;};
  private:
 };
 }

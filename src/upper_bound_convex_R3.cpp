@@ -47,6 +47,12 @@ double UpperBoundConvexR3::Evaluate(const NodeR3& node) {
   return ub;
 }
 
+double UpperBoundConvexR3::EvaluateAndSet(NodeR3& node) {
+  double ub = Evaluate(node);
+  node.SetUB(ub);
+  return ub;
+}
+
 Eigen::Vector3d FindMaxTranslationInNode(const Eigen::Matrix3d& A, 
     const Eigen::Vector3d& b, const NodeR3& node) {
   // Check corners of box.

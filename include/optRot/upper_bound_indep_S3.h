@@ -18,6 +18,7 @@ class UpperBoundIndepS3 : public Bound<NodeS3> {
  public:
   UpperBoundIndepS3(const vMFMM<3>& vmf_mm_A, const vMFMM<3>& vmf_mm_B);
   virtual double Evaluate(const NodeS3& node);
+  virtual double EvaluateAndSet(NodeS3& node);
  private:
   const vMFMM<3>& vmf_mm_A_;
   const vMFMM<3>& vmf_mm_B_;

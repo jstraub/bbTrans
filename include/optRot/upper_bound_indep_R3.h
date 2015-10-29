@@ -20,6 +20,7 @@ class UpperBoundIndepR3 : public Bound<NodeR3> {
       std::vector<Normal<3>>& gmm_B, const Eigen::Quaterniond& q);
   virtual ~UpperBoundIndepR3() = default;
   virtual double Evaluate(const NodeR3& node);
+  virtual double EvaluateAndSet(NodeR3& node);
  private:
   std::vector<Normal<3>> gmmT_;
 };

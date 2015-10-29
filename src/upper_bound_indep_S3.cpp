@@ -25,6 +25,12 @@ double UpperBoundIndepS3::Evaluate(const NodeS3& node) {
   return SumExp(ubElem);
 }
 
+double UpperBoundIndepS3::EvaluateAndSet(NodeS3& node) {
+  double ub = Evaluate(node);
+  node.SetUB(ub);
+  return ub;
+}
+
 Eigen::Vector3d ComputeExtremumOnGeodesic(const Eigen::Vector3d& q1,
     const Eigen::Vector3d& q2, const Eigen::Vector3d& p) {
   const double theta12 = acos(std::min(1., std::max(-1., (q1.transpose()*q2)(0))));
