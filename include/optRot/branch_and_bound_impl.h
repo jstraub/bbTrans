@@ -18,8 +18,8 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
   uint32_t it = 0;
   Node node_star = nodes.front();
   for (auto& node : nodes) {
-    node.SetLB(lower_bound_.Evaluate(node));
-    node.SetUB(upper_bound_.Evaluate(node));
+    lower_bound_.EvaluateAndSet(node);
+    upper_bound_.EvaluateAndSet(node);
   }
 
   uint32_t n_nodes = std::distance(nodes.begin(), nodes.end());
@@ -46,10 +46,10 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
       // Branch and check resulting nodes.
       std::vector<Node> new_nodes = node_i->Branch();
       for (auto& n : new_nodes) {
-        n.SetUB(upper_bound_.Evaluate(n));
+        upper_bound_.EvaluateAndSet(n);
         if (ubn > lb) {
           // Remember this node since we cannot prune it.
-          n.SetLB(lower_bound_.Evaluate(n));
+          lower_bound_.EvaluateAndSet(n);
           nodes.push_back(n);
           ++n_nodes;
         }

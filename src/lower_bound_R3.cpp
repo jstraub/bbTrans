@@ -12,13 +12,36 @@ LowerBoundR3::LowerBoundR3(const
 }
 
 double LowerBoundR3::Evaluate(const NodeR3& node) {
-  // TODO might get a slightly tighter bound by taking the max value
-  // over the corners of the box.
-  double lb = 0.;
-  Eigen::Vector3d x = node.GetBox().GetCenter();
-  for (auto& gT : gmmT_)
-    lb += gT.GetPi() * gT.pdf(x);
+  Eigen::Matrix<double,3,9> xs;
+  Eigen::Matrix<double,9,1> lbs;
+  Evaluate(node, xs, lbs);
+  return lbs.maxCoeff();
+}
+
+double LowerBoundR3::EvaluateAndSet(NodeR3& node) {
+  Eigen::Matrix<double,3,9> xs;
+  Eigen::Matrix<double,9,1> lbs;
+  Evaluate(node, xs, lbs);
+  uint32_t id_max = 0;
+  double lb = lbs.maxCoeff(&id_max);
+  node.SetLB(lb);
+  node.SetLbArgument(xs.col(id_max));
   return lb;
+}
+
+void LowerBoundR3::Evaluate(const NodeR3& node,
+    Eigen::Matrix<double,3,9>& xs, Eigen::Matrix<double,9,1>& lbs) {
+  xs.col(0) = node.GetBox().GetCenter();
+  Eigen::Vector3d c;
+  for (uint32_t i=0; i<8; ++i) {
+    node.GetBox().GetCorner(i,c);
+    xs.col(i+1) = c;
+  }
+  lbs = Eigen::VectorXd::Zero(9);
+  for (uint32_t i=0; i<8; ++i) {
+    for (auto& gT : gmmT_)
+      lbs(i) += gT.GetPi() * gT.pdf(xs.col(i));
+  }
 }
 
 void ComputeGmmT( const std::vector<Normal<3>>& gmmA, const

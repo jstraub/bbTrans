@@ -12,8 +12,25 @@ LowerBoundS3::LowerBoundS3(const vMFMM<3>& vmf_mm_A, const vMFMM<3>&
 {}
 
 double LowerBoundS3::Evaluate(const NodeS3& node) {
-  Eigen::VectorXd lbs(5); 
   std::vector<Eigen::Quaterniond> qs(5);
+  Eigen::Matrix<double,5,1> lbs;
+  Evaluate(node, qs, lbs);
+  return lbs.maxCoeff();
+}
+
+double LowerBoundS3::EvaluateAndSet(NodeS3& node) {
+  Eigen::Matrix<double,5,1> lbs;
+  std::vector<Eigen::Quaterniond> qs(5);
+  Evaluate(node, qs, lbs);
+  uint32_t id_max = 0;
+  double lb = lbs.maxCoeff(&id_max);
+  node.SetLB(lb);
+  node.SetLbArgument(qs[id_max]);
+  return lb;
+}
+
+void LowerBoundS3::Evaluate(const NodeS3& node
+  std::vector<Eigen::Quaterniond>& qs, Eigen::Matrix<double,5,1>& lbs) {
   qs[0] = node.GetTetrahedron().GetCenterQuaternion();
   for (uint32_t i=0; i<4; ++i)
     qs[i+1] = node.GetTetrahedron().GetVertexQuaternion(i);

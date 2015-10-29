@@ -19,7 +19,10 @@ class LowerBoundR3 : public Bound<NodeR3> {
       std::vector<Normal<3>>& gmmB, const Eigen::Quaterniond& q);
   virtual ~LowerBoundR3() = default;
   virtual double Evaluate(const NodeR3& node);
+  virtual double EvaluateAndSet(NodeR3& node);
  private:
+  void Evaluate(const NodeR3& node, Eigen::Matrix<double,3,9>& xs,
+      Eigen::Matrix<double,9,1>& lbs);
   std::vector<Normal<3>> gmmT_;
 };
 

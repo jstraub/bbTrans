@@ -20,6 +20,9 @@ class NodeS3 : public BaseNode {
   virtual ~NodeS3() = default;
   virtual std::vector<NodeS3> Branch() const;
   const Tetrahedron4D& GetTetrahedron() const { return tetrahedron_;}
+  void SetLbArgument(const Eigen::Quaterniond& q) {q_lb_ = q;}
+  Eigen::Quaterniond GetLbArgument() const
+  {return q_lb_;}
   virtual uint32_t GetBranchingFactor(uint32_t i) const { return i==0? 600 : 8;}
   virtual std::string ToString() const {
     std::stringstream out; out << GetTetrahedron().GetCenter().transpose();
@@ -27,6 +30,7 @@ class NodeS3 : public BaseNode {
   };
  protected:
   Tetrahedron4D tetrahedron_;
+  Eigen::Quaterniond q_lb_;
 };
 
 std::list<NodeS3> GenerateNotesThatTessellateS3();

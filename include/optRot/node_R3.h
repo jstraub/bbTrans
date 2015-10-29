@@ -19,6 +19,7 @@ class NodeR3 : public BaseNode {
   virtual ~NodeR3() = default;
   virtual std::vector<NodeR3> Branch() const;
   const Box& GetBox() const { return box_;}
+  void SetLbArgument(const Eigen::Vector3d& t) {t_lb_ = t;}
   virtual uint32_t GetBranchingFactor(uint32_t i) const { return 8;}
   virtual std::string ToString() const {
     std::stringstream out; out << GetBox().GetCenter().transpose();
@@ -26,6 +27,7 @@ class NodeR3 : public BaseNode {
   };
  protected:
   Box box_;
+  Eigen::Vector3d t_lb_;
 };
 
 std::list<NodeR3> GenerateNotesThatTessellateR3(const Eigen::Vector3d&
