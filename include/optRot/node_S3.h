@@ -30,6 +30,7 @@ class NodeS3 : public BaseNode {
     return out.str();
   };
   std::string GetSpace() const { return "S3"; }
+  double GetVolume() const { return tetrahedron_.GetVolume();}
  protected:
   Tetrahedron4D tetrahedron_;
   Eigen::Quaterniond q_lb_;

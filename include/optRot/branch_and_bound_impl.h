@@ -28,11 +28,15 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
   bool write_stats = true;
   std::ofstream out;
   if (write_stats) {
+    double V = 0.; // Volume that trhe nodes explain
+    for (auto& node : nodes) {
+      V += node.GetVolume(); 
+    }
     std::stringstream ss;
     ss << "./bb_iteration_stats_" << nodes.begin()->GetSpace() << ".csv";
     out.open(ss.str());
     if (write_stats) 
-      out << lb << " " << ub << " " << n_nodes << std::endl;
+      out << lb << " " << ub << " " << n_nodes << " " << V << std::endl;
   }
 
   Node node_star = *std::max_element(nodes.begin(), nodes.end(),
@@ -80,8 +84,13 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
       ub = std::max(ub, node.GetUB());
       ++n_nodes;
     }
-    if (write_stats) 
-      out << lb << " " << ub << " " << n_nodes << std::endl;
+    if (write_stats) {
+      double V = 0.;
+      for (auto& node : nodes) {
+        V += node.GetVolume(); 
+      }
+      out << lb << " " << ub << " " << n_nodes << " " << V << std::endl;
+    }
     
     ++it;
   }

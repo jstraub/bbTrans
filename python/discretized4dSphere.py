@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.linalg import svd, det, eig
 from js.geometry.rotations import *
 from itertools import combinations, permutations
 
@@ -16,6 +17,7 @@ class Tetrahedron(object):
       + 0.25*self.vertices[self.tetra[1]] + \
       0.25*self.vertices[self.tetra[2]] + 0.25*self.vertices[self.tetra[3]]
     return normed(center)
+
   def GeMinMaxVertexDotProduct(self):
     dots = np.zeros(6)
     for i, p in enumerate(combinations(range(4), 2)):
@@ -23,6 +25,46 @@ class Tetrahedron(object):
       print self.vertices[p[0]]
       dots[i] = self.vertices[p[0]].dot(self.vertices[p[1]])
     return np.min(dots), np.max(dots)
+
+  def Volume(self):
+    A = np.zeros((4,3))
+    for i in range(3):
+      A[:,i] = self.vertices[i] - self.vertices[3]
+#    print A
+    U,S,Vt = svd(A)
+#    print U
+#    print S
+#    print Vt
+#    print det(U)
+#    print det(Vt)
+    return S.prod()
+#    print " reducing dim" 
+#    print U[:,:3]
+#    print np.diag(S[:3])
+#    print Vt[:3,:]
+#    A_ = U[:,:3].dot(np.diag(S[:3])).dot(Vt[:3,:])
+#    print A_
+#    print det(A_)
+#    A_ = U[:3,:].dot(A).dot(Vt[:,:3])
+#    print A_
+#    print det(A_)
+#    A_ = U[:3,:].dot(np.diag(S)).dot(Vt[:,:3])
+#    print A_
+#    print det(A_)
+    # http://mathworld.wolfram.com/Cayley-MengerDeterminant.html
+#    B = np.zeros((4,4))
+#    for i in range(4):
+#      for j in range(4):
+#        B[i,j] = ((self.vertices[i]-self.vertices[j])**2).sum()
+#    B_ = np.ones((5,5))
+#    B_[0,0] = 0.
+#    B_[1:,1:] = B
+#    print B_
+#    print det(B_)
+#    print det(B_)/(-9216.)
+    
+    V = 0;
+    return V;
 
   def Subdivide(self):
     '''
@@ -292,6 +334,20 @@ class S3Grid(object):
     return tetrahedra
 
 if __name__ == "__main__":
+  s3 = S3Grid(4)
+  Vs = np.zeros((4,100))
+  for lvl in range(4):
+    tetras = s3.GetTetrahedra(lvl)
+    ids = np.arange(len(tetras))
+    np.random.shuffle(ids)
+    for i,id in enumerate(ids[:100]):
+      Vs[lvl,i] = tetras[id].Volume()
+  print "mean", np.mean(Vs, axis=1)
+  print np.cov(Vs[0,:].T)
+  print np.cov(Vs[1,:].T)
+  print np.cov(Vs[2,:].T)
+  print np.cov(Vs[3,:].T)
+  raw_input()
   lvls = 4
   s3 = S3Grid(lvls)
   print s3.tetra_levels

@@ -2,12 +2,17 @@ import numpy as np
 import re
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from js.utils.plot.colors import colorScheme
 
 mpl.rc('font',size=25) 
 mpl.rc('lines',linewidth=3.)
 figSize = (14, 5.5)
 figSize = (14, 10)
 figSize = (14, 12)
+
+c1 = colorScheme("labelMap")["turquoise"]
+c2 = colorScheme("labelMap")["orange"]
+c3 = colorScheme("labelMap")["green"]
 
 #bs = np.loadtxt('./testBound.csv').T
 for path in ['./bb_bounds_S3_t0.csv', './bb_bounds_R3_t0.csv']:
@@ -19,9 +24,10 @@ for path in ['./bb_bounds_S3_t0.csv', './bb_bounds_R3_t0.csv']:
       edgecolor="k")
   ax = plt.subplot(1,1,1)
 #  ax.set_yscale("log")
-  plt.plot(bs[1,ids],label="independent component upper bound")
-  plt.plot(bs[2,ids],label="joint convex upper bound")
-  plt.plot(bs[0,ids],label="lower bound")
+  plt.plot(bs[1,ids],label="independent component upper bound",
+      color=c2)
+  plt.plot(bs[2,ids],label="joint convex upper bound",color=c1)
+  plt.plot(bs[0,ids],label="lower bound",color=c3)
   plt.legend(loc="best")
   plt.ylabel("log$_{10}$(bounds)")
   plt.ylim([bs.min(), bs.max()])

@@ -22,6 +22,7 @@ class Box {
   void GetSide(uint32_t i, Eigen::Vector3d& p0, Eigen::Matrix<double,3,2>& E) const
   {p0 = corners_.col(i/2); E = sides_.middleCols<2>(i*2);}
   Eigen::Vector3d GetSideLengths() const;
+  double GetVolume() const { return (p_max_- p_min_).prod();}
  private:
   Eigen::Matrix<double, 3, 1> p_min_;
   Eigen::Matrix<double, 3, 1> p_max_;

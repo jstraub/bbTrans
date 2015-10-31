@@ -40,6 +40,15 @@ Eigen::Quaterniond Tetrahedron4D::GetVertexQuaternion(uint32_t i) const {
   return Eigen::Quaterniond(q(0), q(1), q(2), q(3));
 }
 
+double Tetrahedron4D::GetVolume() const {
+  Eigen::Matrix<double, 4,3> A;
+  A.col(0) = vertices_.col(0)-vertices_.col(3);
+  A.col(1) = vertices_.col(1)-vertices_.col(3);
+  A.col(2) = vertices_.col(2)-vertices_.col(3);
+  Eigen::JacobiSVD<Eigen::Matrix<double,4,3>> svd(A);
+  return svd.singularValues().prod()/6.;
+}
+
 std::vector<Tetrahedron4D> Tetrahedron4D::Subdivide() const {
   std::vector<Tetrahedron4D> tetrahedra;  
   tetrahedra.reserve(8);

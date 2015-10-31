@@ -28,6 +28,7 @@ class NodeR3 : public BaseNode {
     return out.str();
   };
   std::string GetSpace() const { return "R3"; }
+  double GetVolume() const { return box_.GetVolume();}
  protected:
   Box box_;
   Eigen::Vector3d t_lb_;

@@ -21,6 +21,7 @@ class Tetrahedron4D {
   Eigen::Vector4d GetVertex(uint32_t i) const;
   Eigen::Quaterniond GetVertexQuaternion(uint32_t i) const;
   std::vector<Tetrahedron4D> Subdivide() const;
+  double GetVolume() const;
  private:
   /// One 4D vertex per column. 4 vertices in total to describe the 4D
   /// Tetrahedron.
