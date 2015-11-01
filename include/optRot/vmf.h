@@ -17,6 +17,7 @@ class vMF {
   vMF(const vMF<D>& vmf) = default;
   ~vMF() = default;
   double GetPi() const {return pi_;}
+  void SetPi(double pi) {pi_ = pi;}
   double GetTau() const {return tau_;}
   const Eigen::Matrix<double, D, 1>& GetMu() const {return mu_;}
   double GetLogZ() const;
