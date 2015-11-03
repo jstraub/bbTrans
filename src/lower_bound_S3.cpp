@@ -15,7 +15,8 @@ double LowerBoundS3::Evaluate(const NodeS3& node) {
   std::vector<Eigen::Quaterniond> qs(5);
   Eigen::Matrix<double,5,1> lbs;
   Evaluate(node, qs, lbs);
-  return lbs.maxCoeff();
+  return lbs(0); // at Center only
+//  return lbs.maxCoeff();
 }
 
 double LowerBoundS3::EvaluateAndSet(NodeS3& node) {
@@ -23,7 +24,8 @@ double LowerBoundS3::EvaluateAndSet(NodeS3& node) {
   std::vector<Eigen::Quaterniond> qs(5);
   Evaluate(node, qs, lbs);
   uint32_t id_max = 0;
-  double lb = lbs.maxCoeff(&id_max);
+  double lb = lbs(0); // at Center only
+//  double lb = lbs.maxCoeff(&id_max);
   node.SetLB(lb);
   node.SetLbArgument(qs[id_max]);
   return lb;

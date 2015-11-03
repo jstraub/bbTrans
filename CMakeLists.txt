@@ -79,6 +79,9 @@ target_link_libraries(testBranchAndBoundT3 optRot)
 add_executable(testMinMaxInBox ./test/min_max_in_box.cpp)
 target_link_libraries(testMinMaxInBox optRot)
 
+add_executable(testMinMaxInTetrahedron ./test/min_max_in_tetrahedron.cpp)
+target_link_libraries(testMinMaxInTetrahedron optRot)
+
 pods_install_libraries(optRot)
 pods_install_headers(
   ./include/optRot/s3_tessellation.h

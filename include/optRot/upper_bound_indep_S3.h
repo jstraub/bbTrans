@@ -24,6 +24,9 @@ class UpperBoundIndepS3 : public Bound<NodeS3> {
   const vMFMM<3>& vmf_mm_B_;
 };
 
+Eigen::Vector3d ComputeExtremumOnGeodesic(const Eigen::Vector3d& q1,
+    const Eigen::Vector3d& q2, const Eigen::Vector3d& p);
+
 Eigen::Vector3d ClosestPointInTetrahedron(const vMF<3>& vmf_A, const
     vMF<3>& vmf_B, const Tetrahedron4D& tetrahedron, bool
     furthest=false);
