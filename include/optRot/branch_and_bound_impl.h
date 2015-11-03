@@ -26,7 +26,6 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     ub = std::max(ub, node.GetUB());
     ++n_nodes;
   }
-
   bool write_stats = true;
   std::ofstream out;
   if (write_stats) {
@@ -43,12 +42,13 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
 
   Node node_star = *std::max_element(nodes.begin(), nodes.end(),
         LessThanNodeLB<Node>());
+  nodes.remove_if(IsPrunableNode<Node>(lb));
+  n_nodes = 0;
+  for (auto& node : nodes) {
+    ++n_nodes;
+  }
+
   while (it < max_it && fabs(ub - lb) > eps && n_nodes > 1) {
-    // Copy the best node to return here since the next operation might
-    // remove all nodes.
-    node_star = *std::max_element(nodes.begin(), nodes.end(),
-        LessThanNodeLB<Node>());
-    nodes.remove_if(IsPrunableNode<Node>(lb));
     // Find node with the biggest upper bound (the most promising node)
     // to explore further.
     auto node_i = std::max_element(nodes.begin(), nodes.end(),
@@ -79,9 +79,17 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
           ++n_nodes;
         }
       }
-      if (n_nodes == 1) break;
-      // Pop the examined node since we are branching here
-      nodes.erase(node_i); 
+    }
+
+    // Copy the best node to return here since the next operation might
+    // remove all nodes.
+    node_star = *std::max_element(nodes.begin(), nodes.end(),
+        LessThanNodeLB<Node>());
+    if (n_nodes == 1) break;
+    // Pop the examined node since we are branching here
+    nodes.erase(node_i); 
+    nodes.remove_if(IsPrunableNode<Node>(lb));
+
     n_nodes = 0; lb = -1e40; ub = -1e40; 
     for (auto& node : nodes) {
       lb = std::max(lb, node.GetLB());
@@ -95,7 +103,6 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
       }
       out << lb << " " << ub << " " << n_nodes << " " << V << std::endl;
     }
-    
     ++it;
   }
   std::cout << "@" << it << " # " << n_nodes << ": global " 
