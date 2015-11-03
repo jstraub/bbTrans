@@ -20,6 +20,8 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
   for (auto& node : nodes) {
     lower_bound_.EvaluateAndSet(node);
     upper_bound_.EvaluateAndSet(node);
+    // Because of numerics in S3 case...
+    if (node.GetUB() < node.GetLB()) node.SetUB(node.GetLB()); 
     lb = std::max(lb, node.GetLB());
     ub = std::max(ub, node.GetUB());
     ++n_nodes;
@@ -68,9 +70,11 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
       std::vector<Node> new_nodes = node_i->Branch();
       for (auto& node : new_nodes) {
         upper_bound_.EvaluateAndSet(node);
+        lower_bound_.EvaluateAndSet(node);
+        // Because of numerics in S3 case...
+        if (node.GetUB() < node.GetLB()) node.SetUB(node.GetLB()); 
         if (node.GetUB() >= lb) {
           // Remember this node since we cannot prune it.
-          lower_bound_.EvaluateAndSet(node);
           nodes.push_back(node);
           ++n_nodes;
         }
