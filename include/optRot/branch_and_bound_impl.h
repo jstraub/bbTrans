@@ -21,7 +21,13 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     lower_bound_.EvaluateAndSet(node);
     upper_bound_.EvaluateAndSet(node);
     // Because of numerics in S3 case...
-    if (node.GetUB() < node.GetLB()) node.SetUB(node.GetLB()); 
+    if (node.GetUB() < node.GetLB()) {
+      std::cout << " ub < lb: " << node.GetUB() << " < " <<
+        node.GetLB() << " - " << node.GetUB() - node.GetLB()
+        << " lvl " << node.GetLevel()
+        << std::endl;
+//      node.SetUB(node.GetLB()+eps); 
+    }
     lb = std::max(lb, node.GetLB());
     ub = std::max(ub, node.GetUB());
     ++n_nodes;
@@ -48,7 +54,7 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     ++n_nodes;
   }
 
-  while (it < max_it && fabs(ub - lb) > eps && n_nodes > 1) {
+  while (it < max_it && fabs(ub - lb) >= eps && n_nodes > 1) {
     // Find node with the biggest upper bound (the most promising node)
     // to explore further.
     auto node_i = std::max_element(nodes.begin(), nodes.end(),
@@ -60,26 +66,38 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     // Find the node with the biggest lower bound (the most
     // conservative node to return).
     if (it%(max_it/10) == 0)
-    std::cout << "@" << it << " # " << n_nodes 
-      << ": cur " << node_i->GetLB() << " < " << node_i->GetUB() 
-      << " lvl " << node_i->GetLevel()
-      << "\t global "
-      << lb << " < " << ub << " " << " |.| " << fabs(ub - lb) 
-      << std::endl;
+      std::cout << "@" << it << " # " << n_nodes 
+        << ": cur " << node_i->GetLB() << " < " << node_i->GetUB() 
+        << " lvl " << node_i->GetLevel()
+        << "\t global "
+        << lb << " < " << ub << " " << " |.| " << fabs(ub - lb) 
+        << std::endl;
       // Branch and check resulting nodes.
       std::vector<Node> new_nodes = node_i->Branch();
       for (auto& node : new_nodes) {
         upper_bound_.EvaluateAndSet(node);
         lower_bound_.EvaluateAndSet(node);
         // Because of numerics in S3 case...
-        if (node.GetUB() < node.GetLB()) node.SetUB(node.GetLB()); 
+        if (node.GetUB() < node.GetLB()) {
+          std::cout << " ub < lb: " << node.GetUB() << " < " <<
+            node.GetLB() << " - " << node.GetUB() - node.GetLB() 
+            << " lvl " << node.GetLevel() << " \t" << node.ToString()
+            << std::endl;
+          upper_bound_.ToggleVerbose();
+          upper_bound_.EvaluateAndSet(node);
+          upper_bound_.ToggleVerbose();
+          std::cout << "lower bound ----------- " << std::endl;
+          lower_bound_.ToggleVerbose();
+          lower_bound_.EvaluateAndSet(node);
+          lower_bound_.ToggleVerbose();
+//          node.SetUB(node.GetLB()+eps); 
+        }
         if (node.GetUB() >= lb) {
           // Remember this node since we cannot prune it.
           nodes.push_back(node);
           ++n_nodes;
         }
       }
-    }
 
     // Copy the best node to return here since the next operation might
     // remove all nodes.

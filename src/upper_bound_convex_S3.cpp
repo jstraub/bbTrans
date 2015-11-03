@@ -28,20 +28,35 @@ Eigen::Matrix<double,4,4> BuildM(const Eigen::Vector3d& u, const
 }
 
 double FindMaximumQAQ(const Eigen::Matrix4d& A, const Tetrahedron4D&
-    tetrahedron) {
+    tetrahedron, bool verbose) {
   std::vector<double> lambdas;
   Eigen::Matrix4d Q;
   for (uint32_t i=0; i<4; ++i)
     Q.col(i) = tetrahedron.GetVertex(i);
+  if(verbose) {
+    std::cout << " q_true in Q? " << std::endl;
+    Eigen::FullPivLU<Eigen::Matrix<double,4,4>> lu(Q);
+    Eigen::Vector4d q_tr(-0.285745, -0.234756, -0.690839, -0.621274);
+    std::cout << "alpha: " << lu.solve(q_tr).transpose() << std::endl;
+
+    Eigen::Quaterniond q_true(-0.285745, -0.234756, -0.690839, -0.621274);
+    for (uint32_t i=0; i<4; ++i)
+      std::cout << " angle to true: " << q_true.angularDistance(
+        tetrahedron.GetVertexQuaternion(i))*180./M_PI << std::endl;
+  }
   // Only one q: 
-  for (uint32_t i=0; i<4; ++i)
+  for (uint32_t i=0; i<4; ++i) {
     lambdas.push_back(Q.col(i).transpose() * A * Q.col(i));
+    if(verbose) std::cout<<"lambda 1x1 " << lambdas[i] << std::endl;
+  }
   // Full problem:
   Eigen::Matrix4d A_ = Q.transpose() * A * Q;
   Eigen::Matrix4d B_ = Q.transpose() * Q;
   double lambda = 0.;
-  if (FindLambda<4>(A_,B_, &lambda))
+  if (FindLambda<4>(A_,B_, &lambda, verbose)) {
     lambdas.push_back(lambda);
+    if(verbose) std::cout<<"lambda Full " << lambda << std::endl;
+  }
   // Only three or two qs: 
   Combinations comb43s(4,3);
   for (auto comb : comb43s.Get()) {
@@ -52,8 +67,10 @@ double FindMaximumQAQ(const Eigen::Matrix4d& A, const Tetrahedron4D&
         A__(i,j) = A_(comb[i],comb[j]);
         B__(i,j) = B_(comb[i],comb[j]);
       }
-    if (FindLambda<3>(A__, B__, &lambda))
+    if (FindLambda<3>(A__, B__, &lambda, verbose)) {
       lambdas.push_back(lambda);
+    if(verbose) std::cout<<"lambda 3x3 " << lambda << std::endl;
+    }
   }
   Combinations comb42s(4,2);
   for (auto comb : comb42s.Get()) {
@@ -64,8 +81,10 @@ double FindMaximumQAQ(const Eigen::Matrix4d& A, const Tetrahedron4D&
         A__(i,j) = A_(comb[i],comb[j]);
         B__(i,j) = B_(comb[i],comb[j]);
       }
-    if (FindLambda<2>(A__, B__, &lambda))
+    if (FindLambda<2>(A__, B__, &lambda, verbose)) {
       lambdas.push_back(lambda);
+    if(verbose) std::cout<<"lambda 2x2 " << lambda << std::endl;
+    }
   }
 //  std::cout << "Q" << std::endl << Q << std::endl;
 //  for (auto l : lambdas) 
@@ -86,9 +105,9 @@ double UpperBoundConvexS3::Evaluate(const NodeS3& node) {
       const vMF<3>& vmf_A = vmf_mm_A_.Get(j);
       const vMF<3>& vmf_B = vmf_mm_B_.Get(k);
       Eigen::Vector3d p_U = ClosestPointInTetrahedron(vmf_A,
-          vmf_B, node.GetTetrahedron());
+          vmf_B, node.GetTetrahedron(), false, this->verbose_);
       Eigen::Vector3d p_L = FurthestPointInTetrahedron(vmf_A,
-          vmf_B, node.GetTetrahedron());
+          vmf_B, node.GetTetrahedron(), this->verbose_);
   //    std::cout << p_U.transpose() << " and " << p_L.transpose() << std::endl;
       double U = (vmf_A.GetTau()*vmf_A.GetMu() +
           vmf_B.GetTau()*p_U).norm();
@@ -98,7 +117,8 @@ double UpperBoundConvexS3::Evaluate(const NodeS3& node) {
       double UfL = 0.;
       double fUfLoU2L2 = 0.;
       double L2fUU2fLoU2L2 = 0.;
-      std::cout << "-- U " << U << " L " << L << std::endl;
+      if (this->verbose_)
+        std::cout << "-- U " << U << " L " << L << std::endl;
       if (fabs(U-L) < 1.e-6) {
         if (U > 50.) {
           fUfLoU2L2 = log(U-1.) + 2.*U - log(2.) - 3.*log(U) - U;
@@ -111,21 +131,25 @@ double UpperBoundConvexS3::Evaluate(const NodeS3& node) {
       } else {
         double f_U = ComputeLog2SinhOverZ(U);
         double f_L = ComputeLog2SinhOverZ(L);
-        std::cout << "f_U " << f_U << " f_L " << f_L << std::endl;
+        if (this->verbose_)
+          std::cout << "f_U " << f_U << " f_L " << f_L << std::endl;
         fUfLoU2L2 = - log(U - L) - log(U + L);
-        if (f_U > f_L) {
-          fUfLoU2L2 += log(1. - exp(f_L-f_U)) + f_U;
+//        if (f_U > f_L) {
+        fUfLoU2L2 += log(1. - exp(f_L-f_U)) + f_U;
+        if (this->verbose_)
           std::cout << "f_L - f_U " << f_L-f_U << " exp(.) " << exp(f_L-f_U)
             << std::endl;
-        } else {
-          fUfLoU2L2 += log(exp(f_U-f_L) - 1.) + f_L;
-          std::cout << "f_U - f_L " << f_U-f_L << " exp(.) " << exp(f_U-f_L)
-            << std::endl;
-        }
+//        } else {
+//          fUfLoU2L2 += log(exp(f_U-f_L) - 1.) + f_L;
+//          if (this->verbose_)
+//            std::cout << "f_U - f_L " << f_U-f_L << " exp(.) " << exp(f_U-f_L)
+//                << std::endl;
+//        }
         L2fUU2fLoU2L2 = -log(U - L) -log(U + L);
         LfU = 2.*log(L)+f_U + L2fUU2fLoU2L2;
         UfL = 2.*log(U)+f_L + L2fUU2fLoU2L2;
-        std::cout << "LfU " << LfU << " UfL " << UfL << std::endl;
+        if (this->verbose_)
+          std::cout << "LfU " << LfU << " UfL " << UfL << std::endl;
       }
       uint32_t K = vmf_mm_B_.GetK();
       Melem[j*K+k] = BuildM(vmf_A.GetMu(), vmf_B.GetMu());
@@ -133,7 +157,7 @@ double UpperBoundConvexS3::Evaluate(const NodeS3& node) {
 //      std::cout << j << " k " << k << std::endl << Melem[j*k+k] << std::endl;
       double D = log(2.*M_PI) + log(vmf_A.GetPi()) + log(vmf_B.GetPi())
         + vmf_A.GetLogZ() + vmf_B.GetLogZ();
-      Aelem(j*K+k) = log(2) + log(vmf_A.GetTau()) + log(vmf_B.GetTau())
+      Aelem(j*K+k) = log(2.) + log(vmf_A.GetTau()) + log(vmf_B.GetTau())
         + D + fUfLoU2L2;
       Eigen::Vector4d b;
       b << 2.*log(vmf_A.GetTau()) + fUfLoU2L2,
@@ -147,18 +171,35 @@ double UpperBoundConvexS3::Evaluate(const NodeS3& node) {
       Eigen::VectorXd M_jk_elem(Melem.size());
       for (uint32_t i=0; i<Melem.size(); ++i)
         M_jk_elem(i) = Melem[i](j,k);
-//        std::cout << j << " " << k << " " << M_jk_elem.transpose() << std::endl;
       A(j,k) = (M_jk_elem.array()*(Aelem.array() -
             Aelem.maxCoeff()).array().exp()).sum() *
         exp(Aelem.maxCoeff());
+      if (this->verbose_)
+        std::cout << j << " " << k << " " << M_jk_elem.transpose() 
+          << " = " << A(j,k) << std::endl;
     }
-//  std::cout << "Aelem " << Aelem.transpose() << std::endl;
   double B = (BelemSign.array()*(Belem.array() -
         Belem.maxCoeff()).exp()).sum() * exp(Belem.maxCoeff());
-  std::cout << "A " <<  std::endl;
-  std::cout << A << std::endl;
-  double lambda_max = FindMaximumQAQ(A, node.GetTetrahedron());
-  std::cout << "B " << B << " lambda_max " << lambda_max << std::endl;
+  if (this->verbose_) {
+    std::cout << "Aelem " << Aelem.transpose() << std::endl;
+    std::cout << "A " <<  std::endl;
+    std::cout << A << std::endl;
+    std::cout << "BelemSign " << BelemSign << std::endl;
+    std::cout << "Belem " << Belem << std::endl;
+    std::cout << "B " << B << std::endl;
+    double Bb = 0.;
+    for (uint32_t l=0; l<Belem.rows(); ++l) {
+      double  dB =  (BelemSign.row(l).array()*(Belem.row(l).array() -
+        Belem.row(l).maxCoeff()).exp()).sum() * exp(Belem.row(l).maxCoeff());
+      std::cout << dB << " ";
+      Bb += dB;
+    }
+    std::cout << " = " << Bb << std::endl;
+  }
+  double lambda_max = FindMaximumQAQ(A, node.GetTetrahedron(), this->verbose_);
+  if (this->verbose_) {
+    std::cout << "B " << B << " lambda_max " << lambda_max << std::endl;
+  }
   return B + lambda_max;
 }
 

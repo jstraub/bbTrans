@@ -24,19 +24,19 @@ int main(int argc, char ** argv) {
   q1 << 1., 0., 0.;
   q2 << 0., 1., 0.;
   p = q1;
-  Eigen::Vector3d a = ComputeExtremumOnGeodesic(q1, q2, p);
+  Eigen::Vector3d a = ComputeExtremumOnGeodesic(q1, q2, p, false);
   if (!VectorsClose(a,q1)) 
     std::cout << " ERROR: " << p.transpose();
   p = q2;
-  a = ComputeExtremumOnGeodesic(q1, q2, p);
+  a = ComputeExtremumOnGeodesic(q1, q2, p, false);
   if (!VectorsClose(a,q2)) 
     std::cout << " ERROR: " << p.transpose();
   p << -1.,0.,0.;
-  a = ComputeExtremumOnGeodesic(q1, q2, p);
+  a = ComputeExtremumOnGeodesic(q1, q2, p, false);
   if (!VectorsClose(a,q2)) 
     std::cout << " ERROR: " << p.transpose();
   p << 0.,-1.,0.;
-  a = ComputeExtremumOnGeodesic(q1, q2, p);
+  a = ComputeExtremumOnGeodesic(q1, q2, p, false);
   if (!VectorsClose(a,q1)) 
     std::cout << " ERROR: " << p.transpose();
 }

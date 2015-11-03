@@ -56,8 +56,10 @@ void LowerBoundS3::Evaluate(const NodeS3& node,
 //          << std::endl;
       }
     }
-//    std::cout << lbElem.transpose() << std::endl;
+
     lbs(i) = SumExp(lbElem);
+    if (this->verbose_)
+      std::cout << lbElem.transpose() <<  " " << lbs(i) << std::endl;
   }
 }
 

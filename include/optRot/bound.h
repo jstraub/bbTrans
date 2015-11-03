@@ -12,8 +12,10 @@ class Bound {
  public:
   Bound() = default;
   virtual ~Bound() = default;
-  virtual double Evaluate(const Node& node) { return 0;};
+  virtual double Evaluate(const Node& node) { return 0;}
   virtual double EvaluateAndSet(Node& node) { return 0;};
- private:
+  virtual void ToggleVerbose() {verbose_ = verbose_?false:true;}
+ protected:
+  bool verbose_;
 };
 }

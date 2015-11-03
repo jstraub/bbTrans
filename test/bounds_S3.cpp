@@ -37,12 +37,12 @@ int main(int argc, char ** argv) {
   muB2 = q_true.toRotationMatrix()*muA2;
 
   std::vector<vMF<3>> vmfs_A;
-  vmfs_A.push_back(vMF<3>(muA1,10000.,0.3));
-  vmfs_A.push_back(vMF<3>(muA2,1000.,0.7));
+  vmfs_A.push_back(vMF<3>(muA1,100.,0.3));
+  vmfs_A.push_back(vMF<3>(muA2,10.,0.7));
 
   std::vector<vMF<3>> vmfs_B;
-  vmfs_B.push_back(vMF<3>(muB1,10000.,0.3));
-  vmfs_B.push_back(vMF<3>(muB2,1000.,0.7));
+  vmfs_B.push_back(vMF<3>(muB1,100.,0.3));
+  vmfs_B.push_back(vMF<3>(muB2,10.,0.7));
   
   vMFMM<3> vmf_mm_A(vmfs_A);
   vMFMM<3> vmf_mm_B(vmfs_B);
@@ -87,9 +87,9 @@ int main(int argc, char ** argv) {
     << std::endl;
   std::cout << "Upper Bounds Convexity: " << std::endl;
   std::cout << ubCs.transpose() << std::endl;
-  std::cout << "# upper < lower " << (ubCs.array() < lbs.array()).transpose()
+  std::cout << "# upperC < lower " << (ubCs.array() < lbs.array()).transpose()
     << std::endl;
-  std::cout << "# upperS < upper " << (ubCs.array() < ubs.array()).transpose()
+  std::cout << "# upperC <= upper " << (ubCs.array() <= ubs.array()).transpose()
     << std::endl;
 
   auto it = nodes.begin();

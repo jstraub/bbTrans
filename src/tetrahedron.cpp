@@ -54,12 +54,12 @@ std::vector<Tetrahedron4D> Tetrahedron4D::Subdivide() const {
   tetrahedra.reserve(8);
   // Compute new vertices and "pop" them out to the sphere.
   Eigen::Matrix<double, 4, 6> vertices;
-  vertices << normed(vertices_.col(0) + vertices_.col(1)),
-    normed(vertices_.col(1) + vertices_.col(2)),
-    normed(vertices_.col(2) + vertices_.col(0)),
-    normed(vertices_.col(0) + vertices_.col(3)),
-    normed(vertices_.col(1) + vertices_.col(3)),
-    normed(vertices_.col(2) + vertices_.col(3));
+  vertices << normed(vertices_.col(0) + vertices_.col(1)), //0
+    normed(vertices_.col(1) + vertices_.col(2)), //1
+    normed(vertices_.col(2) + vertices_.col(0)), //2
+    normed(vertices_.col(0) + vertices_.col(3)), //3
+    normed(vertices_.col(1) + vertices_.col(3)), //4
+    normed(vertices_.col(2) + vertices_.col(3)); //5
   // Corner tetrahedron at 0th corner of parent.
   tetrahedra.push_back(Tetrahedron4D(vertices_.col(0), vertices.col(0),
         vertices.col(2), vertices.col(3)));

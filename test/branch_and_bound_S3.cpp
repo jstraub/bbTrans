@@ -12,11 +12,24 @@
 
 using namespace OptRot;
 
+Eigen::Quaterniond RandomRotation() {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::normal_distribution<> N(0,1);
+  Eigen::Quaterniond q(N(gen), N(gen), N(gen), N(gen));
+  q.normalize();
+  return q;
+}
+
 int main(int argc, char** argv) {
 
   Eigen::Quaterniond q_true(1.,1.,1.,1.);
   q_true.normalize();
-  std::cout << "true quaternion: " << q_true.coeffs().transpose() << std::endl;
+  q_true = RandomRotation();
+
+  q_true = Eigen::Quaterniond(-0.285745, -0.234756, -0.690839, -0.621274);
+//  std::cout << "true quaternion: " << q_true.coeffs().transpose() << std::endl;
+  std::cout << "true quaternion: " << q_true.w() << " " << q_true.x() << " " << q_true.y() << " " << q_true.z() << std::endl;
   //std::cout << q_true.toRotationMatrix() << std::endl;
   
   Eigen::Vector3d muA1, muA2;
@@ -42,7 +55,7 @@ int main(int argc, char** argv) {
   UpperBoundIndepS3 upper_bound(vmf_mm_A, vmf_mm_B);
   UpperBoundConvexS3 upper_bound_convex(vmf_mm_A, vmf_mm_B);
   
-  double eps = 1.0e-5 * M_PI / 180.;
+  double eps = 1.0e-8;
   uint32_t max_it = 1000;
   BranchAndBound<NodeS3> bb(lower_bound, upper_bound_convex);
   NodeS3 node_star = bb.Compute(nodes, eps, max_it);

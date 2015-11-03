@@ -26,7 +26,19 @@ class NodeS3 : public BaseNode {
   {return q_lb_;}
   virtual uint32_t GetBranchingFactor(uint32_t i) const { return i==0? 600 : 8;}
   virtual std::string ToString() const {
-    std::stringstream out; out << GetTetrahedron().GetCenter().transpose();
+    std::stringstream out; 
+    out << GetTetrahedron().GetCenter().transpose() << std::endl
+      << GetTetrahedron().GetVertex(0).transpose() << std::endl
+      << GetTetrahedron().GetVertex(1).transpose() << std::endl
+      << GetTetrahedron().GetVertex(2).transpose() << std::endl
+      << GetTetrahedron().GetVertex(3).transpose() << std::endl;
+    out << "pairwise angles: ";
+    for (uint32_t i=0; i < 4; ++i) 
+      for (uint32_t j=0; j < 4; ++j) 
+        if(i!=j)
+          out << i << "," <<j<< ": "
+            << GetTetrahedron().GetVertexQuaternion(i).angularDistance(
+                GetTetrahedron().GetVertexQuaternion(j)) *180./M_PI<< " ";
     return out.str();
   };
   std::string GetSpace() const { return "S3"; }

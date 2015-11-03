@@ -18,12 +18,14 @@ double SumExp(const Eigen::VectorXd& x) {
 
 /// Compute log((exp(z) - exp(-z)) / z)
 double ComputeLog2SinhOverZ(double z) {
-  if (fabs(z) < 1.e-6) 
+  if (fabs(z) < 1.e-3) 
     return log(2.);
   else if (z < 50.) 
-    return - log(z) + log(exp(2.*z) -1) - z;
+    return log(exp(z) - exp(-z)) - log(z);
+//  else
+//    return z - log(z) + log(1.- exp(-2.*z) );
   else
-    return - log(z) + z;
+    return z - log(z);
 };
 
 }
