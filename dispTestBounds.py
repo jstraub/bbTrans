@@ -9,6 +9,7 @@ mpl.rc('lines',linewidth=3.)
 figSize = (14, 5.5)
 figSize = (14, 10)
 figSize = (14, 12)
+figSize = (9, 6)
 
 c1 = colorScheme("labelMap")["turquoise"]
 c2 = colorScheme("labelMap")["orange"]
@@ -24,16 +25,17 @@ for path in ['./bb_bounds_S3_t0.csv', './bb_bounds_R3_t0.csv']:
       edgecolor="k")
   ax = plt.subplot(1,1,1)
 #  ax.set_yscale("log")
-  plt.plot(bs[1,ids],label="independent component upper bound",
-      color=c2)
-  plt.plot(bs[2,ids],label="joint convex upper bound",color=c1)
-  plt.plot(bs[0,ids],label="lower bound",color=c3)
+  plt.plot(bs[1,ids],label="indep. UB",
+      color=c3)
+  plt.plot(bs[2,ids],label="joint UB",color=c2)
+  plt.plot(bs[0,ids],label="LB",color=c1)
   plt.legend(loc="best")
-  plt.ylabel("log$_{10}$(bounds)")
+  plt.ylabel("log$_{10}$(bound)")
   plt.ylim([bs.min(), bs.max()])
   plt.xlim([0, bs.shape[1]])
   plt.xlabel("nodes in first level of B&B tree")
   #plt.subplot(2,1,2)
   #plt.plot(bs[3,:],label="sorting criterium")
+  plt.tight_layout()
   plt.savefig(re.sub("csv","png",path), figure = fig)
   plt.show()

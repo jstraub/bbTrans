@@ -20,16 +20,10 @@ Eigen::Matrix<double,4,4> BuildM(const Eigen::Vector3d& u, const
   const double vj = v(1);
   const double vk = v(2);
   Eigen::Matrix<double,4,4> M;
-  // TODO might have to switch columna and ro order because Eigen uses
-  // different quaternion interpertation!
   M << u.transpose()*v, uk*vj-uj*vk,       ui*vk-uk*vi,       uj*vi-ui*vj, 
        uk*vj-uj*vk,     ui*vi-uj*vj-uk*vk, uj*vi+ui*vj,       ui*vk+uk*vi,
        ui*vk-uk*vi,     uj*vi+ui*vj,       uj*vj-ui*vi-uk*vk, uj*vk+uk*vj,
        uj*vi-ui*vj,     ui*vk+uk*vi,       uj*vk+uk*vj,       uk*vk-ui*vi-uj*vj;
-//   M <<    uk*vk-ui*vi-uj*vj,  ui*vk+uk*vi,       uj*vk+uk*vj,       uj*vi-ui*vj,
-//         ui*vk+uk*vi,     ui*vi-uj*vj-uk*vk, uj*vi+ui*vj,      uk*vj-uj*vk,
-//        uj*vk+uk*vj,  uj*vi+ui*vj,       uj*vj-ui*vi-uk*vk,  ui*vk-uk*vi,  
-//  uj*vi-ui*vj, uk*vj-uj*vk,       ui*vk-uk*vi,        u.transpose()*v;
   return M;
 }
 
@@ -104,7 +98,7 @@ double UpperBoundConvexS3::Evaluate(const NodeS3& node) {
       double UfL = 0.;
       double fUfLoU2L2 = 0.;
       double L2fUU2fLoU2L2 = 0.;
-//      std::cout << "U " << U << " L " << L << std::endl;
+      std::cout << "-- U " << U << " L " << L << std::endl;
       if (fabs(U-L) < 1.e-6) {
         if (U > 50.) {
           fUfLoU2L2 = log(U-1.) + 2.*U - log(2.) - 3.*log(U) - U;
@@ -117,16 +111,21 @@ double UpperBoundConvexS3::Evaluate(const NodeS3& node) {
       } else {
         double f_U = ComputeLog2SinhOverZ(U);
         double f_L = ComputeLog2SinhOverZ(L);
-//        std::cout << "f_U " << f_U << " f_L " << f_L << std::endl;
+        std::cout << "f_U " << f_U << " f_L " << f_L << std::endl;
         fUfLoU2L2 = - log(U - L) - log(U + L);
         if (f_U > f_L) {
           fUfLoU2L2 += log(1. - exp(f_L-f_U)) + f_U;
+          std::cout << "f_L - f_U " << f_L-f_U << " exp(.) " << exp(f_L-f_U)
+            << std::endl;
         } else {
           fUfLoU2L2 += log(exp(f_U-f_L) - 1.) + f_L;
+          std::cout << "f_U - f_L " << f_U-f_L << " exp(.) " << exp(f_U-f_L)
+            << std::endl;
         }
         L2fUU2fLoU2L2 = -log(U - L) -log(U + L);
         LfU = 2.*log(L)+f_U + L2fUU2fLoU2L2;
         UfL = 2.*log(U)+f_L + L2fUU2fLoU2L2;
+        std::cout << "LfU " << LfU << " UfL " << UfL << std::endl;
       }
       uint32_t K = vmf_mm_B_.GetK();
       Melem[j*K+k] = BuildM(vmf_A.GetMu(), vmf_B.GetMu());
@@ -156,10 +155,10 @@ double UpperBoundConvexS3::Evaluate(const NodeS3& node) {
 //  std::cout << "Aelem " << Aelem.transpose() << std::endl;
   double B = (BelemSign.array()*(Belem.array() -
         Belem.maxCoeff()).exp()).sum() * exp(Belem.maxCoeff());
-//  std::cout << "A " <<  std::endl;
-//  std::cout << A << std::endl;
+  std::cout << "A " <<  std::endl;
+  std::cout << A << std::endl;
   double lambda_max = FindMaximumQAQ(A, node.GetTetrahedron());
-//  std::cout << "B " << B << " lambda_max " << lambda_max << std::endl;
+  std::cout << "B " << B << " lambda_max " << lambda_max << std::endl;
   return B + lambda_max;
 }
 

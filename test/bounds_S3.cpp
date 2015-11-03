@@ -89,10 +89,17 @@ int main(int argc, char ** argv) {
   std::cout << ubCs.transpose() << std::endl;
   std::cout << "# upper < lower " << (ubCs.array() < lbs.array()).transpose()
     << std::endl;
-  std::cout << "# upper < lower " << (ubCs.array() < lbs.array()-1e-6).transpose()
+  std::cout << "# upperS < upper " << (ubCs.array() < ubs.array()).transpose()
     << std::endl;
-  std::cout << "# upper - lower " << (ubCs.array() - lbs.array()).transpose()
-    << std::endl;
+
+  auto it = nodes.begin();
+  for (uint32_t i=0; i<nodes.size(); ++i, it++)
+    if (ubCs(i) < lbs(i)) {
+      std::cout << i << ": should " << ubCs(i) << " > " << lbs(i) << " but not! " << (ubCs(i)-lbs(i))  << std::endl;
+//    lbs[i] = lower_bound.Evaluate(node);
+    ubCs[i] = upper_bound_convex.Evaluate(*it);
+
+    }
 
   std::vector<NodeS3> nodes_v(nodes.begin(), nodes.end());
   std::vector<size_t> idx(nodes.size());
