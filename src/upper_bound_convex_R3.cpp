@@ -63,12 +63,21 @@ double UpperBoundConvexR3::Evaluate(const NodeR3& node) {
   double c = (celemSign.array()*(celem.array() -
         celem.maxCoeff()).exp()).sum()*exp(celem.maxCoeff());
 
-//  std::cout << "- A: \n" << A << std::endl;
-//  std::cout << "- b: " << b.transpose() << std::endl;
-//  std::cout << "- c: " << c << std::endl;
   Eigen::Vector3d t = FindMinTranslationInNode(-A, 0.5*b, node);
-//  std::cout << "- t: " << t.transpose() << std::endl;
   double ub = (t.transpose()*A*t)(0) + (b.transpose()*t)(0) + c;
+
+  if (this->verbose_) {
+    std::cout << "# GMM " << gmmT_.size() << std::endl;
+    std::cout << Aelem.transpose() << std::endl
+      << belem.transpose() << std::endl
+      << celem.transpose() << std::endl;
+
+    std::cout << "- A: \n" << A << std::endl;
+    std::cout << "- b: " << b.transpose() << std::endl
+      << "t* " << t.transpose() << std::endl;
+    std::cout << "- c: " << c << std::endl;
+    std::cout << " UB: " << ub << std::endl;
+  }
 //  std::cout << "- tAt: " <<  (t.transpose()*A*t)(0) 
 //    << " bt: " << (b.transpose()*t)(0) << " c: " << c 
 //    << " UB: " << ub

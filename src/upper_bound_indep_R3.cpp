@@ -47,9 +47,9 @@ Eigen::Vector3d FindMinTranslationInNode(const Eigen::Matrix3d& A,
     Eigen::Vector3d p0;
     Eigen::Matrix<double, 3,2> E;
     node.GetBox().GetSide(i, p0, E);
-    Eigen::FullPivLU<Eigen::Matrix2d> lu(E.transpose()*A*E);
+    Eigen::FullPivLU<Eigen::Matrix<double,3,2>> lu(A*E);
     if (lu.rank() == 2) {
-      Eigen::Vector2d alpha = lu.solve(E.transpose()*(b-A*p0));
+      Eigen::Vector2d alpha = lu.solve((b-A*p0));
       if ((alpha.array() >= 0.).all() && (alpha.array() <= 1.).all()) {
         ts.push_back(p0+E*alpha);
       }

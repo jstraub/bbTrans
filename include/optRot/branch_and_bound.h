@@ -21,7 +21,10 @@ class BranchAndBound {
  private:
   Bound<Node>& lower_bound_;
   Bound<Node>& upper_bound_;
+  uint32_t BoundAndPrune(std::list<Node>& nodes, double& lb, double& ub, double eps);
 };
+
+
 
 }
 #include "optRot/branch_and_bound_impl.h"
