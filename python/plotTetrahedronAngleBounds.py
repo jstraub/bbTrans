@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 #paper
-mpl.rc('font',size=30) 
+mpl.rc('font',size=40) 
 mpl.rc('lines',linewidth=3.)
 figSize = (14, 5.5)
 figSize = (14, 12)
-figSize = (14, 10)
+figSize = (21, 7)
 
 def ToRad(deg):
   return deg*np.pi/180.
@@ -73,8 +73,9 @@ plt.plot(dotMaxPred,'-', color="orange")
 plt.plot(dotMax,"--", color="red", label="actual min")
 plt.plot(dotMin,"--", color="green", label="actual max")
 plt.xlabel("subdivision level of the tetrahedron")
-plt.ylabel("angle between any two vertices [deg]")
+plt.ylabel("$\gamma$ [deg]")
 plt.legend()
+plt.tight_layout(0.4)
 plt.savefig("../subdivisionVsMinAngle_ActualAndBound.png", figure=fig)
 
 fig = plt.figure(figsize = figSize, dpi = 80, facecolor="w",
@@ -89,8 +90,8 @@ plt.plot(dotMaxPred,'-', color="orange")
 plt.plot(dotMax,"--", color="red", label="actual min")
 plt.plot(dotMin,"--", color="green", label="actual max")
 plt.xlabel("subdivision level of the tetrahedron")
-plt.ylabel("angle between any two vertices [deg]")
+plt.ylabel("$\gamma$ [deg]")
 plt.legend()
-#plt.tight_layout()
+plt.tight_layout(0.4)
 plt.savefig("../subdivisionVsMinAngle_ActualAndBound_allBounds.png", figure=fig)
 plt.show()

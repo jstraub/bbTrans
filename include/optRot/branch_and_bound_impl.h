@@ -16,8 +16,8 @@ uint32_t BranchAndBound<Node>::BoundAndPrune(std::list<Node>& nodes, double& lb,
 
   lb = -1e40; ub = -1e40; 
   for (auto& node : nodes) {
-    lower_bound_.EvaluateAndSet(node);
-    upper_bound_.EvaluateAndSet(node);
+//    lower_bound_.EvaluateAndSet(node);
+//    upper_bound_.EvaluateAndSet(node);
     // Because of numerics...
     if (node.GetUB() < node.GetLB()) {
       std::cout << " ub < lb: " << node.GetUB() << " < " <<
@@ -41,21 +41,18 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
   double ub = -1.e6;
   uint32_t it = 0;
   uint32_t n_nodes = 0;
-//  for (auto& node : nodes) {
-//    lower_bound_.EvaluateAndSet(node);
-//    upper_bound_.EvaluateAndSet(node);
-//    // Because of numerics in S3 case...
-//    if (node.GetUB() < node.GetLB()) {
-//      std::cout << " ub < lb: " << node.GetUB() << " < " <<
-//        node.GetLB() << " - " << node.GetUB() - node.GetLB()
-//        << " lvl " << node.GetLevel()
-//        << std::endl;
-//      node.SetUB(node.GetLB()+eps); 
-//    }
-//    lb = std::max(lb, node.GetLB());
-//    ub = std::max(ub, node.GetUB());
-//    ++n_nodes;
-//  }
+  for (auto& node : nodes) {
+    lower_bound_.EvaluateAndSet(node);
+    upper_bound_.EvaluateAndSet(node);
+    // Because of numerics in S3 case...
+    if (node.GetUB() < node.GetLB()) {
+      std::cout << " ub < lb: " << node.GetUB() << " < " <<
+        node.GetLB() << " - " << node.GetUB() - node.GetLB()
+        << " lvl " << node.GetLevel()
+        << std::endl;
+      node.SetUB(node.GetLB()+eps); 
+    }
+  }
   bool write_stats = true;
   std::ofstream out;
   if (write_stats) {
@@ -69,6 +66,7 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     if (write_stats) 
       out << lb << " " << ub << " " << n_nodes << " " << V << std::endl;
   }
+
   n_nodes = BoundAndPrune(nodes, lb, ub, eps);
 
 //  Node node_star = *std::max_element(nodes.begin(), nodes.end(),
@@ -105,6 +103,11 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
             std::cout << " ub < lb: " << node.GetUB() << " < " <<
               node.GetLB() << " - " << node.GetUB() - node.GetLB() 
               << " lvl " << node.GetLevel() //<< " \t" << node.ToString()
+              << "@" << it << " # " << n_nodes 
+              << ": cur " << node_i->GetLB() << " < " << node_i->GetUB() 
+              << " lvl " << node_i->GetLevel()
+              << "\t global "
+              << lb << " < " << ub << " " << " |.| " << (ub - lb)/lb
               << std::endl;
 //          upper_bound_.ToggleVerbose();
 //          upper_bound_.EvaluateAndSet(node);
@@ -113,9 +116,9 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
 //          lower_bound_.ToggleVerbose();
 //          lower_bound_.EvaluateAndSet(node);
 //          lower_bound_.ToggleVerbose();
-          node.SetUB(node.GetLB()+eps); 
+          node.SetUB(node.GetLB()+10*eps); 
         }
-        if (node.GetUB() >= lb) {
+        if (node.GetUB() > lb) {
           // Remember this node since we cannot prune it.
           nodes.push_back(node);
           ++n_nodes;
@@ -125,7 +128,7 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
 //    // Copy the best node to return here since the next operation might
 //    // remove all nodes.
 //    node_star = *std::max_element(nodes.begin(), nodes.end(),
-//        LessThanNodeLB<Node>());
+//        LessThanNodeLB<Node>())
 //    if (n_nodes == 1) break;
     // Pop the examined node since we are branching here
     nodes.erase(node_i); 
@@ -146,7 +149,7 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
       }
       out << lb << " " << ub << " " << n_nodes << " " << V << std::endl;
     }
-  } while (it++ < max_it && (ub - lb)/lb > eps && n_nodes > 1);
+  } while (it++ < max_it && (ub - lb)/lb > eps && n_nodes >= 1);
 
   Node node_star = *std::max_element(nodes.begin(), nodes.end(),
       LessThanNodeLB<Node>());

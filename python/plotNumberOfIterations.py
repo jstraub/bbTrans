@@ -2,6 +2,11 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
+from js.utils.plot.colors import colorScheme
+
+c1 = colorScheme("labelMap")["turquoise"]
+c2 = colorScheme("labelMap")["orange"]
+
 #paper
 mpl.rc('font',size=30) 
 mpl.rc('lines',linewidth=3.)
@@ -26,11 +31,33 @@ N[N<0.] = 0.
 fig = plt.figure(figsize = figSize, dpi = 80, facecolor="w",
     edgecolor="k")
 ax = plt.subplot(111)
-plt.plot(ToDeg(eta), N, color="orange")
+plt.plot(ToDeg(eta), N, color=c1)
 #plt.plot(N, ToDeg(eta))
 #ax.set_yscale("log")
 ax.set_xscale("log")
 plt.xlabel("desired angular precision $\eta$ [deg]")
 plt.ylabel("number of required subdivisions")
 plt.savefig("../angularPrecisionVsSubdivisionLvl.png", figure=fig)
+
+fig = plt.figure(figsize = figSize, dpi = 80, facecolor="w",
+    edgecolor="k")
+ax = plt.subplot(111)
+plt.plot(N, ToDeg(eta), color=c1)
+ax.set_yscale("log")
+plt.ylabel("angular precision $\eta$ [deg]")
+plt.xlabel("number of subdivisions")
+plt.ylim([ToDeg(eta).min(), ToDeg(eta).max()])
+
+ax2 = ax.twinx()
+
+r0 = 10.
+r = np.exp(np.linspace(np.log(1e-10), np.log(r0),1000))
+N = np.ceil(np.log(r0/r))/np.log(2.)
+
+plt.plot(N, r, color=c2)
+ax2.set_yscale("log")
+plt.ylabel("translational precision $r$ [m]")
+plt.ylim([r.min(), r.max()])
+
+
 plt.show()
