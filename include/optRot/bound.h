@@ -10,7 +10,7 @@ namespace OptRot {
 template <class Node>
 class Bound {
  public:
-  Bound() = default;
+  Bound() : verbose_(false) {};
   virtual ~Bound() = default;
   virtual double Evaluate(const Node& node) { return 0;}
   virtual double EvaluateAndSet(Node& node) { return 0;};
