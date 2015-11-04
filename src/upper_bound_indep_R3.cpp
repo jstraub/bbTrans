@@ -32,10 +32,11 @@ Eigen::Vector3d FindMinTranslationInNode(const Eigen::Matrix3d& A,
   // Check if the unconstraint maximum lies inside the node.
   // This maximum is the mean of the Gaussian with Information matrix A
   // and Information vector b.
-  Eigen::ColPivHouseholderQR<Eigen::Matrix3d> qr(A);
+//  Eigen::ColPivHouseholderQR<Eigen::Matrix3d> qr(A);
+  Eigen::FullPivLU<Eigen::Matrix3d> lu(A);
   Eigen::Vector3d t;
-  if (qr.rank() == 3) {
-    t = qr.solve(b);
+  if (lu.rank() == 3) {
+    t = lu.solve(b);
     if (node.GetBox().IsInside(t)) 
       return t;
   }
@@ -46,10 +47,12 @@ Eigen::Vector3d FindMinTranslationInNode(const Eigen::Matrix3d& A,
     Eigen::Vector3d p0;
     Eigen::Matrix<double, 3,2> E;
     node.GetBox().GetSide(i, p0, E);
-    Eigen::ColPivHouseholderQR<Eigen::Matrix2d> qr(E.transpose()*A*E);
-    Eigen::Vector2d alpha = qr.solve(E.transpose()*(b-A*p0));
-    if ((alpha.array() >= 0.).all() && (alpha.array() <= 1.).all()) {
-      ts.push_back(p0+E*alpha);
+    Eigen::FullPivLU<Eigen::Matrix2d> lu(E.transpose()*A*E);
+    if (lu.rank() == 2) {
+      Eigen::Vector2d alpha = lu.solve(E.transpose()*(b-A*p0));
+      if ((alpha.array() >= 0.).all() && (alpha.array() <= 1.).all()) {
+        ts.push_back(p0+E*alpha);
+      }
     }
   }
   // Check edges of box.

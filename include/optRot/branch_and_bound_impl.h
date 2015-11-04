@@ -26,7 +26,7 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
         node.GetLB() << " - " << node.GetUB() - node.GetLB()
         << " lvl " << node.GetLevel()
         << std::endl;
-//      node.SetUB(node.GetLB()+eps); 
+      node.SetUB(node.GetLB()+eps); 
     }
     lb = std::max(lb, node.GetLB());
     ub = std::max(ub, node.GetUB());
@@ -49,12 +49,9 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
   Node node_star = *std::max_element(nodes.begin(), nodes.end(),
         LessThanNodeLB<Node>());
   nodes.remove_if(IsPrunableNode<Node>(lb));
-  n_nodes = 0;
-  for (auto& node : nodes) {
-    ++n_nodes;
-  }
+  n_nodes = std::distance(nodes.begin(), nodes.end());
 
-  while (it < max_it && fabs(ub - lb)/lb >= eps && n_nodes > 1) {
+  do  {
     // Find node with the biggest upper bound (the most promising node)
     // to explore further.
     auto node_i = std::max_element(nodes.begin(), nodes.end(),
@@ -70,7 +67,7 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
         << ": cur " << node_i->GetLB() << " < " << node_i->GetUB() 
         << " lvl " << node_i->GetLevel()
         << "\t global "
-        << lb << " < " << ub << " " << " |.| " << fabs(ub - lb)/lb
+        << lb << " < " << ub << " " << " |.| " << (ub - lb)/lb
         << std::endl;
       // Branch and check resulting nodes.
       std::vector<Node> new_nodes = node_i->Branch();
@@ -122,11 +119,10 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
       }
       out << lb << " " << ub << " " << n_nodes << " " << V << std::endl;
     }
-    ++it;
-  }
+  } while (it++ < max_it && (ub - lb)/lb > eps && n_nodes > 1);
   std::cout << "@" << it << " # " << n_nodes << ": global " 
     << lb << " < " << ub << " " << " |.| " << fabs(ub - lb)/lb << "\t selected "
-    << node_star.GetLB() << " < " << node_star.GetUB() << " "
+    << node_star.GetLB() << " < " << node_star.GetUB() << " lvl "
     << node_star.GetLevel() << " " //<< node_star.GetIds()[0] << "\t" 
     << std::endl;
   if (write_stats) 

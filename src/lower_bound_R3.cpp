@@ -15,7 +15,8 @@ double LowerBoundR3::Evaluate(const NodeR3& node) {
   Eigen::Matrix<double,3,9> xs;
   Eigen::Matrix<double,9,1> lbs;
   Evaluate(node, xs, lbs);
-  return lbs.maxCoeff();
+  return lbs(0); // at center
+//  return lbs.maxCoeff();
 }
 
 double LowerBoundR3::EvaluateAndSet(NodeR3& node) {
@@ -23,7 +24,8 @@ double LowerBoundR3::EvaluateAndSet(NodeR3& node) {
   Eigen::Matrix<double,9,1> lbs;
   Evaluate(node, xs, lbs);
   uint32_t id_max = 0;
-  double lb = lbs.maxCoeff(&id_max);
+//  double lb = lbs.maxCoeff(&id_max);
+  double lb = lbs(id_max);
   node.SetLB(lb);
   node.SetLbArgument(xs.col(id_max));
   return lb;
@@ -38,9 +40,13 @@ void LowerBoundR3::Evaluate(const NodeR3& node,
     xs.col(i+1) = c;
   }
   lbs = Eigen::VectorXd::Zero(9);
-  for (uint32_t i=0; i<8; ++i) {
-    for (auto& gT : gmmT_)
-      lbs(i) += gT.GetPi() * gT.pdf(xs.col(i));
+  Eigen::VectorXd lbelem(gmmT_.size());
+  for (uint32_t i=0; i<9; ++i) {
+    for (uint32_t j=0; j< gmmT_.size(); ++j) {
+      lbelem(j) = log(gmmT_[j].GetPi()) + gmmT_[j].logPdf(xs.col(i));
+      //      lbs(i) += gT.GetPi() * gT.pdf(xs.col(i));
+    }
+    lbs(i) = SumExp(lbelem);
   }
 }
 
