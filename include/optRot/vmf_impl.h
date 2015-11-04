@@ -35,7 +35,7 @@ double vMF<D>::MLEstimateTau(const Eigen::Vector3d& xSum, const
   double prevTau = 0.;
   double eps = 1e-8;
   double R = xSum.norm()/count;
-  while (abs(tau - prevTau) > eps) {
+  while (fabs(tau - prevTau) > eps) {
 //    std::cout << "tau " << tau << " R " << R << std::endl;
     double inv_tanh_tau = 1./tanh(tau);
     double inv_tau = 1./tau;
