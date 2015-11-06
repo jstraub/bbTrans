@@ -2,10 +2,15 @@ from discretized4dSphere import *
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+from js.utils.plot.colors import colorScheme
+
+c1 = colorScheme("labelMap")["turquoise"]
+c2 = colorScheme("labelMap")["orange"]
+c3 = colorScheme("labelMap")["red"]
 
 #paper
 mpl.rc('font',size=40) 
-mpl.rc('lines',linewidth=3.)
+mpl.rc('lines',linewidth=4.)
 figSize = (14, 5.5)
 figSize = (14, 12)
 figSize = (21, 7)
@@ -67,30 +72,39 @@ dotMinPred = [ToDeg(np.arccos(dotMinPred_i)) for dotMinPred_i in dotMinPred]
 fig = plt.figure(figsize = figSize, dpi = 80, facecolor="w",
     edgecolor="k")
 plt.fill_between(np.arange(20), dotMinPred, dotMaxPred,
-  facecolor="orange", alpha=0.3)
-plt.plot(dotMaxPredSqrt,"-", color="orange", label="upper/lower bound")
-plt.plot(dotMaxPred,'-', color="orange")
-plt.plot(dotMax,"--", color="red", label="actual min")
-plt.plot(dotMin,"--", color="green", label="actual max")
-plt.xlabel("subdivision level of the tetrahedron")
-plt.ylabel("$\gamma$ [deg]")
+  facecolor=c2, alpha=0.3)
+plt.plot(dotMaxPredSqrt,"-", color=c2, label="bounds")
+plt.plot(dotMaxPred,'-', color=c2)
+plt.plot(dotMax,"--", color=c1, label="true $\gamma$, $\Gamma$")
+plt.plot(dotMin,"--", color=c1)
+plt.fill_between(np.arange(20), dotMin, dotMax,
+  facecolor=c1, alpha=0.3)
+#
+#plt.plot(dotMax,"--", color=c3, label="actual min")
+#plt.plot(dotMin,"--", color=c1, label="actual max")
+plt.xlabel("subdivision level")
+plt.ylabel("angle [deg]")
 plt.legend()
 plt.tight_layout(0.4)
 plt.savefig("../subdivisionVsMinAngle_ActualAndBound.png", figure=fig)
+plt.show()
+
+import sys
+sys.exit(0)
 
 fig = plt.figure(figsize = figSize, dpi = 80, facecolor="w",
     edgecolor="k")
 plt.fill_between(np.arange(20), dotMinPred, dotMaxPred,
-  facecolor="orange", alpha=0.3)
-plt.plot(dotMaxPredSqrt,"-", color="orange", label="upper/lower bound")
+  facecolor=c2, alpha=0.3)
+plt.plot(dotMaxPredSqrt,"-", color=c2, label="upper/lower bound")
 plt.plot(dotMaxPred2, 'c--', label=r"$\frac{1+3\gamma}{2(1+\gamma)}$")
 #plt.plot(dotMaxPredSqrt,'g--', label=r"$\sqrt{\frac{1+\gamma}{2}}$")
-plt.plot(dotMaxPred,'-', color="orange")
-#plt.plot(dotMaxPred,'-', color="orange", label=r"$\frac{2\gamma}{1+\gamma}$")
-plt.plot(dotMax,"--", color="red", label="actual min")
-plt.plot(dotMin,"--", color="green", label="actual max")
+plt.plot(dotMaxPred,'-', color=c2)
+#plt.plot(dotMaxPred,'-', color=c2, label=r"$\frac{2\gamma}{1+\gamma}$")
+plt.plot(dotMax,"--", color=c3, label="actual min")
+plt.plot(dotMin,"--", color=c1, label="actual max")
 plt.xlabel("subdivision level of the tetrahedron")
-plt.ylabel("$\gamma$ [deg]")
+plt.ylabel("angle [deg]")
 plt.legend()
 plt.tight_layout(0.4)
 plt.savefig("../subdivisionVsMinAngle_ActualAndBound_allBounds.png", figure=fig)
