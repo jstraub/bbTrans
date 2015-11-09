@@ -30,7 +30,7 @@ for i,path in enumerate(['./bb_bounds_S3_t0.csv',
 #  ax.set_yscale("log")
   plt.plot(bs[1,ids],label="indep. UB",
       color=c3)
-  plt.plot(bs[2,ids],label="joint UB",color=c2)
+  plt.plot(bs[2,ids],label="convex UB",color=c2)
   plt.plot(bs[0,ids],label="LB",color=c1)
   plt.ylabel("log$_{10}$(bound)")
   plt.ylim([bs.min(), bs.max()])
