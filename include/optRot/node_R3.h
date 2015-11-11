@@ -27,6 +27,15 @@ class NodeR3 : public BaseNode {
     std::stringstream out; out << GetBox().GetCenter().transpose();
     return out.str();
   };
+  virtual std::string Serialize() const {
+    std::stringstream out; 
+    Eigen::Vector3d c;
+    for (uint32_t i=0; i<8; ++i) {
+      GetBox().GetCorner(i, c);
+      out << c(0) << " " << c(1) << " " << c(2) << std::endl;
+    }
+    return out.str();
+  };
   std::string GetSpace() const { return "R3"; }
   double GetVolume() const { return box_.GetVolume();}
  protected:

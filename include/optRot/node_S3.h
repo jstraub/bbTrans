@@ -41,6 +41,15 @@ class NodeS3 : public BaseNode {
                 GetTetrahedron().GetVertexQuaternion(j)) *180./M_PI<< " ";
     return out.str();
   };
+  virtual std::string Serialize() const {
+    std::stringstream out; 
+    Eigen::Vector4d v;
+    for (uint32_t i=0; i<4; ++i) {
+      v = GetTetrahedron().GetVertex(i);
+      out << v(0) << " " << v(1) << " " << v(2) << " " << v(3) << std::endl;
+    }
+    return out.str();
+  };
   std::string GetSpace() const { return "S3"; }
   double GetVolume() const { return tetrahedron_.GetVolume();}
  protected:
