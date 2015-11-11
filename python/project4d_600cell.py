@@ -49,6 +49,5 @@ src.mlab_source.dataset.lines = edges
 # The stripper filter cleans up connected lines
 lines = mlab.pipeline.stripper(src)
 # Finally, display the set of lines
-mlab.pipeline.surface(lines, color=silver, line_width=3.,
-    opacity=.4)
+mlab.pipeline.surface(lines, color=silver, line_width=3., opacity=.4)
 mlab.show(stop=True)
