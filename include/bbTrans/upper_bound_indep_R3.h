@@ -6,13 +6,13 @@
 #include <vector>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-#include "optRot/node_R3.h"
-#include "optRot/numeric_helpers.h"
-#include "optRot/normal.h"
-#include "optRot/bound.h"
-#include "optRot/lower_bound_R3.h"
+#include "bbTrans/node_R3.h"
+#include "bbTrans/numeric_helpers.h"
+#include "bbTrans/normal.h"
+#include "bbTrans/bound.h"
+#include "bbTrans/lower_bound_R3.h"
 
-namespace OptRot {
+namespace bb {
 
 class UpperBoundIndepR3 : public Bound<NodeR3> {
  public:

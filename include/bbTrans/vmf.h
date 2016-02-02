@@ -5,9 +5,9 @@
 
 #include <Eigen/Dense>
 #include <iostream>
-#include "optRot/numeric_helpers.h"
+#include "bbTrans/numeric_helpers.h"
 
-namespace OptRot {
+namespace bb {
 
 /// vMF distribution templated on the dimension.
 template <uint32_t D>
@@ -41,4 +41,4 @@ double ComputeLogvMFtovMFcost(const vMF<D>& vmf_A, const vMF<D>& vmF_B,
 //    Eigen::Vector3d& mu, double count);
 
 }
-#include "optRot/vmf_impl.h"
+#include "bbTrans/vmf_impl.h"

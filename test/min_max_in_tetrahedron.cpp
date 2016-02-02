@@ -6,12 +6,12 @@
 #include <fstream>
 #include <random>
 #include <vector>
-#include "optRot/node.h"
-#include "optRot/lower_bound_S3.h"
-#include "optRot/upper_bound_indep_S3.h"
-#include "optRot/upper_bound_convex_S3.h"
+#include "bbTrans/node.h"
+#include "bbTrans/lower_bound_S3.h"
+#include "bbTrans/upper_bound_indep_S3.h"
+#include "bbTrans/upper_bound_convex_S3.h"
 
-using namespace OptRot;
+using namespace bb;
 
 bool VectorsClose(const Eigen::Vector3d& a, const Eigen::Vector3d& b) {
   return ((a-b).array().abs() < 1.e-6).all();

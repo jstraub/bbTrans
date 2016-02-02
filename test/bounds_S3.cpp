@@ -6,12 +6,12 @@
 #include <fstream>
 #include <random>
 #include <vector>
-#include "optRot/node.h"
-#include "optRot/lower_bound_S3.h"
-#include "optRot/upper_bound_indep_S3.h"
-#include "optRot/upper_bound_convex_S3.h"
+#include "bbTrans/node.h"
+#include "bbTrans/lower_bound_S3.h"
+#include "bbTrans/upper_bound_indep_S3.h"
+#include "bbTrans/upper_bound_convex_S3.h"
 
-using namespace OptRot;
+using namespace bb;
 
 Eigen::Quaterniond RandomRotation() {
   std::random_device rd;

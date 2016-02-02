@@ -1,4 +1,4 @@
-namespace OptRot {
+namespace bb {
 
 template<uint32_t D>
 Normal<D>::Normal(const Eigen::Matrix<double,D,1>& mu, const

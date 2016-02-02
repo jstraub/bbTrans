@@ -6,7 +6,7 @@
 #include <vector>
 #include <Eigen/Dense>
 
-namespace OptRot {
+namespace bb {
 Eigen::Vector4d normed(const Eigen::Vector4d& x);
 
 class Tetrahedron4D {

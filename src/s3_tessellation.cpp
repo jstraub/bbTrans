@@ -1,9 +1,9 @@
 /* Copyright (c) 2015, Julian Straub <jstraub@csail.mit.edu> Licensed
  * under the MIT license. See the license file LICENSE.
  */
-#include "optRot/s3_tessellation.h" 
+#include "bbTrans/s3_tessellation.h" 
 
-namespace OptRot {
+namespace bb {
 
 std::vector<Tetrahedron4D> TessellateS3() {
   std::vector<Tetrahedron4D> tetrahedra;

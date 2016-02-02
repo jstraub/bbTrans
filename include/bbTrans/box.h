@@ -7,7 +7,7 @@
 #include <vector>
 #include <Eigen/Dense>
 
-namespace OptRot {
+namespace bb {
 
 class Box {
  public:

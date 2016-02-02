@@ -5,7 +5,7 @@
 
 #include <Eigen/Dense>
 
-namespace OptRot {
+namespace bb {
 
 double LogSumExp(const Eigen::VectorXd& x);
 double SumExp(const Eigen::VectorXd& x);

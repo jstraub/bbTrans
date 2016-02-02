@@ -6,10 +6,10 @@
 #include <iostream>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-#include "optRot/combinations.h"
-#include "optRot/tetrahedron.h"
+#include "bbTrans/combinations.h"
+#include "bbTrans/tetrahedron.h"
 
-namespace OptRot {
+namespace bb {
 
 std::vector<Tetrahedron4D> TessellateS3();
 

@@ -3,9 +3,9 @@
  */
 #pragma once
 
-#include "optRot/node.h"
+#include "bbTrans/node.h"
 
-namespace OptRot {
+namespace bb {
 
 template <class Node>
 class Bound {

@@ -2,9 +2,9 @@
  * under the MIT license. See the license file LICENSE.
  */
 
-#include "optRot/numeric_helpers.h"
+#include "bbTrans/numeric_helpers.h"
 
-namespace OptRot {
+namespace bb {
 
 double LogSumExp(const Eigen::VectorXd& x) {
   const double x_max = x.maxCoeff();

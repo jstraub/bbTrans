@@ -7,10 +7,10 @@
 #include <vector>
 #include <list>
 #include <fstream>
-#include "optRot/node.h"
-#include "optRot/bound.h"
+#include "bbTrans/node.h"
+#include "bbTrans/bound.h"
 
-namespace OptRot {
+namespace bb {
 
 template <class Node>
 class BranchAndBound {
@@ -29,4 +29,4 @@ class BranchAndBound {
       lb, double ub);
 };
 }
-#include "optRot/branch_and_bound_impl.h"
+#include "bbTrans/branch_and_bound_impl.h"

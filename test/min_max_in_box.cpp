@@ -6,12 +6,12 @@
 #include <fstream>
 #include <random>
 #include <vector>
-#include "optRot/node.h"
-#include "optRot/lower_bound_R3.h"
-#include "optRot/upper_bound_indep_R3.h"
-#include "optRot/upper_bound_convex_R3.h"
+#include "bbTrans/node.h"
+#include "bbTrans/lower_bound_R3.h"
+#include "bbTrans/upper_bound_indep_R3.h"
+#include "bbTrans/upper_bound_convex_R3.h"
 
-using namespace OptRot;
+using namespace bb;
 
 int main(int argc, char ** argv) {
   Eigen::Vector3d min, max;

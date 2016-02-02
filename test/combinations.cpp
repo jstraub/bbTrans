@@ -3,9 +3,9 @@
  */
 
 #include <iostream>
-#include "optRot/combinations.h"
+#include "bbTrans/combinations.h"
 
-using namespace OptRot;
+using namespace bb;
 
 int main(int argc, char** argv) {
   

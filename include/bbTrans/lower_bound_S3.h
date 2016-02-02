@@ -5,13 +5,13 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-#include "optRot/node_S3.h"
-#include "optRot/numeric_helpers.h"
-#include "optRot/vmf.h"
-#include "optRot/vmf_mm.h"
-#include "optRot/bound.h"
+#include "bbTrans/node_S3.h"
+#include "bbTrans/numeric_helpers.h"
+#include "bbTrans/vmf.h"
+#include "bbTrans/vmf_mm.h"
+#include "bbTrans/bound.h"
 
-namespace OptRot {
+namespace bb {
 
 class LowerBoundS3 : public Bound<NodeS3> {
  public:

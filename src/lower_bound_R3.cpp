@@ -1,9 +1,9 @@
 /* Copyright (c) 2015, Julian Straub <jstraub@csail.mit.edu> Licensed
  * under the MIT license. See the license file LICENSE.
  */
-#include "optRot/lower_bound_R3.h"
+#include "bbTrans/lower_bound_R3.h"
 
-namespace OptRot {
+namespace bb {
 
 LowerBoundR3::LowerBoundR3(const
     std::vector<Normal<3>>& gmmA, const std::vector<Normal<3>>& gmmB, 

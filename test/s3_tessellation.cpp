@@ -3,8 +3,8 @@
  */
 
 #include <iostream>
-#include "optRot/s3_tessellation.h"
-using namespace OptRot;
+#include "bbTrans/s3_tessellation.h"
+using namespace bb;
 
 int main(int argc, char**argv) {
   std::vector<Tetrahedron4D> tetrahedra = TessellateS3();

@@ -2,9 +2,9 @@
  * under the MIT license. See the license file LICENSE.
  */
 
-#include "optRot/lower_bound_S3.h"
+#include "bbTrans/lower_bound_S3.h"
 
-namespace OptRot {
+namespace bb {
 
 LowerBoundS3::LowerBoundS3(const vMFMM<3>& vmf_mm_A, const vMFMM<3>&
     vmf_mm_B) 

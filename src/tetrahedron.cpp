@@ -2,9 +2,9 @@
  * under the MIT license. See the license file LICENSE.
  */
 
-#include "optRot/tetrahedron.h"
+#include "bbTrans/tetrahedron.h"
 
-namespace OptRot {
+namespace bb {
 
 Eigen::Vector4d normed(const Eigen::Vector4d& x) {
   return x / x.norm();

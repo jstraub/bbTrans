@@ -1,18 +1,19 @@
-This library provides basic algorithms and data structures to
-efficiently interface with GPU data as well as several helper classes
-for evaluation and logging.
+This library provides all branch and bound (BB) code necessary to
+efficiently search over the space of rotations and translations given
+mixture models of von-Mises-Fisher distributions and Gaussians
+respectively.
 
 ### Dependencies
 
-This code depends on the following other libraries and was tested under Ubuntu
-14.04. 
+This code depends on the following other libraries and was tested under
+Ubuntu 14.04. 
 - Eigen3 (3.0.5) 
-- cuda 5.5 or 6.5 
-
-The GPU kernels were tested on a Nvidia Quadro K2000M with compute
-capability 3.0.
 
 ### Library
-*libjsCore.so* collects all the cuda code into one shared library. The rest
+*libbbTrans.so* collects all the branch and bound code into one shared library. The rest
 of the code is in the form of header files.
 
+### Tests
+There are a couple of test binaries in the ./test/ subfolder that are
+being build as well and can be used to understand the workings of the
+BB code as well as to test its functionality.

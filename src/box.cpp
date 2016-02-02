@@ -1,9 +1,9 @@
 /* Copyright (c) 2015, Julian Straub <jstraub@csail.mit.edu> Licensed
  * under the MIT license. See the license file LICENSE.
  */
-#include "optRot/box.h"
+#include "bbTrans/box.h"
 
-namespace OptRot {
+namespace bb {
 Box::Box(const Eigen::Vector3d& p_min, const Eigen::Vector3d& p_max) 
   : p_min_(p_min), p_max_(p_max) {
   // The first 4 are on purpose the way they are layed out to allow

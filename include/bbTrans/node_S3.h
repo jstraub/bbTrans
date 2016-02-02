@@ -8,11 +8,11 @@
 #include <list>
 #include <sstream>
 #include <string>
-#include "optRot/node.h"
-#include "optRot/tetrahedron.h"
-#include "optRot/s3_tessellation.h"
+#include "bbTrans/node.h"
+#include "bbTrans/tetrahedron.h"
+#include "bbTrans/s3_tessellation.h"
 
-namespace OptRot {
+namespace bb {
 
 class NodeS3 : public BaseNode {
  public:

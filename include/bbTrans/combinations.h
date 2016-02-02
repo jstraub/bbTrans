@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <vector>
 
-namespace OptRot {
+namespace bb {
 
 class Combinations {
  public:

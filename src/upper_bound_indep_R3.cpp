@@ -1,9 +1,9 @@
 /* Copyright (c) 2015, Julian Straub <jstraub@csail.mit.edu> Licensed
  * under the MIT license. See the license file LICENSE.
  */
-#include "optRot/upper_bound_indep_R3.h"
+#include "bbTrans/upper_bound_indep_R3.h"
 
-namespace OptRot {
+namespace bb {
 
 UpperBoundIndepR3::UpperBoundIndepR3(const
     std::vector<Normal<3>>& gmmA, const std::vector<Normal<3>>& gmmB, 

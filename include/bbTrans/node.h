@@ -9,7 +9,7 @@
 #include <map>
 #include <iostream>
 
-namespace OptRot {
+namespace bb {
 
 class BaseNode {
  public:
@@ -61,4 +61,4 @@ template<class Node>
 std::vector<uint32_t> CountBranchesInTree(const std::list<Node>& nodes);
 
 }
-#include "optRot/node_impl.h"
+#include "bbTrans/node_impl.h"

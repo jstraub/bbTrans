@@ -1,9 +1,9 @@
 /* Copyright (c) 2015, Julian Straub <jstraub@csail.mit.edu> Licensed
  * under the MIT license. See the license file LICENSE.
  */
-#include "optRot/node_S3.h"
+#include "bbTrans/node_S3.h"
 
-namespace OptRot {
+namespace bb {
 
 NodeS3::NodeS3(const Tetrahedron4D& tetrahedron,
     std::vector<uint32_t> ids) : BaseNode(ids),

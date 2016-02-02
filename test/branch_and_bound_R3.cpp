@@ -4,14 +4,14 @@
 
 #include <iostream>
 #include <vector>
-#include "optRot/normal.h"
-#include "optRot/node.h"
-#include "optRot/lower_bound_R3.h"
-#include "optRot/upper_bound_indep_R3.h"
-#include "optRot/upper_bound_convex_R3.h"
-#include "optRot/branch_and_bound.h"
+#include "bbTrans/normal.h"
+#include "bbTrans/node.h"
+#include "bbTrans/lower_bound_R3.h"
+#include "bbTrans/upper_bound_indep_R3.h"
+#include "bbTrans/upper_bound_convex_R3.h"
+#include "bbTrans/branch_and_bound.h"
 
-using namespace OptRot;
+using namespace bb;
 
 int main(int argc, char** argv) {
 

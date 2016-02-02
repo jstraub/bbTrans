@@ -3,9 +3,9 @@
  */
 
 #include <iostream>
-#include "optRot/combinations.h"
+#include "bbTrans/combinations.h"
 
-namespace OptRot {
+namespace bb {
 
 Combinations::Combinations(uint32_t n, uint32_t k) : 
   comb_work_(k)

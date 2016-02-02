@@ -8,10 +8,10 @@
 #include <vector>
 #include <list>
 #include <string>
-#include "optRot/node.h"
-#include "optRot/box.h"
+#include "bbTrans/node.h"
+#include "bbTrans/box.h"
 
-namespace OptRot {
+namespace bb {
 
 class NodeR3 : public BaseNode {
  public:

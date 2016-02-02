@@ -1,9 +1,9 @@
 /* Copyright (c) 2015, Julian Straub <jstraub@csail.mit.edu> Licensed
  * under the MIT license. See the license file LICENSE.
  */
-#include "optRot/node.h"
+#include "bbTrans/node.h"
 
-namespace OptRot {
+namespace bb {
 
 BaseNode::BaseNode(std::vector<uint32_t> ids) :
   ids_(ids), lb_(-1e12), ub_(1e12)
