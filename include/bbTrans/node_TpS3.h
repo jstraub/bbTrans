@@ -8,28 +8,32 @@
 #include <list>
 #include <sstream>
 #include <string>
-#include "bbTrans/node.h"
+
+#include "manifold/S.h"
+#include "bbTrans/node_S3.h"
+#include "bbTrans/box.h"
 #include "bbTrans/tetrahedron.h"
 #include "bbTrans/s3_tessellation.h"
 
 namespace bb {
 
-class NodeS3 : public BaseNode {
+class NodeTpS3 : public BaseNode {
  public:
-  NodeS3(const Tetrahedron4D& tetrahedron, std::vector<uint32_t> ids);
+  NodeTpS3(const Box& box, std::vector<uint32_t> ids);
   NodeS3(const NodeS3& node);
   virtual ~NodeS3() = default;
   virtual std::vector<NodeS3> Branch() const;
-  const Tetrahedron4D& GetTetrahedron() const { return tetrahedron_;}
+//  const Tetrahedron4D& GetTetrahedron() const { return tetrahedron_;}
   void SetLbArgument(const Eigen::Quaterniond& q) {q_lb_ = q;}
   Eigen::Quaterniond GetLbArgument() const {return q_lb_;}
-  virtual uint32_t GetBranchingFactor(uint32_t i) const { return i==0? 600 : 8;}
+  virtual uint32_t GetBranchingFactor(uint32_t i) const { return 8;}
   virtual std::string ToString() const;
   virtual std::string Serialize() const;
-  std::string GetSpace() const { return "S3"; }
+  std::string GetSpace() const { return "TpS3"; }
   double GetVolume() const { return tetrahedron_.GetVolume();}
  protected:
-  Tetrahedron4D tetrahedron_;
+  NodeR3 nodeTpS3_;
+  std::vector<NodeS3> nodeS3s_;
   Eigen::Quaterniond q_lb_;
 };
 
