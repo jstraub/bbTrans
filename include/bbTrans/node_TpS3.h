@@ -10,10 +10,10 @@
 #include <string>
 
 #include "manifold/S.h"
+#include "bbTrans/node_R3.h"
 #include "bbTrans/node_S3.h"
 #include "bbTrans/box.h"
 #include "bbTrans/tetrahedron.h"
-#include "bbTrans/s3_tessellation.h"
 
 namespace bb {
 

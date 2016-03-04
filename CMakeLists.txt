@@ -39,6 +39,7 @@ add_library(bbTrans SHARED
   ./src/tetrahedron.cpp
   ./src/node.cpp
   ./src/node_S3.cpp
+  ./src/node_TpS3.cpp
   ./src/node_R3.cpp
   ./src/box.cpp
   ./src/combinations.cpp
@@ -50,6 +51,8 @@ add_library(bbTrans SHARED
   ./src/lower_bound_R3.cpp
   ./src/upper_bound_indep_R3.cpp
   ./src/upper_bound_convex_R3.cpp
+  ./src/lower_bound_TpS3.cpp
+  ./src/upper_bound_convex_TpS3.cpp
 #  ./src/branch_and_bound.cpp
   )
 
@@ -67,6 +70,9 @@ target_link_libraries(testBoundsR3 bbTrans)
 
 add_executable(testBranchAndBoundS3 ./test/branch_and_bound_S3.cpp)
 target_link_libraries(testBranchAndBoundS3 bbTrans)
+
+add_executable(testBranchAndBoundTpS3 ./test/branch_and_bound_TpS3.cpp)
+target_link_libraries(testBranchAndBoundTpS3 bbTrans)
 
 add_executable(testBranchAndBoundR3 ./test/branch_and_bound_R3.cpp)
 target_link_libraries(testBranchAndBoundR3 bbTrans)
@@ -90,6 +96,7 @@ pods_install_headers(
   ./include/bbTrans/node.h
   ./include/bbTrans/node_impl.h
   ./include/bbTrans/node_S3.h
+  ./include/bbTrans/node_TpS3.h
   ./include/bbTrans/node_R3.h
   ./include/bbTrans/branch_and_bound.h
   ./include/bbTrans/branch_and_bound_impl.h
@@ -106,4 +113,6 @@ pods_install_headers(
   ./include/bbTrans/lower_bound_S3.h
   ./include/bbTrans/upper_bound_indep_S3.h
   ./include/bbTrans/upper_bound_convex_S3.h
+  ./include/bbTrans/lower_bound_TpS3.h
+  ./include/bbTrans/upper_bound_convex_TpS3.h
   DESTINATION bbTrans)

@@ -1,6 +1,9 @@
 # Default pod makefile distributed with pods version: 12.11.14
 
-default_target: all
+default_target: main
+
+# get a list of subdirs to build by reading tobuild.txt
+SUBDIRS:=$(shell grep -v "^\#" tobuild.txt)
 
 # Default to a less-verbose build.  If you want all the gory compiler output,
 # run "make VERBOSE=1"
@@ -23,6 +26,28 @@ ifeq "$(BUILD_TYPE)" ""
 BUILD_TYPE="Release"
 endif
 
+main:
+	@[ -d $(BUILD_PREFIX) ] || mkdir -p $(BUILD_PREFIX) || exit 1
+	@for subdir in $(SUBDIRS); do \
+    echo "\n-------------------------------------------"; \
+    echo "-- $$subdir"; \
+    echo "-------------------------------------------"; \
+    $(MAKE) -C $$subdir all || exit 2; \
+  done 
+#	@$(MAKE) -C pod-build all install
+	@# Place additional commands here if you have any
+
+clean:
+	@for subdir in $(SUBDIRS); do \
+    echo "\n-------------------------------------------"; \
+    echo "-- $$subdir"; \
+    echo "-------------------------------------------"; \
+    $(MAKE) -C $$subdir clean; \
+  done
+	-if [ -e pod-build/install_manifest.txt ]; then rm -f `cat pod-build/install_manifest.txt`; fi
+	-if [ -d pod-build ]; then $(MAKE) -C pod-build clean; rm -rf pod-build; fi
+	@# Place additional commands here if you have any
+
 all: pod-build/Makefile
 	$(MAKE) -C pod-build all install
 
@@ -40,10 +65,26 @@ configure:
 	@cd pod-build && cmake -DCMAKE_INSTALL_PREFIX=$(BUILD_PREFIX) \
 		   -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) ..
 
-clean:
-	-if [ -e pod-build/install_manifest.txt ]; then rm -f `cat pod-build/install_manifest.txt`; fi
-	-if [ -d pod-build ]; then $(MAKE) -C pod-build clean; rm -rf pod-build; fi
 
-# other (custom) targets are passed through to the cmake-generated Makefile 
+checkout:
+	git clone https://github.com/jstraub/jsCore.git
+	git clone https://github.com/jstraub/cudaPcl.git
+	git clone https://github.com/jstraub/dpMMlowVar.git
+	git clone https://github.com/jstraub/rtDDPvMF.git
+	git clone git@github.mit.edu:jstraub/bbTrans.git
+##git clone git@github.com:jstraub/jsCore.git
+##git clone git@github.com:jstraub/cudaPcl.git
+##git clone git@github.com:jstraub/dpMMlowVar.git
+##git clone git@github.com:jstraub/rtDDPvMF.git
+##git clone git@github.mit.edu:jstraub/bbTrans.git
+
+update:
+	cd cudaPcl; git pull; cd -
+	cd dpMMlowVar; git pull; cd -
+	cd rtDDPvMF; git pull; cd -
+	cd jsCore; git pull; cd -
+	cd bbTrans; git pull; cd -
+
+# other (custom) targets are passed through to the cmake-generated Makefile
 %::
 	$(MAKE) -C pod-build $@
