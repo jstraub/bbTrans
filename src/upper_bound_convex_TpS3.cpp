@@ -5,17 +5,19 @@
 
 namespace bb {
 
-UpperBoundConvexTpS3::UpperBoundConvexTpS3(BS3<NodeS3>& boundS3) 
+UpperBoundConvexTpS3::UpperBoundConvexTpS3(UpperBoundConvexS3& boundS3) 
   : boundS3_(boundS3)
 { }
 
 double UpperBoundConvexTpS3::Evaluate(const NodeTpS3& node) {
   double ub = 1e99;
   for (uint32_t i=0; i<5; ++i) {
-    double ub_i = boundS3_.evaluate(NodeTpS3.GetNodeS3(i));
+    double ub_i = boundS3_.Evaluate(node.GetNodeS3(i));
+//    std::cout << ub_i << " ";
     if (ub_i < ub)
       ub = ub_i;
   }
+//  std::cout << ub << std::endl;
   return ub;
 }
 

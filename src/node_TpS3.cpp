@@ -10,17 +10,24 @@ NodeTpS3::NodeTpS3(const Box& box, std::vector<uint32_t> ids)
 { 
   // subdivide box in TpS into 4 tetrahedra
   // https://www.ics.uci.edu/~eppstein/projects/tetra/
-  S<double,4> s3;
-  nodeS3s_.reserve(5);
-  std::vector<Eigen::Vector3d> cs(4);
   Eigen::Vector4d north;
   north << 0.,0.,0.,1.;
+  S<double,4> s3(north);
+  nodeS3s_.reserve(5);
+  std::vector<Eigen::Vector3d> cs(4);
   Eigen::Matrix4d qs;
   // NodeS3 1: 0 4 5 7
   box.GetCorner(0, cs[0]); box.GetCorner(4, cs[1]);
   box.GetCorner(5, cs[2]); box.GetCorner(7, cs[3]);
-  for (uint32_t i=0; i<4; ++i)
-    qs.col(i) = s3.Exp(north, cs[i]);
+  for (uint32_t i=0; i<4; ++i) {
+//    std::cout << "---  " << std::endl;
+//    std::cout << cs[i].transpose() << std::endl;
+//    std::cout << cs[i].norm() << std::endl;
+//    std::cout << s3.ToAmbient(cs[i]).transpose() << std::endl;
+    qs.col(i) = s3.Exp(s3.ToAmbient(cs[i])).vector();
+//    std::cout << qs.col(i).transpose() << std::endl;
+//    std::cout << qs.col(i).norm() << std::endl;
+  }
   Tetrahedron4D t(qs);
   std::vector<uint32_t> idsInternal(1,0);
   nodeS3s_.push_back(NodeS3(t, idsInternal));
@@ -28,7 +35,7 @@ NodeTpS3::NodeTpS3(const Box& box, std::vector<uint32_t> ids)
   box.GetCorner(1, cs[0]); box.GetCorner(4, cs[1]);
   box.GetCorner(5, cs[2]); box.GetCorner(6, cs[3]);
   for (uint32_t i=0; i<4; ++i)
-    qs.col(i) = s3.Exp(north, cs[i]);
+    qs.col(i) = s3.Exp(s3.ToAmbient(cs[i])).vector();
   t = Tetrahedron4D(qs);
   idsInternal = std::vector<uint32_t>(1,1);
   nodeS3s_.push_back(NodeS3(t, idsInternal));
@@ -36,7 +43,7 @@ NodeTpS3::NodeTpS3(const Box& box, std::vector<uint32_t> ids)
   box.GetCorner(2, cs[0]); box.GetCorner(4, cs[1]);
   box.GetCorner(6, cs[2]); box.GetCorner(7, cs[3]);
   for (uint32_t i=0; i<4; ++i)
-    qs.col(i) = s3.Exp(north, cs[i]);
+    qs.col(i) = s3.Exp(s3.ToAmbient(cs[i])).vector();
   t = Tetrahedron4D(qs);
   idsInternal = std::vector<uint32_t>(1,2);
   nodeS3s_.push_back(NodeS3(t, idsInternal));
@@ -44,7 +51,7 @@ NodeTpS3::NodeTpS3(const Box& box, std::vector<uint32_t> ids)
   box.GetCorner(3, cs[0]); box.GetCorner(5, cs[1]);
   box.GetCorner(6, cs[2]); box.GetCorner(7, cs[3]);
   for (uint32_t i=0; i<4; ++i)
-    qs.col(i) = s3.Exp(north, cs[i]);
+    qs.col(i) = s3.Exp(s3.ToAmbient(cs[i])).vector();
   t = Tetrahedron4D(qs);
   idsInternal = std::vector<uint32_t>(1,3);
   nodeS3s_.push_back(NodeS3(t, idsInternal));
@@ -52,7 +59,7 @@ NodeTpS3::NodeTpS3(const Box& box, std::vector<uint32_t> ids)
   box.GetCorner(0, cs[0]); box.GetCorner(1, cs[1]);
   box.GetCorner(2, cs[2]); box.GetCorner(3, cs[3]);
   for (uint32_t i=0; i<4; ++i)
-    qs.col(i) = s3.Exp(north, cs[i]);
+    qs.col(i) = s3.Exp(s3.ToAmbient(cs[i])).vector();
   t = Tetrahedron4D(qs);
   idsInternal = std::vector<uint32_t>(1,4);
   nodeS3s_.push_back(NodeS3(t, idsInternal));
@@ -83,7 +90,13 @@ double NodeTpS3::GetVolume() const {
 }
 
 std::string NodeTpS3::ToString() const {
-  return nodeTpS3_.ToString();
+  std::stringstream ss;
+  ss << " V=" << GetVolume()
+    << " in TpS: " << nodeTpS3_.ToString() 
+    << std::endl;
+  for (const auto& node : nodeS3s_) 
+    ss << "\t " << node.ToString() << std::endl;
+  return ss.str();
 };
 
 std::string NodeTpS3::Serialize() const {

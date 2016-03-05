@@ -29,11 +29,11 @@ std::vector<NodeS3> NodeS3::Branch() const {
 
 std::string NodeS3::ToString() const {
   std::stringstream out; 
-  out << GetTetrahedron().GetCenter().transpose() << std::endl
-    << GetTetrahedron().GetVertex(0).transpose() << std::endl
-    << GetTetrahedron().GetVertex(1).transpose() << std::endl
-    << GetTetrahedron().GetVertex(2).transpose() << std::endl
-    << GetTetrahedron().GetVertex(3).transpose() << std::endl;
+  out << GetTetrahedron().GetCenter().transpose() << std::endl;
+
+  for (uint32_t i=0; i < 4; ++i) 
+    out << GetTetrahedron().GetVertex(i).transpose() << "|.| " <<
+      GetTetrahedron().GetVertex(i).norm() << std::endl;
   out << "pairwise angles: ";
   for (uint32_t i=0; i < 4; ++i) 
     for (uint32_t j=0; j < 4; ++j) 

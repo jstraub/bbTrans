@@ -32,6 +32,7 @@ class NodeTpS3 : public BaseNode {
   std::string GetSpace() const { return "TpS3"; }
   double GetVolume() const;
   const NodeS3& GetNodeS3(uint32_t i) const { return nodeS3s_[i]; }
+  NodeS3& GetNodeS3(uint32_t i) { return nodeS3s_[i]; }
  protected:
   NodeR3 nodeTpS3_;
   std::vector<NodeS3> nodeS3s_;

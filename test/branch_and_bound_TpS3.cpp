@@ -56,18 +56,38 @@ int main(int argc, char** argv) {
   LowerBoundTpS3 lower_bound(lower_bound_S3);
   UpperBoundConvexTpS3 upper_bound_convex(upper_bound_convex_S3);
 
-  std::list<NodeTpS3> nodes;
   Eigen::Vector3d p_min(-M_PI,-M_PI,-M_PI);
   Eigen::Vector3d p_max(M_PI,M_PI,M_PI);
-  nodes.push_back(NodeTpS3(Box(p_min, p_max),std::vector<uint32_t>(0)));
+  NodeTpS3 root(Box(p_min, p_max),std::vector<uint32_t>(0));
+  std::cout << root.ToString() << std::endl;
+  std::vector<NodeTpS3> l1 = root.Branch();
+  std::list<NodeTpS3> nodes;
+  for (auto& node1 : l1) {
+    std::vector<NodeTpS3> l2 = node1.Branch();
+    for (auto& node2 : l2) {
+      std::vector<NodeTpS3> l3 = node2.Branch();
+      for (auto& node3 : l3) {
+        std::vector<NodeTpS3> l4 = node3.Branch();
+        nodes.insert(nodes.end(), l4.begin(), l4.end());
+      }
+    }
+  }
+  std::cout << "initial # nodes: " << nodes.size() << std::endl;
+
+//  for (const auto& node : nodes) {
+//    std::cout << node.ToString() << std::endl;
+//  }
   
   double eps = 1.0e-8;
-  uint32_t max_it = 1000;
+  uint32_t max_it = 100;
   BranchAndBound<NodeTpS3> bb(lower_bound, upper_bound_convex);
   NodeTpS3 node_star = bb.Compute(nodes, eps, max_it);
 
   std::cout << "optimum quaternion: " 
-    << node_star.GetLbArgument()
+    << " w=" << node_star.GetLbArgument().w()
+    << " " << node_star.GetLbArgument().vec().transpose()
     << std::endl;
+
+  std::cout << "true quaternion: " << q_true.w() << " " << q_true.x() << " " << q_true.y() << " " << q_true.z() << std::endl;
 }
 

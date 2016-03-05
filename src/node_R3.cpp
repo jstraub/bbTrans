@@ -44,4 +44,21 @@ std::list<NodeR3> GenerateNotesThatTessellateR3(const Eigen::Vector3d&
   return std::list<NodeR3>(node_tree[lvl].begin(), node_tree[lvl].end());
 }
 
+std::string NodeR3::ToString() const {
+  std::stringstream out; 
+  out << GetBox().GetCenter().transpose();
+  out << " V=" << GetBox().GetVolume();
+  return out.str();
+};
+
+std::string NodeR3::Serialize() const {
+  std::stringstream out; 
+  Eigen::Vector3d c;
+  for (uint32_t i=0; i<8; ++i) {
+    GetBox().GetCorner(i, c);
+    out << c(0) << " " << c(1) << " " << c(2) << std::endl;
+  }
+  return out.str();
+};
+
 }

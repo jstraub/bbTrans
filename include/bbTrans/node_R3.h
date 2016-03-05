@@ -23,19 +23,8 @@ class NodeR3 : public BaseNode {
   const Eigen::Vector3d& GetLbArgument() const {return t_lb_;}
   void SetLbArgument(const Eigen::Vector3d& t) {t_lb_ = t;}
   virtual uint32_t GetBranchingFactor(uint32_t i) const { return 8;}
-  virtual std::string ToString() const {
-    std::stringstream out; out << GetBox().GetCenter().transpose();
-    return out.str();
-  };
-  virtual std::string Serialize() const {
-    std::stringstream out; 
-    Eigen::Vector3d c;
-    for (uint32_t i=0; i<8; ++i) {
-      GetBox().GetCorner(i, c);
-      out << c(0) << " " << c(1) << " " << c(2) << std::endl;
-    }
-    return out.str();
-  };
+  virtual std::string ToString() const;
+  virtual std::string Serialize() const;
   std::string GetSpace() const { return "R3"; }
   double GetVolume() const { return box_.GetVolume();}
  protected:
