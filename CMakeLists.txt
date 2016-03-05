@@ -52,6 +52,7 @@ add_library(bbTrans SHARED
   ./src/upper_bound_indep_R3.cpp
   ./src/upper_bound_convex_R3.cpp
   ./src/lower_bound_TpS3.cpp
+  ./src/upper_bound_indep_TpS3.cpp
   ./src/upper_bound_convex_TpS3.cpp
 #  ./src/branch_and_bound.cpp
   )
@@ -114,5 +115,6 @@ pods_install_headers(
   ./include/bbTrans/upper_bound_indep_S3.h
   ./include/bbTrans/upper_bound_convex_S3.h
   ./include/bbTrans/lower_bound_TpS3.h
+  ./include/bbTrans/upper_bound_indep_TpS3.h
   ./include/bbTrans/upper_bound_convex_TpS3.h
   DESTINATION bbTrans)
