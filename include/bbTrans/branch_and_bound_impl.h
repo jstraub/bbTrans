@@ -54,7 +54,7 @@ void BranchAndBound<Node>::WriteNodes(std::ofstream& out, std::list<Node>& nodes
 
 template <class Node>
 Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
-    uint32_t max_it) {
+    uint32_t max_lvl, uint32_t max_it) {
 
   // Prepare output
   bool write_stats = true;
@@ -88,6 +88,7 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     // to explore further.
     auto node_i = std::max_element(nodes.begin(), nodes.end(),
         LessThanNodeUB<Node>());
+    if (node_i->GetLevel() >= max_lvl) break;
     // Find the node with the biggest lower bound (the most
     // conservative node to return).
     if (it%(max_it/10) == 0)

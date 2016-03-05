@@ -56,12 +56,22 @@ int main(int argc, char** argv) {
   UpperBoundConvexS3 upper_bound_convex(vmf_mm_A, vmf_mm_B);
   
   double eps = 1.0e-8;
-  uint32_t max_it = 1000;
+  uint32_t max_it = 100;
+  uint32_t max_lvl = 100;
   BranchAndBound<NodeS3> bb(lower_bound, upper_bound_convex);
-  NodeS3 node_star = bb.Compute(nodes, eps, max_it);
+  NodeS3 node_star = bb.Compute(nodes, eps, max_lvl, max_it);
 
   std::cout << "optimum quaternion: " 
-    << node_star.GetTetrahedron().GetCenter().transpose()
+    << node_star.GetLbArgument().coeffs().transpose()
+    << " |.|=" << node_star.GetLbArgument().norm()
+    << std::endl;
+  std::cout << "true quaternion: " << q_true.w() << " " << q_true.x()
+    << " " << q_true.y() << " " << q_true.z() 
+    << " |.|=" << q_true.norm()
+    << std::endl;
+
+  std::cout << "Deviation from GT: " 
+    << 2.*acos(std::min(1.0, std::max(-1.,node_star.GetLbArgument().dot(q_true))))*180./M_PI
     << std::endl;
 }
 

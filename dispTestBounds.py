@@ -20,8 +20,7 @@ c3 = colorScheme("labelMap")["green"]
 #bs = np.loadtxt('./testBound.csv').T
 fig = plt.figure(figsize = figSize, dpi = 80, facecolor="w",
     edgecolor="k")
-for i,path in enumerate(['./bb_bounds_S3_t0.csv',
-  './bb_bounds_R3_t0.csv']):
+for i,path in enumerate(['./bb_iteration_stats_S3.csv', './bb_iteration_stats_TpS3.csv']):
   bs = np.loadtxt(path).T
   bs[:3,:] = np.log(bs[:3,:])/np.log(10)
   ids = np.argsort(bs[0,:])

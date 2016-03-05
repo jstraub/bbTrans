@@ -66,10 +66,10 @@ int main(int argc, char** argv) {
     std::vector<NodeTpS3> l2 = node1.Branch();
     for (auto& node2 : l2) {
       std::vector<NodeTpS3> l3 = node2.Branch();
-      for (auto& node3 : l3) {
-        std::vector<NodeTpS3> l4 = node3.Branch();
-        nodes.insert(nodes.end(), l4.begin(), l4.end());
-      }
+//      for (auto& node3 : l3) {
+//        std::vector<NodeTpS3> l4 = node3.Branch();
+        nodes.insert(nodes.end(), l3.begin(), l3.end());
+//      }
     }
   }
   std::cout << "initial # nodes: " << nodes.size() << std::endl;
@@ -80,14 +80,23 @@ int main(int argc, char** argv) {
   
   double eps = 1.0e-8;
   uint32_t max_it = 100;
+  uint32_t max_lvl = 100;
   BranchAndBound<NodeTpS3> bb(lower_bound, upper_bound_convex);
-  NodeTpS3 node_star = bb.Compute(nodes, eps, max_it);
+  NodeTpS3 node_star = bb.Compute(nodes, eps, max_lvl, max_it);
 
   std::cout << "optimum quaternion: " 
     << " w=" << node_star.GetLbArgument().w()
     << " " << node_star.GetLbArgument().vec().transpose()
+    << "|.| " << node_star.GetLbArgument().norm()
     << std::endl;
 
-  std::cout << "true quaternion: " << q_true.w() << " " << q_true.x() << " " << q_true.y() << " " << q_true.z() << std::endl;
+  std::cout << "true quaternion: " << q_true.w() << " " << q_true.x()
+    << " " << q_true.y() << " " << q_true.z() 
+    << "|.| " << q_true.norm()
+    << std::endl;
+
+  std::cout << "Deviation from GT: " 
+    << 2.*acos(std::min(1.0, std::max(-1.,node_star.GetLbArgument().dot(q_true))))*180./M_PI
+    << std::endl;
 }
 

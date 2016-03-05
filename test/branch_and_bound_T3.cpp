@@ -81,9 +81,10 @@ int main(int argc, char** argv) {
   
   double eps = 1.0e-8;
   uint32_t max_it = 1000;
+  uint32_t max_lvl = 50;
   BranchAndBound<NodeS3> bb(lower_bound, upper_bound);
 //  BranchAndBound<NodeS3> bb(lower_bound, upper_bound_convex);
-  NodeS3 node_star = bb.Compute(nodes, eps, max_it);
+  NodeS3 node_star = bb.Compute(nodes, eps, max_lvl, max_it);
   Eigen::Quaterniond q = node_star.GetTetrahedron().GetCenterQuaternion();
   q = q.inverse();
 
@@ -112,8 +113,9 @@ int main(int argc, char** argv) {
   
   eps = 1.e-8;
   max_it = 5000;
+  max_lvl = 50;
   BranchAndBound<NodeR3> bbR3(lower_boundR3, upper_bound_convex_R3);
-  NodeR3 node_starR3 = bbR3.Compute(nodesR3, eps, max_it);
+  NodeR3 node_starR3 = bbR3.Compute(nodesR3, eps, max_lvl, max_it);
   Eigen::Vector3d t = node_starR3.GetBox().GetCenter();
 
   std::cout << "optimum translation: " << t.transpose() << std::endl;

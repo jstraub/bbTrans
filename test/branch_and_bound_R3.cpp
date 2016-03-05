@@ -63,8 +63,9 @@ int main(int argc, char** argv) {
   
   double eps = 1.e-4;
   uint32_t max_it = 1000;
+  uint32_t max_lvl = 50;
   BranchAndBound<NodeR3> bb1(lower_bound, upper_bound);
-  NodeR3 node_star = bb1.Compute(nodes, eps, max_it);
+  NodeR3 node_star = bb1.Compute(nodes, eps, max_lvl, max_it);
 
   std::cout << "optimum translation (indep UB): " 
     << node_star.GetBox().GetCenter().transpose()
@@ -72,7 +73,7 @@ int main(int argc, char** argv) {
 
   nodes = GenerateNotesThatTessellateR3(min, max, 0.3);
   BranchAndBound<NodeR3> bb2(lower_bound, upper_bound_convex);
-  node_star = bb2.Compute(nodes, eps, max_it);
+  node_star = bb2.Compute(nodes, eps, max_lvl, max_it);
 
   std::cout << "optimum translation (convex UB): " 
     << node_star.GetBox().GetCenter().transpose()

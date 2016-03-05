@@ -10,15 +10,16 @@ UpperBoundConvexTpS3::UpperBoundConvexTpS3(UpperBoundConvexS3& boundS3)
 { }
 
 double UpperBoundConvexTpS3::Evaluate(const NodeTpS3& node) {
-  double ub = 1e99;
-  for (uint32_t i=0; i<5; ++i) {
-    double ub_i = boundS3_.Evaluate(node.GetNodeS3(i));
+  Eigen::Matrix<double,5,1> ubs;
+//  double ub = -1e99;
+  for (uint32_t i=0; i<5; ++i)
+    ubs(i) = boundS3_.Evaluate(node.GetNodeS3(i));
 //    std::cout << ub_i << " ";
-    if (ub_i < ub)
-      ub = ub_i;
-  }
+//    if (ub_i > ub)
+//      ub = ub_i;
+//  }
 //  std::cout << ub << std::endl;
-  return ub;
+  return ubs.maxCoeff();
 }
 
 double UpperBoundConvexTpS3::EvaluateAndSet(NodeTpS3& node) {
