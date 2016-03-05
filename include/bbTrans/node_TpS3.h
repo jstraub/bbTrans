@@ -23,7 +23,9 @@ class NodeTpS3 : public BaseNode {
   NodeTpS3(const NodeTpS3& node);
   virtual ~NodeTpS3() = default;
   virtual std::vector<NodeTpS3> Branch() const;
-//  const Tetrahedron4D& GetTetrahedron() const { return tetrahedron_;}
+
+  /// Give access to the interior Tetrahedron of the partitining of the cube
+  const Tetrahedron4D& GetTetrahedron() const {return nodeS3s_[4].GetTetrahedron();}
   void SetLbArgument(const Eigen::Quaterniond& q) {q_lb_ = q;}
   Eigen::Quaterniond GetLbArgument() const {return q_lb_;}
   virtual uint32_t GetBranchingFactor(uint32_t i) const { return 8;}

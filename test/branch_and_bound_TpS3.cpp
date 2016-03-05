@@ -6,6 +6,7 @@
 #include <vector>
 #include "bbTrans/node.h"
 #include "bbTrans/lower_bound_TpS3.h"
+#include "bbTrans/upper_bound_indep_TpS3.h"
 #include "bbTrans/upper_bound_convex_TpS3.h"
 #include "bbTrans/branch_and_bound.h"
 
@@ -54,6 +55,7 @@ int main(int argc, char** argv) {
   UpperBoundConvexS3 upper_bound_convex_S3(vmf_mm_A, vmf_mm_B);
 
   LowerBoundTpS3 lower_bound(lower_bound_S3);
+  UpperBoundIndepTpS3 upper_bound_indep(upper_bound_S3);
   UpperBoundConvexTpS3 upper_bound_convex(upper_bound_convex_S3);
 
   Eigen::Vector3d p_min(-M_PI,-M_PI,-M_PI);
