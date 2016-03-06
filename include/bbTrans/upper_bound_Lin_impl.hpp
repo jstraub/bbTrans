@@ -5,12 +5,12 @@
 namespace bb {
 
 template<class UpperBound, class NodeLin>
-UpperBoundConvexLin<UpperBound,NodeLin>::UpperBoundConvexLin(UpperBound& boundS3) 
+UpperBoundLin<UpperBound,NodeLin>::UpperBoundLin(UpperBound& boundS3) 
   : boundS3_(boundS3)
 { }
 
 template<class UpperBound, class NodeLin>
-double UpperBoundConvexLin<UpperBound,NodeLin>::Evaluate(const NodeLin& node) {
+double UpperBoundLin<UpperBound,NodeLin>::Evaluate(const NodeLin& node) {
   Eigen::Matrix<double,5,1> ubs;
 //  double ub = -1e99;
   for (uint32_t i=0; i<5; ++i)
@@ -24,7 +24,7 @@ double UpperBoundConvexLin<UpperBound,NodeLin>::Evaluate(const NodeLin& node) {
 }
 
 template<class UpperBound, class NodeLin>
-double UpperBoundConvexLin<UpperBound,NodeLin>::EvaluateAndSet(NodeLin& node) {
+double UpperBoundLin<UpperBound,NodeLin>::EvaluateAndSet(NodeLin& node) {
   double ub = Evaluate(node);
   node.SetUB(ub);
   return ub;
