@@ -14,15 +14,17 @@
 
 namespace bb {
 
-class UpperBoundConvexTpS3 : public Bound<NodeTpS3> {
+template<class UpperBound, class NodeLin>
+class UpperBoundConvexLin : public Bound<NodeLin> {
  public:
-  UpperBoundConvexTpS3(UpperBoundConvexS3& boundS3);
-  virtual ~UpperBoundConvexTpS3() = default;
-  virtual double Evaluate(const NodeTpS3& node);
-  virtual double EvaluateAndSet(NodeTpS3& node);
+  UpperBoundConvexLin(UpperBound& boundS3);
+  virtual ~UpperBoundConvexLin() = default;
+  virtual double Evaluate(const NodeLin& node);
+  virtual double EvaluateAndSet(NodeLin& node);
  private:
-  UpperBoundConvexS3& boundS3_;
+  UpperBound& boundS3_;
 };
 
 }
 
+#include "bbTrans/upper_bound_Lin_impl.hpp"

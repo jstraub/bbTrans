@@ -14,12 +14,13 @@
 
 namespace bb {
 
-class UpperBoundIndepTpS3 : public Bound<NodeTpS3> {
+template<class NodeLin>
+class UpperBoundIndepLin : public Bound<NodeLin> {
  public:
-  UpperBoundIndepTpS3(UpperBoundIndepS3& boundS3);
-  virtual ~UpperBoundIndepTpS3() = default;
-  virtual double Evaluate(const NodeTpS3& node);
-  virtual double EvaluateAndSet(NodeTpS3& node);
+  UpperBoundIndepLin(UpperBoundIndepS3& boundS3);
+  virtual ~UpperBoundIndepLin() = default;
+  virtual double Evaluate(const NodeLin& node);
+  virtual double EvaluateAndSet(NodeLin& node);
  private:
   UpperBoundIndepS3& boundS3_;
 };

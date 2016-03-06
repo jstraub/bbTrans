@@ -10,6 +10,7 @@
 #include <string>
 
 #include "manifold/S.h"
+#include "bbTrans/node_AA.h"
 #include "bbTrans/node_R3.h"
 #include "bbTrans/node_S3.h"
 #include "bbTrans/box.h"
@@ -17,27 +18,14 @@
 
 namespace bb {
 
-class NodeTpS3 : public BaseNode {
+class NodeTpS3 : public NodeAA {
  public:
   NodeTpS3(const Box& box, std::vector<uint32_t> ids);
   NodeTpS3(const NodeTpS3& node);
   virtual ~NodeTpS3() = default;
-  virtual std::vector<NodeTpS3> Branch() const;
 
-  /// Give access to the interior Tetrahedron of the partitining of the cube
-  const Tetrahedron4D& GetTetrahedron() const {return nodeS3s_[4].GetTetrahedron();}
-  void SetLbArgument(const Eigen::Quaterniond& q) {q_lb_ = q;}
-  Eigen::Quaterniond GetLbArgument() const {return q_lb_;}
-  virtual uint32_t GetBranchingFactor(uint32_t i) const { return 8;}
-  virtual std::string ToString() const;
-  virtual std::string Serialize() const;
-  std::string GetSpace() const { return "TpS3"; }
-  double GetVolume() const;
-  const NodeS3& GetNodeS3(uint32_t i) const { return nodeS3s_[i]; }
-  NodeS3& GetNodeS3(uint32_t i) { return nodeS3s_[i]; }
  protected:
-  NodeR3 nodeTpS3_;
-  std::vector<NodeS3> nodeS3s_;
-  Eigen::Quaterniond q_lb_;
+  virtual Tetrahedron4D TetraFromBox(const Box& box, uint32_t i0, uint32_t i1,
+    uint32_t i2, uint32_t i3);
 };
 }
