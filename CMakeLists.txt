@@ -40,6 +40,7 @@ add_library(bbTrans SHARED
   ./src/node.cpp
   ./src/node_S3.cpp
   ./src/node_TpS3.cpp
+  ./src/node_AA.cpp
   ./src/node_R3.cpp
   ./src/box.cpp
   ./src/combinations.cpp
@@ -51,10 +52,6 @@ add_library(bbTrans SHARED
   ./src/lower_bound_R3.cpp
   ./src/upper_bound_indep_R3.cpp
   ./src/upper_bound_convex_R3.cpp
-  ./src/lower_bound_TpS3.cpp
-  ./src/upper_bound_indep_TpS3.cpp
-  ./src/upper_bound_convex_TpS3.cpp
-#  ./src/branch_and_bound.cpp
   )
 
 add_executable(testCombinations ./test/combinations.cpp)
@@ -98,6 +95,7 @@ pods_install_headers(
   ./include/bbTrans/node_impl.h
   ./include/bbTrans/node_S3.h
   ./include/bbTrans/node_TpS3.h
+  ./include/bbTrans/node_AA.h
   ./include/bbTrans/node_R3.h
   ./include/bbTrans/branch_and_bound.h
   ./include/bbTrans/branch_and_bound_impl.h
@@ -114,7 +112,8 @@ pods_install_headers(
   ./include/bbTrans/lower_bound_S3.h
   ./include/bbTrans/upper_bound_indep_S3.h
   ./include/bbTrans/upper_bound_convex_S3.h
-  ./include/bbTrans/lower_bound_TpS3.h
-  ./include/bbTrans/upper_bound_indep_TpS3.h
-  ./include/bbTrans/upper_bound_convex_TpS3.h
+  ./include/bbTrans/lower_bound_Lin.h
+  ./include/bbTrans/lower_bound_Lin_impl.hpp
+  ./include/bbTrans/upper_bound_Lin.h
+  ./include/bbTrans/upper_bound_Lin_impl.hpp
   DESTINATION bbTrans)
