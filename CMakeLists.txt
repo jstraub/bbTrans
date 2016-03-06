@@ -39,6 +39,7 @@ add_library(bbTrans SHARED
   ./src/tetrahedron.cpp
   ./src/node.cpp
   ./src/node_S3.cpp
+  ./src/node_Lin.cpp
   ./src/node_TpS3.cpp
   ./src/node_AA.cpp
   ./src/node_R3.cpp
@@ -97,9 +98,10 @@ pods_install_headers(
   ./include/bbTrans/node.h
   ./include/bbTrans/node_impl.h
   ./include/bbTrans/node_S3.h
+  ./include/bbTrans/node_R3.h
+  ./include/bbTrans/node_Lin.h
   ./include/bbTrans/node_TpS3.h
   ./include/bbTrans/node_AA.h
-  ./include/bbTrans/node_R3.h
   ./include/bbTrans/branch_and_bound.h
   ./include/bbTrans/branch_and_bound_impl.h
   ./include/bbTrans/numeric_helpers.h

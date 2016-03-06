@@ -10,7 +10,7 @@
 #include <string>
 
 #include "manifold/S.h"
-#include "bbTrans/node_AA.h"
+#include "bbTrans/node_Lin.h"
 #include "bbTrans/node_R3.h"
 #include "bbTrans/node_S3.h"
 #include "bbTrans/box.h"
@@ -18,11 +18,12 @@
 
 namespace bb {
 
-class NodeTpS3 : public NodeAA {
+class NodeTpS3 : public NodeLin {
  public:
   NodeTpS3(const Box& box, std::vector<uint32_t> ids);
   NodeTpS3(const NodeTpS3& node);
   virtual ~NodeTpS3() = default;
+  virtual std::vector<NodeTpS3> Branch() const;
 
  protected:
   virtual Tetrahedron4D TetraFromBox(const Box& box, uint32_t i0, uint32_t i1,

@@ -7,6 +7,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 #include "bbTrans/node_S3.h"
+#include "bbTrans/node_AA.h"
 #include "bbTrans/node_TpS3.h"
 #include "bbTrans/numeric_helpers.h"
 #include "bbTrans/bound.h"
