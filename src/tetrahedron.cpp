@@ -109,4 +109,9 @@ std::vector<Tetrahedron4D> Tetrahedron4D::Subdivide() const {
   return tetrahedra;
 }
 
+bool Tetrahedron4D::Intersects(const Eigen::Vector4d& q) const {
+  Eigen::Vector3d alpha = vertices_.lu().solve(q);
+  return (alpha.array() >= 0.).all();
+}
+
 }

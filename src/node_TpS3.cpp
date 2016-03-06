@@ -6,74 +6,35 @@
 namespace bb {
 
 NodeTpS3::NodeTpS3(const Box& box, std::vector<uint32_t> ids) 
-  : BaseNode(ids), nodeTpS3_(box, ids)
+  : NodeLin(box, ids)
 { 
-  // subdivide box in TpS into 4 tetrahedra
-  // https://www.ics.uci.edu/~eppstein/projects/tetra/
-  Eigen::Vector4d north;
-  north << 0.,0.,0.,1.;
-  S<double,4> s3(north);
-  nodeS3s_.reserve(5);
-  std::vector<Eigen::Vector3d> cs(4);
-  Eigen::Matrix4d qs;
-  // NodeS3 1: 0 4 5 7
-  box.GetCorner(0, cs[0]); box.GetCorner(4, cs[1]);
-  box.GetCorner(5, cs[2]); box.GetCorner(7, cs[3]);
-  for (uint32_t i=0; i<4; ++i) {
-//    std::cout << "---  " << std::endl;
-//    std::cout << cs[i].transpose() << std::endl;
-//    std::cout << cs[i].norm() << std::endl;
-//    std::cout << s3.ToAmbient(cs[i]).transpose() << std::endl;
-    qs.col(i) = s3.Exp(s3.ToAmbient(cs[i])).vector();
-//    std::cout << qs.col(i).transpose() << std::endl;
-//    std::cout << qs.col(i).norm() << std::endl;
-  }
-  Tetrahedron4D t(qs);
-  std::vector<uint32_t> idsInternal(1,0);
-  nodeS3s_.push_back(NodeS3(t, idsInternal));
-  // NodeS3 2: 1 4 5 6
-  box.GetCorner(1, cs[0]); box.GetCorner(4, cs[1]);
-  box.GetCorner(5, cs[2]); box.GetCorner(6, cs[3]);
-  for (uint32_t i=0; i<4; ++i)
-    qs.col(i) = s3.Exp(s3.ToAmbient(cs[i])).vector();
-  t = Tetrahedron4D(qs);
-  idsInternal = std::vector<uint32_t>(1,1);
-  nodeS3s_.push_back(NodeS3(t, idsInternal));
-  // NodeS3 3: 2 4 6 7
-  box.GetCorner(2, cs[0]); box.GetCorner(4, cs[1]);
-  box.GetCorner(6, cs[2]); box.GetCorner(7, cs[3]);
-  for (uint32_t i=0; i<4; ++i)
-    qs.col(i) = s3.Exp(s3.ToAmbient(cs[i])).vector();
-  t = Tetrahedron4D(qs);
-  idsInternal = std::vector<uint32_t>(1,2);
-  nodeS3s_.push_back(NodeS3(t, idsInternal));
-  // NodeS3 4: 3 5 6 7
-  box.GetCorner(3, cs[0]); box.GetCorner(5, cs[1]);
-  box.GetCorner(6, cs[2]); box.GetCorner(7, cs[3]);
-  for (uint32_t i=0; i<4; ++i)
-    qs.col(i) = s3.Exp(s3.ToAmbient(cs[i])).vector();
-  t = Tetrahedron4D(qs);
-  idsInternal = std::vector<uint32_t>(1,3);
-  nodeS3s_.push_back(NodeS3(t, idsInternal));
-  // NodeS3 5: 0 1 2 3
-  box.GetCorner(0, cs[0]); box.GetCorner(1, cs[1]);
-  box.GetCorner(2, cs[2]); box.GetCorner(3, cs[3]);
-  for (uint32_t i=0; i<4; ++i)
-    qs.col(i) = s3.Exp(s3.ToAmbient(cs[i])).vector();
-  t = Tetrahedron4D(qs);
-  idsInternal = std::vector<uint32_t>(1,4);
-  nodeS3s_.push_back(NodeS3(t, idsInternal));
+  Linearize(box);
 }
 
 NodeTpS3::NodeTpS3(const NodeTpS3& node) 
-  : BaseNode(node.GetIds(), node.GetLB(), node.GetUB()),
-  nodeTpS3_(node.nodeTpS3_), nodeS3s_(node.nodeS3s_), q_lb_(node.q_lb_)
+  : NodeLin(node)
 { }
+
+Tetrahedron4D NodeTpS3::TetraFromBox(const Box& box, uint32_t i0, uint32_t i1,
+    uint32_t i2, uint32_t i3) {
+  Eigen::Vector4d north;
+  // In accordance with the other tessellation approaches
+  north << 1.,0.,0.,0.;
+  S<double,4> s3(north);
+  std::vector<Eigen::Vector3d> cs(4);
+  Eigen::Matrix4d qs;
+  box.GetCorner(i0, cs[0]); box.GetCorner(i1, cs[1]);
+  box.GetCorner(i2, cs[2]); box.GetCorner(i3, cs[3]);
+
+  for (uint32_t i=0; i<4; ++i)
+    qs.col(i) = s3.Exp(s3.ToAmbient(cs[i])).vector();
+  return Tetrahedron4D(qs);
+}
 
 std::vector<NodeTpS3> NodeTpS3::Branch() const {
   std::vector<NodeTpS3> nodes;
   nodes.reserve(8);
-  std::vector<NodeR3> boxs = nodeTpS3_.Branch();
+  std::vector<NodeR3> boxs = nodeLin_.Branch();
   for (uint32_t i=0; i < boxs.size(); ++i) {
     std::vector<uint32_t> ids(this->ids_);
     ids.push_back(i);
@@ -81,27 +42,6 @@ std::vector<NodeTpS3> NodeTpS3::Branch() const {
   }
   return nodes;
 }
-
-double NodeTpS3::GetVolume() const { 
-  double V = 0.;
-  for (uint32_t i=0; i<5; ++i)
-    V += nodeS3s_[i].GetVolume();
-  return V;
-}
-
-std::string NodeTpS3::ToString() const {
-  std::stringstream ss;
-  ss << " V=" << GetVolume()
-    << " in TpS: " << nodeTpS3_.ToString() 
-    << std::endl;
-  for (const auto& node : nodeS3s_) 
-    ss << "\t " << node.ToString() << std::endl;
-  return ss.str();
-};
-
-std::string NodeTpS3::Serialize() const {
-  return nodeTpS3_.Serialize();
-};
 
 
 }

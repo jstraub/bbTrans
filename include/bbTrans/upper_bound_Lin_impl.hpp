@@ -1,15 +1,16 @@
 /* Copyright (c) 2015, Julian Straub <jstraub@csail.mit.edu> Licensed
  * under the MIT license. See the license file LICENSE.
  */
-#include "bbTrans/upper_bound_convex_TpS3.h"
 
 namespace bb {
 
-UpperBoundConvexTpS3::UpperBoundConvexTpS3(UpperBoundConvexS3& boundS3) 
+template<class UpperBound, class NodeLin>
+UpperBoundLin<UpperBound,NodeLin>::UpperBoundLin(UpperBound& boundS3) 
   : boundS3_(boundS3)
 { }
 
-double UpperBoundConvexTpS3::Evaluate(const NodeTpS3& node) {
+template<class UpperBound, class NodeLin>
+double UpperBoundLin<UpperBound,NodeLin>::Evaluate(const NodeLin& node) {
   Eigen::Matrix<double,5,1> ubs;
 //  double ub = -1e99;
   for (uint32_t i=0; i<5; ++i)
@@ -22,7 +23,8 @@ double UpperBoundConvexTpS3::Evaluate(const NodeTpS3& node) {
   return ubs.maxCoeff();
 }
 
-double UpperBoundConvexTpS3::EvaluateAndSet(NodeTpS3& node) {
+template<class UpperBound, class NodeLin>
+double UpperBoundLin<UpperBound,NodeLin>::EvaluateAndSet(NodeLin& node) {
   double ub = Evaluate(node);
   node.SetUB(ub);
   return ub;

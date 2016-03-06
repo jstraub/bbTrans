@@ -39,7 +39,9 @@ add_library(bbTrans SHARED
   ./src/tetrahedron.cpp
   ./src/node.cpp
   ./src/node_S3.cpp
+  ./src/node_Lin.cpp
   ./src/node_TpS3.cpp
+  ./src/node_AA.cpp
   ./src/node_R3.cpp
   ./src/box.cpp
   ./src/combinations.cpp
@@ -51,10 +53,6 @@ add_library(bbTrans SHARED
   ./src/lower_bound_R3.cpp
   ./src/upper_bound_indep_R3.cpp
   ./src/upper_bound_convex_R3.cpp
-  ./src/lower_bound_TpS3.cpp
-  ./src/upper_bound_indep_TpS3.cpp
-  ./src/upper_bound_convex_TpS3.cpp
-#  ./src/branch_and_bound.cpp
   )
 
 add_executable(testCombinations ./test/combinations.cpp)
@@ -62,6 +60,9 @@ target_link_libraries(testCombinations bbTrans)
 
 add_executable(testS3Tessellation ./test/s3_tessellation.cpp)
 target_link_libraries(testS3Tessellation bbTrans)
+
+add_executable(testS3LinTessellation ./test/s3_lin_tessellation.cpp)
+target_link_libraries(testS3LinTessellation bbTrans)
 
 add_executable(testBoundsS3 ./test/bounds_S3.cpp)
 target_link_libraries(testBoundsS3 bbTrans)
@@ -74,6 +75,9 @@ target_link_libraries(testBranchAndBoundS3 bbTrans)
 
 add_executable(testBranchAndBoundTpS3 ./test/branch_and_bound_TpS3.cpp)
 target_link_libraries(testBranchAndBoundTpS3 bbTrans)
+
+add_executable(testBranchAndBoundAA ./test/branch_and_bound_AA.cpp)
+target_link_libraries(testBranchAndBoundAA bbTrans)
 
 add_executable(testBranchAndBoundR3 ./test/branch_and_bound_R3.cpp)
 target_link_libraries(testBranchAndBoundR3 bbTrans)
@@ -97,8 +101,10 @@ pods_install_headers(
   ./include/bbTrans/node.h
   ./include/bbTrans/node_impl.h
   ./include/bbTrans/node_S3.h
-  ./include/bbTrans/node_TpS3.h
   ./include/bbTrans/node_R3.h
+  ./include/bbTrans/node_Lin.h
+  ./include/bbTrans/node_TpS3.h
+  ./include/bbTrans/node_AA.h
   ./include/bbTrans/branch_and_bound.h
   ./include/bbTrans/branch_and_bound_impl.h
   ./include/bbTrans/numeric_helpers.h
@@ -114,7 +120,8 @@ pods_install_headers(
   ./include/bbTrans/lower_bound_S3.h
   ./include/bbTrans/upper_bound_indep_S3.h
   ./include/bbTrans/upper_bound_convex_S3.h
-  ./include/bbTrans/lower_bound_TpS3.h
-  ./include/bbTrans/upper_bound_indep_TpS3.h
-  ./include/bbTrans/upper_bound_convex_TpS3.h
+  ./include/bbTrans/lower_bound_Lin.h
+  ./include/bbTrans/lower_bound_Lin_impl.hpp
+  ./include/bbTrans/upper_bound_Lin.h
+  ./include/bbTrans/upper_bound_Lin_impl.hpp
   DESTINATION bbTrans)

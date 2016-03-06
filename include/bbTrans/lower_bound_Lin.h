@@ -7,6 +7,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 #include "bbTrans/node_S3.h"
+#include "bbTrans/node_AA.h"
 #include "bbTrans/node_TpS3.h"
 #include "bbTrans/numeric_helpers.h"
 #include "bbTrans/bound.h"
@@ -14,16 +15,17 @@
 
 namespace bb {
 
-class LowerBoundTpS3 : public Bound<NodeTpS3> {
+template<class NodeLin>
+class LowerBoundLin : public Bound<NodeLin> {
  public:
-  LowerBoundTpS3(LowerBoundS3& boundS3);
-  virtual ~LowerBoundTpS3() = default;
-  // find the highest lower bound over the 5 S3 nodes managed by
-  // NodeTpS3
-  virtual double Evaluate(const NodeTpS3& node);
-  virtual double EvaluateAndSet(NodeTpS3& node);
+  LowerBoundLin(LowerBoundS3& boundS3);
+  virtual ~LowerBoundLin() = default;
+  virtual double Evaluate(const NodeLin& node);
+  virtual double EvaluateAndSet(NodeLin& node);
  private:
   LowerBoundS3& boundS3_;
 };
-
+typedef LowerBoundLin<NodeTpS3> LowerBoundTpS3 ;
+typedef LowerBoundLin<NodeAA>   LowerBoundAA   ;
 }
+#include "bbTrans/lower_bound_Lin_impl.hpp"

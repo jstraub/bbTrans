@@ -18,12 +18,12 @@
 
 namespace bb {
 
-class NodeTpS3 : public NodeLin {
+class NodeAA : public NodeLin {
  public:
-  NodeTpS3(const Box& box, std::vector<uint32_t> ids);
-  NodeTpS3(const NodeTpS3& node);
-  virtual ~NodeTpS3() = default;
-  virtual std::vector<NodeTpS3> Branch() const;
+  NodeAA(const Box& box, std::vector<uint32_t> ids);
+  NodeAA(const NodeAA& node);
+  virtual ~NodeAA() = default;
+  virtual std::vector<NodeAA> Branch() const;
 
  protected:
   virtual Tetrahedron4D TetraFromBox(const Box& box, uint32_t i0, uint32_t i1,

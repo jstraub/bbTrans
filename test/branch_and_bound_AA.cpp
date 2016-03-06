@@ -53,22 +53,22 @@ int main(int argc, char** argv) {
   UpperBoundIndepS3 upper_bound_S3(vmf_mm_A, vmf_mm_B);
   UpperBoundConvexS3 upper_bound_convex_S3(vmf_mm_A, vmf_mm_B);
 
-  LowerBoundTpS3 lower_bound(lower_bound_S3);
-  UpperBoundIndepTpS3 upper_bound_indep(upper_bound_S3);
-  UpperBoundConvexTpS3 upper_bound_convex(upper_bound_convex_S3);
+  LowerBoundAA lower_bound(lower_bound_S3);
+  UpperBoundIndepAA upper_bound_indep(upper_bound_S3);
+  UpperBoundConvexAA upper_bound_convex(upper_bound_convex_S3);
 
-  Eigen::Vector3d p_min(-M_PI*0.5,-M_PI*0.5,-M_PI*0.5);
-  Eigen::Vector3d p_max( M_PI*0.5, M_PI*0.5, M_PI*0.5);
-  NodeTpS3 root(Box(p_min, p_max),std::vector<uint32_t>(0));
+  Eigen::Vector3d p_min(-M_PI,-M_PI,-M_PI);
+  Eigen::Vector3d p_max(M_PI,M_PI,M_PI);
+  NodeAA root(Box(p_min, p_max),std::vector<uint32_t>(0));
 //  std::cout << root.ToString() << std::endl;
-  std::vector<NodeTpS3> l1 = root.Branch();
-  std::list<NodeTpS3> nodes;
+  std::vector<NodeAA> l1 = root.Branch();
+  std::list<NodeAA> nodes;
   for (auto& node1 : l1) {
-    std::vector<NodeTpS3> l2 = node1.Branch();
+    std::vector<NodeAA> l2 = node1.Branch();
 //    for (auto& node2 : l2) {
-//      std::vector<NodeTpS3> l3 = node2.Branch();
+//      std::vector<NodeAA> l3 = node2.Branch();
 //      for (auto& node3 : l3) {
-//        std::vector<NodeTpS3> l4 = node3.Branch();
+//        std::vector<NodeAA> l4 = node3.Branch();
         nodes.insert(nodes.end(), l2.begin(), l2.end());
 //      }
 //    }
@@ -82,8 +82,8 @@ int main(int argc, char** argv) {
   double eps = 1.0e-8;
   uint32_t max_it = 100;
   uint32_t max_lvl = 100;
-  BranchAndBound<NodeTpS3> bb(lower_bound, upper_bound_convex);
-  NodeTpS3 node_star = bb.Compute(nodes, eps, max_lvl, max_it);
+  BranchAndBound<NodeAA> bb(lower_bound, upper_bound_convex);
+  NodeAA node_star = bb.Compute(nodes, eps, max_lvl, max_it);
 
   std::cout << "optimum quaternion: " 
     << " w=" << node_star.GetLbArgument().w()

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015, Julian Straub <jstraub@csail.mit.edu> Licensed
+/* Copyright (c) 2016, Julian Straub <jstraub@csail.mit.edu> Licensed
  * under the MIT license. See the license file LICENSE.
  */
 #include "bbTrans/s3_tessellation.h" 
@@ -59,7 +59,7 @@ std::vector<Tetrahedron4D> TessellateS3() {
   north << 1., 0., 0., 0.;
   uint32_t j = 0;
   for (i = 0; i < 120; ++i) {
-    if (acos(north.transpose() * vertices.col(i)) <= 120.*M_PI/180.){
+    if (acos(north.transpose() * vertices.col(i)) <= 90.*M_PI/180.){
       vertices.col(j++) = vertices.col(i); 
     }
   }
@@ -101,5 +101,46 @@ std::vector<Tetrahedron4D> TessellateS3() {
     }
   }
   return tetrahedra;
+}
+
+void TessellationTest(std::vector<Tetrahedron4D>& tetrahedra, uint32_t Nsamples) {
+  uint32_t N = 0;
+  for (uint32_t i=0; i<Nsamples; ++i) {
+    S4d q = S4d::Random();
+    for (const auto& tetra : tetrahedra) 
+      if (tetra.Intersects(q.vector())) {
+        ++N;
+        break;
+      }
+  }
+  std::cout << "fraction all over sphere intersected with tessellation: "
+    << static_cast<double>(N)/static_cast<double>(Nsamples)
+    << std::endl;
+  N = 0.;
+  for (uint32_t i=0; i<Nsamples; ++i) {
+    S4d q = S4d::Random();
+    q.vector()(0) = q.vector()(0) < 0. ? -q.vector()(0) : q.vector()(0);
+    for (const auto& tetra : tetrahedra) 
+      if (tetra.Intersects(q.vector())) {
+        ++N;
+        break;
+      }
+  }
+  std::cout << "fraction on top half-sphere intersected with tessellation: "
+    << static_cast<double>(N)/static_cast<double>(Nsamples)
+    << std::endl;
+  N = 0.;
+  for (uint32_t i=0; i<Nsamples; ++i) {
+    S4d q = S4d::Random();
+    q.vector()(0) = q.vector()(0) < 0. ? q.vector()(0) : -q.vector()(0);
+    for (const auto& tetra : tetrahedra) 
+      if (tetra.Intersects(q.vector())) {
+        ++N;
+        break;
+      }
+  }
+  std::cout << "fraction on bottom half-sphere intersected with tessellation: "
+    << static_cast<double>(N)/static_cast<double>(Nsamples)
+    << std::endl;
 }
 }

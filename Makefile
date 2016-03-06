@@ -67,23 +67,10 @@ configure:
 
 
 checkout:
-	git clone https://github.com/jstraub/jsCore.git
-	git clone https://github.com/jstraub/cudaPcl.git
-	git clone https://github.com/jstraub/dpMMlowVar.git
-	git clone https://github.com/jstraub/rtDDPvMF.git
-	git clone git@github.mit.edu:jstraub/bbTrans.git
-##git clone git@github.com:jstraub/jsCore.git
-##git clone git@github.com:jstraub/cudaPcl.git
-##git clone git@github.com:jstraub/dpMMlowVar.git
-##git clone git@github.com:jstraub/rtDDPvMF.git
-##git clone git@github.mit.edu:jstraub/bbTrans.git
+	git clone https://github.com/jstraub/manifold.git
 
 update:
-	cd cudaPcl; git pull; cd -
-	cd dpMMlowVar; git pull; cd -
-	cd rtDDPvMF; git pull; cd -
-	cd jsCore; git pull; cd -
-	cd bbTrans; git pull; cd -
+	cd manifold; git pull; cd -
 
 # other (custom) targets are passed through to the cmake-generated Makefile
 %::
