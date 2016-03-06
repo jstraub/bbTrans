@@ -57,21 +57,21 @@ int main(int argc, char** argv) {
   UpperBoundIndepTpS3 upper_bound_indep(upper_bound_S3);
   UpperBoundConvexTpS3 upper_bound_convex(upper_bound_convex_S3);
 
-  Eigen::Vector3d p_min(-M_PI,-M_PI,-M_PI);
-  Eigen::Vector3d p_max(M_PI,M_PI,M_PI);
+  Eigen::Vector3d p_min(-M_PI*0.5,-M_PI*0.5,-M_PI*0.5);
+  Eigen::Vector3d p_max( M_PI*0.5, M_PI*0.5, M_PI*0.5);
   NodeTpS3 root(Box(p_min, p_max),std::vector<uint32_t>(0));
-  std::cout << root.ToString() << std::endl;
+//  std::cout << root.ToString() << std::endl;
   std::vector<NodeTpS3> l1 = root.Branch();
   std::list<NodeTpS3> nodes;
   for (auto& node1 : l1) {
     std::vector<NodeTpS3> l2 = node1.Branch();
-    for (auto& node2 : l2) {
-      std::vector<NodeTpS3> l3 = node2.Branch();
+//    for (auto& node2 : l2) {
+//      std::vector<NodeTpS3> l3 = node2.Branch();
 //      for (auto& node3 : l3) {
 //        std::vector<NodeTpS3> l4 = node3.Branch();
-        nodes.insert(nodes.end(), l3.begin(), l3.end());
+        nodes.insert(nodes.end(), l2.begin(), l2.end());
 //      }
-    }
+//    }
   }
   std::cout << "initial # nodes: " << nodes.size() << std::endl;
 
