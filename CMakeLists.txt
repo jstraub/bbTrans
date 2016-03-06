@@ -61,6 +61,9 @@ target_link_libraries(testCombinations bbTrans)
 add_executable(testS3Tessellation ./test/s3_tessellation.cpp)
 target_link_libraries(testS3Tessellation bbTrans)
 
+add_executable(testS3LinTessellation ./test/s3_lin_tessellation.cpp)
+target_link_libraries(testS3LinTessellation bbTrans)
+
 add_executable(testBoundsS3 ./test/bounds_S3.cpp)
 target_link_libraries(testBoundsS3 bbTrans)
 

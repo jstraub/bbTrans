@@ -18,7 +18,8 @@ NodeTpS3::NodeTpS3(const NodeTpS3& node)
 Tetrahedron4D NodeTpS3::TetraFromBox(const Box& box, uint32_t i0, uint32_t i1,
     uint32_t i2, uint32_t i3) {
   Eigen::Vector4d north;
-  north << 0.,0.,0.,1.;
+  // In accordance with the other tessellation approaches
+  north << 1.,0.,0.,0.;
   S<double,4> s3(north);
   std::vector<Eigen::Vector3d> cs(4);
   Eigen::Matrix4d qs;
