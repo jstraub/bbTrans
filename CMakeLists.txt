@@ -69,8 +69,11 @@ target_link_libraries(testBoundsR3 bbTrans)
 add_executable(testBranchAndBoundS3 ./test/branch_and_bound_S3.cpp)
 target_link_libraries(testBranchAndBoundS3 bbTrans)
 
-add_executable(testBranchAndBoundTpS3 ./test/branch_and_bound_TpS3.cpp)
-target_link_libraries(testBranchAndBoundTpS3 bbTrans)
+#add_executable(testBranchAndBoundTpS3 ./test/branch_and_bound_TpS3.cpp)
+#target_link_libraries(testBranchAndBoundTpS3 bbTrans)
+
+add_executable(testBranchAndBoundAA ./test/branch_and_bound_AA.cpp)
+target_link_libraries(testBranchAndBoundAA bbTrans)
 
 add_executable(testBranchAndBoundR3 ./test/branch_and_bound_R3.cpp)
 target_link_libraries(testBranchAndBoundR3 bbTrans)

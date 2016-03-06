@@ -48,10 +48,10 @@ Tetrahedron4D NodeAA::TetraFromBox(const Box& box, uint32_t i0, uint32_t i1,
     double theta = cs[i].norm();
     if (theta > 1e-9) {
       qs(0,i) = cos(theta*0.5);
-      qs.bottomRows<3>(i) = -cs[i]*sin(theta*0.5)/theta;
+      qs.block<3,1>(1,i) = -cs[i]*sin(theta*0.5)/theta;
     } else {
       qs(0,i) = 1.;
-      qs.bottomRows<3>(i).fill(0);
+      qs.block<3,1>(1,i).fill(0);
     }
   }
   return Tetrahedron4D(qs);

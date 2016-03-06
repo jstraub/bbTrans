@@ -10,8 +10,9 @@ NodeTpS3::NodeTpS3(const Box& box, std::vector<uint32_t> ids)
 { }
 
 NodeTpS3::NodeTpS3(const NodeTpS3& node) 
-  : BaseNode(node.GetIds(), node.GetLB(), node.GetUB()),
-  nodeTpS3_(node.nodeTpS3_), nodeS3s_(node.nodeS3s_), q_lb_(node.q_lb_)
+  : NodeAA(node)
+//  : BaseNode(node.GetIds(), node.GetLB(), node.GetUB()),
+//  nodeTpS3_(node.nodeTpS3_), nodeS3s_(node.nodeS3s_), q_lb_(node.q_lb_)
 { }
 
 Tetrahedron4D NodeTpS3::TetraFromBox(const Box& box, uint32_t i0, uint32_t i1,

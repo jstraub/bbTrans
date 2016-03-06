@@ -24,7 +24,7 @@ class LowerBoundLin : public Bound<NodeLin> {
  private:
   LowerBoundS3& boundS3_;
 };
-typedef LowerBoundTpS3 LowerBoundLin<NodeTpS3>;
-typedef LowerBoundAA   LowerBoundLin<NodeAA>;
+typedef LowerBoundLin<NodeTpS3> LowerBoundTpS3 ;
+typedef LowerBoundLin<NodeAA>   LowerBoundAA   ;
 }
 #include "bbTrans/lower_bound_Lin_impl.hpp"
