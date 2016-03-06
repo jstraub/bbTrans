@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <Eigen/Dense>
+#include <Eigen/LU>
 
 namespace bb {
 Eigen::Vector4d normed(const Eigen::Vector4d& x);
@@ -22,6 +23,8 @@ class Tetrahedron4D {
   Eigen::Quaterniond GetVertexQuaternion(uint32_t i) const;
   std::vector<Tetrahedron4D> Subdivide() const;
   double GetVolume() const;
+
+  bool Intersects(const Eigen::Vector4d& q) const;
  private:
   /// One 4D vertex per column. 4 vertices in total to describe the 4D
   /// Tetrahedron.
