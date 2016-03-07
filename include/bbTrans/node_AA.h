@@ -27,8 +27,7 @@ class NodeAA : public NodeLin {
 
   std::string GetSpace() const { return "AA"; }
  protected:
-  virtual Tetrahedron4D TetraFromBox(const Box& box, uint32_t i0, uint32_t i1,
-    uint32_t i2, uint32_t i3);
+  virtual Eigen::Quaterniond Project(const Eigen::Vector3d& c) const;
 };
 std::list<NodeAA> TessellateAA();
 }

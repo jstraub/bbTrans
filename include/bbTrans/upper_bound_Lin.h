@@ -25,9 +25,9 @@ class UpperBoundLin : public Bound<NodeLin> {
  private:
   UpperBound& boundS3_;
 };
-typedef  UpperBoundLin<UpperBoundConvexS3,NodeTpS3>UpperBoundConvexTpS3;
-typedef  UpperBoundLin<UpperBoundIndepS3,NodeTpS3> UpperBoundIndepTpS3 ;
-typedef  UpperBoundLin<UpperBoundConvexS3,NodeAA>  UpperBoundConvexAA  ;
-typedef  UpperBoundLin<UpperBoundIndepS3,NodeAA>   UpperBoundIndepAA   ;
+typedef  UpperBoundLin<UpperBoundConvexS3,NodeTpS3> UpperBoundConvexTpS3;
+typedef  UpperBoundLin<UpperBoundIndepS3,NodeTpS3>  UpperBoundIndepTpS3 ;
+typedef  UpperBoundLin<UpperBoundConvexS3,NodeAA>   UpperBoundConvexAA  ;
+typedef  UpperBoundLin<UpperBoundIndepS3,NodeAA>    UpperBoundIndepAA   ;
 }
 #include "bbTrans/upper_bound_Lin_impl.hpp"

@@ -20,7 +20,10 @@ double LowerBoundLin<NodeLin>::Evaluate(const NodeLin& node) {
 
   // Last node is the center tetrahedron according to
   // NodeLin::Linearize()
-  return boundS3_.Evaluate(node.GetNodeS3(4));
+  Eigen::VectorXd lbs(1);
+  std::vector<Eigen::Quaterniond> qs(1,node.GetCenter());
+  boundS3_.EvaluateRotationSet(qs, lbs);
+  return lbs(0);
 }
 
 template<class NodeLin>
@@ -30,8 +33,7 @@ double LowerBoundLin<NodeLin>::EvaluateAndSet(NodeLin& node) {
 //  for (uint32_t i=0; i<5; ++i)
 //    lbs(i) = boundS3_.Evaluate(node.GetNodeS3(i));
 //  double lb = lbs.minCoeff(&id);
-  uint32_t id = 4;
-  double lb = boundS3_.Evaluate(node.GetNodeS3(id));
+//  double lb = boundS3_.Evaluate(node.GetNodeS3(id));
 //  Eigen::Matrix<double,3,9> xs;
 //  Eigen::Matrix<double,9,1> lbs;
 //  Evaluate(node, xs, lbs);
@@ -39,11 +41,18 @@ double LowerBoundLin<NodeLin>::EvaluateAndSet(NodeLin& node) {
 ////  double lb = lbs.maxCoeff(&id_max);
 //  double lb = lbs(id_max);
 //  node.SetLbArgument(xs.col(id_max));
+
+  Eigen::VectorXd lbs(1);
+  std::vector<Eigen::Quaterniond> qs(1,node.GetCenter());
+  boundS3_.EvaluateRotationSet(qs, lbs);
+  uint32_t id = 0;
+  double lb = lbs(0);
+
   node.SetLB(lb);
   // Set the LB argument in the S3 node
-  boundS3_.EvaluateAndSet(node.GetNodeS3(id));
+//  boundS3_.EvaluateAndSet(node.GetNodeS3(id));
   // Copy the LB argument over to the Lin node
-  node.SetLbArgument(node.GetNodeS3(id).GetLbArgument());
+  node.SetLbArgument(qs[0]);
   return lb;
 }
 

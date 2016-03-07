@@ -11,16 +11,14 @@ UpperBoundLin<UpperBound,NodeLin>::UpperBoundLin(UpperBound& boundS3)
 
 template<class UpperBound, class NodeLin>
 double UpperBoundLin<UpperBound,NodeLin>::Evaluate(const NodeLin& node) {
-  Eigen::Matrix<double,5,1> ubs;
 //  double ub = -1e99;
-  for (uint32_t i=0; i<5; ++i)
-    ubs(i) = boundS3_.Evaluate(node.GetNodeS3(i));
+  return boundS3_.EvaluateRotationSet(node.GetQuaternions());
 //    std::cout << ub_i << " ";
 //    if (ub_i > ub)
 //      ub = ub_i;
 //  }
 //  std::cout << ub << std::endl;
-  return ubs.maxCoeff();
+//  return ubs.maxCoeff();
 }
 
 template<class UpperBound, class NodeLin>

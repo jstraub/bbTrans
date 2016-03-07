@@ -20,16 +20,14 @@ class UpperBoundConvexS3 : public Bound<NodeS3> {
   UpperBoundConvexS3(const vMFMM<3>& vmf_mm_A, const vMFMM<3>& vmf_mm_B);
   virtual double Evaluate(const NodeS3& node);
   virtual double EvaluateAndSet(NodeS3& node);
+  virtual double EvaluateRotationSet(const
+      std::vector<Eigen::Quaterniond>& qs) const;
  private:
   const vMFMM<3>& vmf_mm_A_;
   const vMFMM<3>& vmf_mm_B_;
   static Eigen::Matrix<double,4,4> BuildM(const Eigen::Vector3d& u, const
     Eigen::Vector3d& v);
-
-  double EvaluateRotationSet(const std::vector<Eigen::Quaterniond>& qs) const;
 };
-
-
 
 double FindMaximumQAQ(const Eigen::Matrix4d& A, const
   Eigen::Matrix<double,4,Eigen::Dynamic> Q, bool verbose);

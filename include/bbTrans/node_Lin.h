@@ -9,6 +9,9 @@
 #include <sstream>
 #include <string>
 
+#include <Eigen/Dense>
+#include <Eigen/Geometry>
+
 #include "manifold/S.h"
 #include "bbTrans/node_R3.h"
 #include "bbTrans/node_S3.h"
@@ -23,23 +26,21 @@ class NodeLin : public BaseNode {
   NodeLin(const NodeLin& node);
   virtual ~NodeLin() = default;
 
-  /// Give access to the interior Tetrahedron of the partitining of the cube
-  const Tetrahedron4D& GetTetrahedron() const {return nodeS3s_[4].GetTetrahedron();}
   void SetLbArgument(const Eigen::Quaterniond& q) {q_lb_ = q;}
   Eigen::Quaterniond GetLbArgument() const {return q_lb_;}
+  Eigen::Quaterniond GetCenter() const;
   virtual uint32_t GetBranchingFactor(uint32_t i) const { return 8;}
   virtual std::string ToString() const;
   virtual std::string Serialize() const;
   std::string GetSpace() const { return "Lin"; }
   double GetVolume() const;
-  const NodeS3& GetNodeS3(uint32_t i) const { return nodeS3s_[i]; }
-  NodeS3& GetNodeS3(uint32_t i) { return nodeS3s_[i]; }
+  const std::vector<Eigen::Quaterniond>& GetQuaternions() const { return qs_; }
+  std::vector<Eigen::Quaterniond>& GetQuaternions() { return qs_; }
  protected:
   NodeR3 nodeLin_;
-  std::vector<NodeS3> nodeS3s_;
+  std::vector<Eigen::Quaterniond> qs_;
   Eigen::Quaterniond q_lb_;
   virtual void Linearize(const Box& box);
-  virtual Tetrahedron4D TetraFromBox(const Box& box, uint32_t i0, uint32_t i1,
-    uint32_t i2, uint32_t i3) = 0;
+  virtual Eigen::Quaterniond Project(const Eigen::Vector3d& c) const = 0;
 };
 }

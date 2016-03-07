@@ -15,20 +15,12 @@ NodeTpS3::NodeTpS3(const NodeTpS3& node)
   : NodeLin(node)
 { }
 
-Tetrahedron4D NodeTpS3::TetraFromBox(const Box& box, uint32_t i0, uint32_t i1,
-    uint32_t i2, uint32_t i3) {
-  Eigen::Vector4d north;
+Eigen::Quaterniond NodeTpS3::Project(const Eigen::Vector3d& c) const {
   // In accordance with the other tessellation approaches
-  north << 1.,0.,0.,0.;
-  S<double,4> s3(north);
-  std::vector<Eigen::Vector3d> cs(4);
-  Eigen::Matrix4d qs;
-  box.GetCorner(i0, cs[0]); box.GetCorner(i1, cs[1]);
-  box.GetCorner(i2, cs[2]); box.GetCorner(i3, cs[3]);
-
-  for (uint32_t i=0; i<4; ++i)
-    qs.col(i) = s3.Exp(s3.ToAmbient(cs[i])).vector();
-  return Tetrahedron4D(qs);
+  static Eigen::Vector4d north(1.,0.,0.,0.);
+  static S<double,4> s3(north);
+  Eigen::Vector4d qvec = s3.Exp(s3.ToAmbient(c)).vector();
+  return Eigen::Quaterniond(qvec(0),qvec(1),qvec(2),qvec(3));
 }
 
 std::vector<NodeTpS3> NodeTpS3::Branch() const {
