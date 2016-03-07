@@ -11,11 +11,22 @@ UpperBoundIndepS3::UpperBoundIndepS3(const vMFMM<3>& vmf_mm_A, const vMFMM<3>&
 {}
 
 double UpperBoundIndepS3::Evaluate(const NodeS3& node) {
+
+  std::vector<Eigen::Quaterniond> qs(4);
+  for (uint32_t i=0; i<4; ++i)
+    qs[i] = node.GetTetrahedron().GetVertexQuaternion(i);
+
+  return EvaluateRotationSet(qs);
+}
+
+double UpperBoundIndepS3::EvaluateRotationSet(const
+    std::vector<Eigen::Quaterniond>& qs) const {
+
   Eigen::VectorXd ubElem(vmf_mm_A_.GetK()*vmf_mm_B_.GetK());
   for (std::size_t j=0; j < vmf_mm_A_.GetK(); ++j)
     for (std::size_t k=0; k < vmf_mm_B_.GetK(); ++k) {
-      Eigen::Vector3d p_star = ClosestPointInTetrahedron(vmf_mm_A_.Get(j),
-          vmf_mm_B_.Get(k), node.GetTetrahedron());
+      Eigen::Vector3d p_star = ClosestPointInRotationSet(vmf_mm_A_.Get(j),
+          vmf_mm_B_.Get(k), qs);
 //      std::cout << "p_star " << p_star.transpose() << std::endl;
       ubElem(j*vmf_mm_B_.GetK() + k) =
         ComputeLogvMFtovMFcost<3>(vmf_mm_A_.Get(j), vmf_mm_B_.Get(k),
@@ -56,31 +67,30 @@ Eigen::Vector3d ComputeExtremumOnGeodesic(const Eigen::Vector3d& q1,
   return (q1*sin((1.-t)*theta12) + q2*sin(t*theta12))/sin(theta12);
 }
 
-Eigen::Vector3d ClosestPointInTetrahedron(const vMF<3>& vmf_A, const
-    vMF<3>& vmf_B, const Tetrahedron4D& tetrahedron, bool furthest, bool verbose) {
+Eigen::Vector3d ClosestPointInRotationSet(const vMF<3>& vmf_A, const
+    vMF<3>& vmf_B, const std::vector<Eigen::Quaterniond>& qs, bool
+    furthest, bool verbose) {
   Eigen::Vector3d muA = vmf_A.GetMu();
 //  std::cout << " muA " << muA.transpose() << std::endl;
   if (furthest) muA *= -1.;
-  std::vector<Eigen::Vector3d> mus(4);
-  for (uint32_t i=0; i<4; ++i) {
-    mus[i] = tetrahedron.GetVertexQuaternion(i)._transformVector(vmf_B.GetMu());
+  std::vector<Eigen::Vector3d> mus(qs.size());
+  for (uint32_t i=0; i<qs.size(); ++i) {
+    mus[i] = qs[i]._transformVector(vmf_B.GetMu());
 //    std::cout << " muB " << i << " " 
 //      << tetrahedron.GetVertex(i).transpose() << " -> "
 //      << tetrahedron.GetVertexQuaternion(i).coeffs().transpose() << " -> "
 //      << mus[i].transpose() << std::endl;
   }
-
   if(verbose) {
     std::cout << "-- Polygone:\n";
     for (auto& mu : mus)
       std::cout << mu.transpose() << std::endl;
     std::cout << " query:\n" << vmf_A.GetMu().transpose(); 
   }
-    
   // Check if muA is in any of the triangles spanned by the rotated
   // muBs
   Eigen::Matrix3d A;
-  Combinations combinations(4,3);
+  Combinations combinations(qs.size(),3);
   for (auto tri : combinations.Get()) {
     A << mus[tri[0]], mus[tri[1]], mus[tri[2]];
     // Check if muA inside triangle of rotated muBs
@@ -101,11 +111,11 @@ Eigen::Vector3d ClosestPointInTetrahedron(const vMF<3>& vmf_A, const
     }
   }
   // Check the edges and corners.
-  Eigen::MatrixXd ps(3, 4+6);
+  Eigen::MatrixXd ps(3, qs.size()+(qs.size()*(qs.size()-1))/2);
   uint32_t k = 0;
-  for (uint32_t i=0; i<4; ++i) {
+  for (uint32_t i=0; i<qs.size(); ++i) {
     ps.col(k++) = mus[i];
-    for (uint32_t j=i+1; j<4; ++j)
+    for (uint32_t j=i+1; j<qs.size(); ++j)
       ps.col(k++) = ComputeExtremumOnGeodesic(mus[i],
           mus[j], vmf_A.GetMu(), verbose);
   }
@@ -126,14 +136,90 @@ Eigen::Vector3d ClosestPointInTetrahedron(const vMF<3>& vmf_A, const
         << std::endl;
     }
   }
-
   return ps.col(id);
+}
+
+Eigen::Vector3d ClosestPointInTetrahedron(const vMF<3>& vmf_A, const
+    vMF<3>& vmf_B, const Tetrahedron4D& tetrahedron, bool furthest,
+    bool verbose) {
+  std::vector<Eigen::Quaterniond> qs(4);
+  for (uint32_t i=0; i<4; ++i)
+    qs[i] = tetrahedron.GetVertexQuaternion(i);
+  return ClosestPointInRotationSet(vmf_A, vmf_B, qs, furthest, verbose);
+
+//  Eigen::Vector3d muA = vmf_A.GetMu();
+////  std::cout << " muA " << muA.transpose() << std::endl;
+//  if (furthest) muA *= -1.;
+//  std::vector<Eigen::Vector3d> mus(4);
+//  for (uint32_t i=0; i<4; ++i) {
+//    mus[i] = tetrahedron.GetVertexQuaternion(i)._transformVector(vmf_B.GetMu());
+////    std::cout << " muB " << i << " " 
+////      << tetrahedron.GetVertex(i).transpose() << " -> "
+////      << tetrahedron.GetVertexQuaternion(i).coeffs().transpose() << " -> "
+////      << mus[i].transpose() << std::endl;
+//  }
+//
+//  if(verbose) {
+//    std::cout << "-- Polygone:\n";
+//    for (auto& mu : mus)
+//      std::cout << mu.transpose() << std::endl;
+//    std::cout << " query:\n" << vmf_A.GetMu().transpose(); 
+//  }
+//    
+//  // Check if muA is in any of the triangles spanned by the rotated
+//  // muBs
+//  Eigen::Matrix3d A;
+//  Combinations combinations(4,3);
+//  for (auto tri : combinations.Get()) {
+//    A << mus[tri[0]], mus[tri[1]], mus[tri[2]];
+//    // Check if muA inside triangle of rotated muBs
+//    Eigen::ColPivHouseholderQR<Eigen::Matrix3d> qr(A);
+//    if (qr.rank() == 3) {
+//      Eigen::Vector3d a = qr.solve(muA);
+//      if ((a.array() > 0.).all()) {
+//        if(verbose) {
+//          if (furthest)
+//            std::cout << " furthest point inside polygone " <<
+//              muA.transpose() << std::endl;
+//          else 
+//            std::cout << " closest point inside polygone " <<
+//              muA.transpose() << std::endl;
+//        }
+//        return muA;
+//      }
+//    }
+//  }
+//  // Check the edges and corners.
+//  Eigen::MatrixXd ps(3, 4+6);
+//  uint32_t k = 0;
+//  for (uint32_t i=0; i<4; ++i) {
+//    ps.col(k++) = mus[i];
+//    for (uint32_t j=i+1; j<4; ++j)
+//      ps.col(k++) = ComputeExtremumOnGeodesic(mus[i],
+//          mus[j], vmf_A.GetMu(), verbose);
+//  }
+//  Eigen::VectorXd dots = ps.transpose()*vmf_A.GetMu();
+////  std::cout << "dots " << dots.transpose() << std::endl;
+//  uint32_t id = 0;
+//  if (furthest) 
+//    dots.minCoeff(&id);
+//  else
+//    dots.maxCoeff(&id);
+//
+//  if (verbose) {
+//    if (furthest) {
+//      std::cout << " furthest point on polygone:\n" << ps.col(id).transpose() 
+//        << std::endl;
+//    } else {
+//      std::cout << " closest point on polygone:\n" << ps.col(id).transpose() 
+//        << std::endl;
+//    }
+//  }
+//  return ps.col(id);
 }
 
 Eigen::Vector3d FurthestPointInTetrahedron(const vMF<3>& vmf_A, const
     vMF<3>& vmf_B, const Tetrahedron4D& tetrahedron, bool verbose) {
-//  // TODO: I hope this works - but need to test it.
-//  vMF<3> vmf_A_neg(-vmf_A.GetMu(), vmf_A.GetTau(), vmf_A.GetPi());
   return ClosestPointInTetrahedron(vmf_A, vmf_B, tetrahedron, true, verbose);
 }
 }

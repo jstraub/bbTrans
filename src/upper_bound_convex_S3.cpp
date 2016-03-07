@@ -27,70 +27,46 @@ Eigen::Matrix<double,4,4> BuildM(const Eigen::Vector3d& u, const
   return M;
 }
 
-double FindMaximumQAQ(const Eigen::Matrix4d& A, const Tetrahedron4D&
-    tetrahedron, bool verbose) {
-  std::vector<double> lambdas;
-  Eigen::Matrix4d Q;
-  for (uint32_t i=0; i<4; ++i)
-    Q.col(i) = tetrahedron.GetVertex(i);
-  if(verbose) {
-    std::cout << " q_true in Q? " << std::endl;
-    Eigen::FullPivLU<Eigen::Matrix<double,4,4>> lu(Q);
-    Eigen::Vector4d q_tr(-0.285745, -0.234756, -0.690839, -0.621274);
-    std::cout << "alpha: " << lu.solve(q_tr).transpose() << std::endl;
 
-    Eigen::Quaterniond q_true(-0.285745, -0.234756, -0.690839, -0.621274);
-    for (uint32_t i=0; i<4; ++i)
-      std::cout << " angle to true: " << q_true.angularDistance(
-        tetrahedron.GetVertexQuaternion(i))*180./M_PI << std::endl;
-  }
+
+double FindMaximumQAQ(const Eigen::Matrix4d& A, const
+  Eigen::Matrix<double,4,Eigen::Dynamic> Q, bool verbose) {
+  assert(Q.cols() >= 4);
+  std::vector<double> lambdas;
   // Only one q: 
-  for (uint32_t i=0; i<4; ++i) {
+  for (uint32_t i=0; i<Q.cols(); ++i) {
     lambdas.push_back(Q.col(i).transpose() * A * Q.col(i));
     if(verbose) std::cout<<"lambda 1x1 " << lambdas[i] << std::endl;
   }
   // Full problem:
   Eigen::Matrix4d A_ = Q.transpose() * A * Q;
   Eigen::Matrix4d B_ = Q.transpose() * Q;
-  double lambda = 0.;
-  if (FindLambda<4>(A_,B_, &lambda, verbose)) {
-    lambdas.push_back(lambda);
-    if(verbose) std::cout<<"lambda Full " << lambda << std::endl;
-  }
-  // Only three or two qs: 
-  Combinations comb43s(4,3);
-  for (auto comb : comb43s.Get()) {
-    Eigen::Matrix3d A__; 
-    Eigen::Matrix3d B__;
-    for (uint32_t i=0; i<3; ++i)
-      for (uint32_t j=0; j<3; ++j) {
-        A__(i,j) = A_(comb[i],comb[j]);
-        B__(i,j) = B_(comb[i],comb[j]);
-      }
-    if (FindLambda<3>(A__, B__, &lambda, verbose)) {
-      lambdas.push_back(lambda);
-    if(verbose) std::cout<<"lambda 3x3 " << lambda << std::endl;
-    }
-  }
-  Combinations comb42s(4,2);
-  for (auto comb : comb42s.Get()) {
-    Eigen::Matrix2d A__; 
-    Eigen::Matrix2d B__;
-    for (uint32_t i=0; i<2; ++i)
-      for (uint32_t j=0; j<2; ++j) {
-        A__(i,j) = A_(comb[i],comb[j]);
-        B__(i,j) = B_(comb[i],comb[j]);
-      }
-    if (FindLambda<2>(A__, B__, &lambda, verbose)) {
-      lambdas.push_back(lambda);
-    if(verbose) std::cout<<"lambda 2x2 " << lambda << std::endl;
-    }
-  }
-//  std::cout << "Q" << std::endl << Q << std::endl;
-//  for (auto l : lambdas) 
-//    std::cout << l << " ";
-//  std::cout << std::endl;
+  ComputeLambdasOfSubset<2>(A_,B_,Q,verbose,lambdas);
+  ComputeLambdasOfSubset<3>(A_,B_,Q,verbose,lambdas);
+  ComputeLambdasOfSubset<4>(A_,B_,Q,verbose,lambdas);
+  if (Q.cols() > 4)
+    ComputeLambdasOfSubset<5>(A_,B_,Q,verbose,lambdas);
+  if (Q.cols() > 5)
+    ComputeLambdasOfSubset<6>(A_,B_,Q,verbose,lambdas);
+  if (Q.cols() > 6)
+    ComputeLambdasOfSubset<7>(A_,B_,Q,verbose,lambdas);
+  if (Q.cols() > 7)
+    ComputeLambdasOfSubset<8>(A_,B_,Q,verbose,lambdas);
+  if (Q.cols() > 8)
+    ComputeLambdasOfSubset<9>(A_,B_,Q,verbose,lambdas);
+  if (Q.cols() > 9)
+    std::cout << "ERROR: FindMaximumQAQ does not compute all lambdas;"
+      << " you have to many rotations in the set." << std::endl;
   return *std::max_element(lambdas.begin(), lambdas.end());
+}
+
+double FindMaximumQAQ(const Eigen::Matrix4d& A, const Tetrahedron4D&
+    tetrahedron, bool verbose) {
+  std::vector<double> lambdas;
+  Eigen::Matrix<double,4,Eigen::Dynamic> Q(4,4);
+  for (uint32_t i=0; i<4; ++i)
+    Q.col(i) = tetrahedron.GetVertex(i);
+  return FindMaximumQAQ(A,Q,verbose);
 }
 
 double UpperBoundConvexS3::Evaluate(const NodeS3& node) {

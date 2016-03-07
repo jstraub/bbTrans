@@ -28,6 +28,12 @@ class UpperBoundConvexS3 : public Bound<NodeS3> {
 Eigen::Matrix<double,4,4> BuildM(const Eigen::Vector3d& u, const
     Eigen::Vector3d& v);
 
+
+double FindMaximumQAQ(const Eigen::Matrix4d& A, const
+  Eigen::Matrix<double,4,Eigen::Dynamic> Q, bool verbose);
+double FindMaximumQAQ(const Eigen::Matrix4d& A, const Tetrahedron4D&
+    tetrahedron, bool verbose);
+
 template<uint32_t D>
 bool FindLambda(const Eigen::Matrix<double, D,D>& A, const
     Eigen::Matrix<double, D,D>& B, double* lambda, bool verbose) {
@@ -97,6 +103,29 @@ bool FindLambda(const Eigen::Matrix<double, D,D>& A, const
     }
   } 
   return false;
+}
+
+
+template<uint32_t k> 
+void ComputeLambdasOfSubset(const Eigen::MatrixXd& A, const
+    Eigen::MatrixXd& B, const Eigen::Matrix<double,4,Eigen::Dynamic> Q,
+    bool verbose,
+    std::vector<double>& lambdas) {
+  Combinations combNKs(Q.cols(),k);
+  for (auto comb : combNKs.Get()) {
+    Eigen::Matrix<double,k,k> A_; 
+    Eigen::Matrix<double,k,k> B_;
+    for (uint32_t i=0; i<k; ++i)
+      for (uint32_t j=0; j<k; ++j) {
+        A_(i,j) = A(comb[i],comb[j]);
+        B_(i,j) = B(comb[i],comb[j]);
+      }
+    double lambda = 0.;
+    if (FindLambda<k>(A_, B_, &lambda, verbose)) {
+      lambdas.push_back(lambda);
+      if(verbose) std::cout<<"lambda "<<k<<"x"<<k<<" "<< lambda << std::endl;
+    }
+  }
 }
 
 //template<uint32_t D>

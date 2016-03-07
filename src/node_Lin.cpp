@@ -1,4 +1,4 @@
-/* Copyright (c) 2015, Julian Straub <jstraub@csail.mit.edu> Licensed
+/* Copyright (c) 2016, Julian Straub <jstraub@csail.mit.edu> Licensed
  * under the MIT license. See the license file LICENSE.
  */
 #include "bbTrans/node_Lin.h"
