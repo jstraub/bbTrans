@@ -25,6 +25,7 @@ class NodeTpS3 : public NodeLin {
   virtual ~NodeTpS3() = default;
   virtual std::vector<NodeTpS3> Branch() const;
 
+  std::string GetSpace() const { return "TpS3"; }
  protected:
   virtual Tetrahedron4D TetraFromBox(const Box& box, uint32_t i0, uint32_t i1,
     uint32_t i2, uint32_t i3);
