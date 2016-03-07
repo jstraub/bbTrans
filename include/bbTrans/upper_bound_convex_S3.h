@@ -23,10 +23,12 @@ class UpperBoundConvexS3 : public Bound<NodeS3> {
  private:
   const vMFMM<3>& vmf_mm_A_;
   const vMFMM<3>& vmf_mm_B_;
+  static Eigen::Matrix<double,4,4> BuildM(const Eigen::Vector3d& u, const
+    Eigen::Vector3d& v);
+
+  double EvaluateRotationSet(const std::vector<Eigen::Quaterniond>& qs) const;
 };
 
-Eigen::Matrix<double,4,4> BuildM(const Eigen::Vector3d& u, const
-    Eigen::Vector3d& v);
 
 
 double FindMaximumQAQ(const Eigen::Matrix4d& A, const

@@ -33,6 +33,10 @@ Eigen::Vector3d ClosestPointInRotationSet(const vMF<3>& vmf_A, const
     vMF<3>& vmf_B, const std::vector<Eigen::Quaterniond>& qs, bool
     furthest=false, bool verbose=false);
 
+Eigen::Vector3d FurthestPointInRotationSet(const vMF<3>& vmf_A, const
+    vMF<3>& vmf_B, const std::vector<Eigen::Quaterniond>& qs, 
+    bool verbose);
+
 /// This function just calls ClosestPointInRotationSet with the
 /// rotations implied by Tetrahedron.
 Eigen::Vector3d ClosestPointInTetrahedron(const vMF<3>& vmf_A, const

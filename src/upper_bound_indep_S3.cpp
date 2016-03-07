@@ -11,11 +11,9 @@ UpperBoundIndepS3::UpperBoundIndepS3(const vMFMM<3>& vmf_mm_A, const vMFMM<3>&
 {}
 
 double UpperBoundIndepS3::Evaluate(const NodeS3& node) {
-
   std::vector<Eigen::Quaterniond> qs(4);
   for (uint32_t i=0; i<4; ++i)
     qs[i] = node.GetTetrahedron().GetVertexQuaternion(i);
-
   return EvaluateRotationSet(qs);
 }
 
@@ -139,6 +137,12 @@ Eigen::Vector3d ClosestPointInRotationSet(const vMF<3>& vmf_A, const
   return ps.col(id);
 }
 
+Eigen::Vector3d FurthestPointInRotationSet(const vMF<3>& vmf_A, const
+    vMF<3>& vmf_B, const std::vector<Eigen::Quaterniond>& qs, 
+    bool verbose) {
+  return ClosestPointInRotationSet(vmf_A, vmf_B, qs, true, verbose);
+}
+
 Eigen::Vector3d ClosestPointInTetrahedron(const vMF<3>& vmf_A, const
     vMF<3>& vmf_B, const Tetrahedron4D& tetrahedron, bool furthest,
     bool verbose) {
@@ -146,76 +150,6 @@ Eigen::Vector3d ClosestPointInTetrahedron(const vMF<3>& vmf_A, const
   for (uint32_t i=0; i<4; ++i)
     qs[i] = tetrahedron.GetVertexQuaternion(i);
   return ClosestPointInRotationSet(vmf_A, vmf_B, qs, furthest, verbose);
-
-//  Eigen::Vector3d muA = vmf_A.GetMu();
-////  std::cout << " muA " << muA.transpose() << std::endl;
-//  if (furthest) muA *= -1.;
-//  std::vector<Eigen::Vector3d> mus(4);
-//  for (uint32_t i=0; i<4; ++i) {
-//    mus[i] = tetrahedron.GetVertexQuaternion(i)._transformVector(vmf_B.GetMu());
-////    std::cout << " muB " << i << " " 
-////      << tetrahedron.GetVertex(i).transpose() << " -> "
-////      << tetrahedron.GetVertexQuaternion(i).coeffs().transpose() << " -> "
-////      << mus[i].transpose() << std::endl;
-//  }
-//
-//  if(verbose) {
-//    std::cout << "-- Polygone:\n";
-//    for (auto& mu : mus)
-//      std::cout << mu.transpose() << std::endl;
-//    std::cout << " query:\n" << vmf_A.GetMu().transpose(); 
-//  }
-//    
-//  // Check if muA is in any of the triangles spanned by the rotated
-//  // muBs
-//  Eigen::Matrix3d A;
-//  Combinations combinations(4,3);
-//  for (auto tri : combinations.Get()) {
-//    A << mus[tri[0]], mus[tri[1]], mus[tri[2]];
-//    // Check if muA inside triangle of rotated muBs
-//    Eigen::ColPivHouseholderQR<Eigen::Matrix3d> qr(A);
-//    if (qr.rank() == 3) {
-//      Eigen::Vector3d a = qr.solve(muA);
-//      if ((a.array() > 0.).all()) {
-//        if(verbose) {
-//          if (furthest)
-//            std::cout << " furthest point inside polygone " <<
-//              muA.transpose() << std::endl;
-//          else 
-//            std::cout << " closest point inside polygone " <<
-//              muA.transpose() << std::endl;
-//        }
-//        return muA;
-//      }
-//    }
-//  }
-//  // Check the edges and corners.
-//  Eigen::MatrixXd ps(3, 4+6);
-//  uint32_t k = 0;
-//  for (uint32_t i=0; i<4; ++i) {
-//    ps.col(k++) = mus[i];
-//    for (uint32_t j=i+1; j<4; ++j)
-//      ps.col(k++) = ComputeExtremumOnGeodesic(mus[i],
-//          mus[j], vmf_A.GetMu(), verbose);
-//  }
-//  Eigen::VectorXd dots = ps.transpose()*vmf_A.GetMu();
-////  std::cout << "dots " << dots.transpose() << std::endl;
-//  uint32_t id = 0;
-//  if (furthest) 
-//    dots.minCoeff(&id);
-//  else
-//    dots.maxCoeff(&id);
-//
-//  if (verbose) {
-//    if (furthest) {
-//      std::cout << " furthest point on polygone:\n" << ps.col(id).transpose() 
-//        << std::endl;
-//    } else {
-//      std::cout << " closest point on polygone:\n" << ps.col(id).transpose() 
-//        << std::endl;
-//    }
-//  }
-//  return ps.col(id);
 }
 
 Eigen::Vector3d FurthestPointInTetrahedron(const vMF<3>& vmf_A, const
