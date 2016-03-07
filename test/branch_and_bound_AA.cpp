@@ -63,16 +63,16 @@ int main(int argc, char** argv) {
 //  std::cout << root.ToString() << std::endl;
   std::vector<NodeAA> l1 = root.Branch();
   std::list<NodeAA> nodes;
-  for (auto& node1 : l1) {
-    std::vector<NodeAA> l2 = node1.Branch();
+//  for (auto& node1 : l1) {
+//    std::vector<NodeAA> l2 = node1.Branch();
 //    for (auto& node2 : l2) {
 //      std::vector<NodeAA> l3 = node2.Branch();
 //      for (auto& node3 : l3) {
 //        std::vector<NodeAA> l4 = node3.Branch();
-        nodes.insert(nodes.end(), l2.begin(), l2.end());
+        nodes.insert(nodes.end(), l1.begin(), l1.end());
 //      }
 //    }
-  }
+//  }
   std::cout << "initial # nodes: " << nodes.size() << std::endl;
 
 //  for (const auto& node : nodes) {
@@ -80,8 +80,8 @@ int main(int argc, char** argv) {
 //  }
   
   double eps = 1.0e-8;
-  uint32_t max_it = 100;
-  uint32_t max_lvl = 100;
+  uint32_t max_it = 1000;
+  uint32_t max_lvl = 16;
   BranchAndBound<NodeAA> bb(lower_bound, upper_bound_convex);
   NodeAA node_star = bb.Compute(nodes, eps, max_lvl, max_it);
 

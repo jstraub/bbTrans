@@ -57,6 +57,13 @@ struct LessThanNodeLB {
   {return node_a.GetLB() < node_b.GetLB();}
 };
 
+//template <class Node>
+//struct LessThanNodeLBAndTighter {
+//  bool operator() (const Node& node_a, const Node& node_b) 
+//  {return (node_a.GetLB() < node_b.GetLB()) 
+//    && (node_a.GetUB() - node_a.GetLB() > node_b.GetUB() - node_b.GetLB());}
+//};
+
 template<class Node>
 std::vector<uint32_t> CountBranchesInTree(const std::list<Node>& nodes);
 

@@ -56,8 +56,8 @@ int main(int argc, char** argv) {
   UpperBoundConvexS3 upper_bound_convex(vmf_mm_A, vmf_mm_B);
   
   double eps = 1.0e-8;
-  uint32_t max_it = 100;
-  uint32_t max_lvl = 100;
+  uint32_t max_it = 1000;
+  uint32_t max_lvl = 16;
   BranchAndBound<NodeS3> bb(lower_bound, upper_bound_convex);
   NodeS3 node_star = bb.Compute(nodes, eps, max_lvl, max_it);
 

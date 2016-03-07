@@ -88,13 +88,25 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     // to explore further.
     auto node_i = std::max_element(nodes.begin(), nodes.end(),
         LessThanNodeUB<Node>());
-    if (node_i->GetLevel() >= max_lvl) break;
+    // Find the current best estimate as the maximizer of the lower
+    // bounds
+    auto node_star = std::max_element(nodes.begin(), nodes.end(),
+        LessThanNodeLB<Node>());
+    uint32_t Neq = 0;
+    for (const auto& node : nodes) {
+      if (node_star->GetLB() - node.GetLB() < 1e-6)
+        ++ Neq;
+    }
+    std::cout << " equal best nodes: " << Neq << std::endl;
+    if (node_star->GetLevel() >= max_lvl) break;
     // Find the node with the biggest lower bound (the most
     // conservative node to return).
     if (it%(max_it/10) == 0)
       std::cout << "@" << it << " # " << n_nodes 
-        << ": cur " << node_i->GetLB() << " < " << node_i->GetUB() 
+        << ": exploring " << node_i->GetLB() << " < " << node_i->GetUB() 
         << " lvl " << node_i->GetLevel()
+        << ": best " << node_star->GetLB() << " < " << node_star->GetUB() 
+        << " lvl " << node_star->GetLevel()
         << "\t global "
         << lb << " < " << ub << " " << " |.| " << (ub - lb)/lb
         << std::endl;
