@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
   
   double eps = 1.0e-8;
   uint32_t max_it = 1000;
-  uint32_t max_lvl = 100;
+  uint32_t max_lvl = 20;
   BranchAndBound<NodeTpS3> bb(lower_bound, upper_bound_convex);
   NodeTpS3 node_star = bb.Compute(nodes, eps, max_lvl, max_it);
 

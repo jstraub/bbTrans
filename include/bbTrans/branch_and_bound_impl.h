@@ -86,18 +86,10 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
   do  {
     // Find node with the biggest upper bound (the most promising node)
     // to explore further.
-    auto node_i = std::max_element(nodes.begin(), nodes.end(),
-        LessThanNodeUB<Node>());
+    auto node_i = FindBestNodeToExplore(nodes, eps);
     // Find the current best estimate as the maximizer of the lower
     // bounds
-    auto node_star = std::max_element(nodes.begin(), nodes.end(),
-        LessThanNodeLB<Node>());
-    uint32_t Neq = 0;
-    for (const auto& node : nodes) {
-      if (node_star->GetLB() - node.GetLB() < 1e-6)
-        ++ Neq;
-    }
-    std::cout << " equal best nodes: " << Neq << std::endl;
+    auto node_star = FindBestNode(nodes, eps);
     if (node_star->GetLevel() >= max_lvl) break;
     // Find the node with the biggest lower bound (the most
     // conservative node to return).
@@ -140,8 +132,7 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     if (write_stats) WriteNodes(outNodes, nodes, lb, ub);
   } while (it++ < max_it && (ub - lb)/lb > eps && n_nodes >= 1);
 
-  Node node_star = *std::max_element(nodes.begin(), nodes.end(),
-      LessThanNodeLB<Node>());
+  Node node_star = *FindBestNode(nodes, eps);
 
   std::cout << "@" << it << " # " << n_nodes << ": global " 
     << lb << " < " << ub << " " << " |.| " << fabs(ub - lb)/lb << "\t selected "
@@ -152,6 +143,40 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
   if (write_stats) out.close();
   if (write_stats) outNodes.close();
   return node_star;
+}
+
+template<class Node>
+typename std::list<Node>::iterator BranchAndBound<Node>::FindBestNodeToExplore(std::list<Node>& nodes, double eps) {
+  auto node_i = std::max_element(nodes.begin(), nodes.end(),
+      LessThanNodeUB<Node>());
+  uint32_t Neq = 0;
+  auto node_istar = node_i;
+  for (auto it=nodes.begin(); it!=nodes.end(); it++) 
+    if (node_i->GetUB() - it->GetUB() < eps && it->GetLB() > node_istar->GetLB()) {
+      ++ Neq;
+      node_istar = it;
+    }
+  if (Neq > 1) {
+    std::cout << " equal to explore node updates: " << Neq << std::endl;
+  }
+  return node_istar;
+}
+
+template<class Node>
+typename std::list<Node>::iterator BranchAndBound<Node>::FindBestNode(std::list<Node>& nodes, double eps) {
+  auto node_star = std::max_element(nodes.begin(), nodes.end(),
+      LessThanNodeLB<Node>());
+  uint32_t Neq = 0;
+  auto node_starstar = node_star;
+  for (auto it=nodes.begin(); it!=nodes.end(); it++) 
+    if (node_star->GetLB() - it->GetLB() < eps && it->GetUB() < node_starstar->GetUB()) {
+      node_starstar = it;
+      ++ Neq;
+    }
+  if (Neq > 1) {
+    std::cout << " equal best nodes: " << Neq << std::endl;
+  }
+  return node_starstar;
 }
 
 }
