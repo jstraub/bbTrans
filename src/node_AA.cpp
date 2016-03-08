@@ -56,7 +56,7 @@ std::list<NodeAA> TessellateAA() {
   NodeAA root10(Box(p_min, p_max),std::vector<uint32_t>(1,1));
   p_min << 0.,0.,-M_PI;
   p_max << M_PI, M_PI, M_PI;
-  NodeAA root01(Box(p_min, p_max),std::vector<uint32_t>(1,1));
+  NodeAA root11(Box(p_min, p_max),std::vector<uint32_t>(1,1));
 //  std::cout << root.ToString() << std::endl;
   std::vector<NodeAA> l1 = root00.Branch();
   std::vector<NodeAA> a = root01.Branch();

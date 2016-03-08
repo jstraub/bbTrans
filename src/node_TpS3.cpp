@@ -35,5 +35,41 @@ std::vector<NodeTpS3> NodeTpS3::Branch() const {
   return nodes;
 }
 
+std::list<NodeTpS3> TessellateTpS3() {
+  // split into 4 cubes for level 4 so that at level 2 we have 256
+  // cubes which is close to the 270 of the 600-cell tessellation.
+  Eigen::Vector3d p_min(-0.5*M_PI,-0.5*M_PI,-0.5*M_PI);
+  Eigen::Vector3d p_max( 0., 0., 0.5*M_PI);
+  NodeTpS3 root00(Box(p_min, p_max),std::vector<uint32_t>(1,0));
+  p_min << -0.5*M_PI,0.,-0.5*M_PI;
+  p_max << 0., 0.5*M_PI, 0.5*M_PI;
+  NodeTpS3 root01(Box(p_min, p_max),std::vector<uint32_t>(1,1));
+  p_min << 0., -0.5*M_PI,-0.5*M_PI;
+  p_max << 0.5*M_PI, 0., 0.5*M_PI;
+  NodeTpS3 root10(Box(p_min, p_max),std::vector<uint32_t>(1,1));
+  p_min << 0.,0.,-0.5*M_PI;
+  p_max << 0.5*M_PI, 0.5*M_PI, 0.5*M_PI;
+  NodeTpS3 root11(Box(p_min, p_max),std::vector<uint32_t>(1,1));
+//  std::cout << root.ToString() << std::endl;
+  std::vector<NodeTpS3> l1 = root00.Branch();
+  std::vector<NodeTpS3> a = root01.Branch();
+  l1.insert(l1.end(),a.begin(), a.end());
+  a = root10.Branch();
+  l1.insert(l1.end(),a.begin(), a.end());
+  a = root11.Branch();
+  l1.insert(l1.end(),a.begin(), a.end());
+  std::list<NodeTpS3> nodes;
+  for (auto& node1 : l1) {
+    std::vector<NodeTpS3> l2 = node1.Branch();
+//    for (auto& node2 : l2) {
+//      std::vector<NodeTpS3> l3 = node2.Branch();
+//      for (auto& node3 : l3) {
+//        std::vector<NodeTpS3> l4 = node3.Branch();
+        nodes.insert(nodes.end(), l2.begin(), l2.end());
+//      }
+//    }
+  }
+  return nodes;
+}
 
 }

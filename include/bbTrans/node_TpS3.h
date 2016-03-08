@@ -29,4 +29,6 @@ class NodeTpS3 : public NodeLin {
  protected:
   virtual Eigen::Quaterniond Project(const Eigen::Vector3d& c) const;
 };
+
+std::list<NodeTpS3> TessellateTpS3();
 }
