@@ -45,12 +45,15 @@ bool FindLambda(const Eigen::Matrix<double, D,D>& A, const
   Eigen::Matrix<double, D, D> V = ges.eigenvectors();
 
   if(verbose) {
-    std::cout << "EVs " << ev.transpose() << std::endl;
-    std::cout << V << std::endl;
     Eigen::Matrix<double,D,D> err = (A*V - B*V*ev.asDiagonal());
     if (err.norm() > 1e-6)
-      std::cout << "Error in GES " << std::endl 
-        << err << std::endl;
+      std::cout << "D=" << D << " -------------" << std::endl;
+      std::cout << "EVs " << ev.transpose() << std::endl;
+      std::cout << V << std::endl;
+      std::cout << "Error in GES " 
+        << std::endl << err << std::endl
+        << std::endl << A << std::endl
+        << std::endl << B << std::endl;
 //    std::cout << "VTBV:\n" << V.transpose()*B*V << std::endl;
   }
 
@@ -86,7 +89,7 @@ bool FindLambda(const Eigen::Matrix<double, D,D>& A, const
 //  std::cout << es.eigenvectors().transpose() * es.eigenvectors() << std::endl;
 ////  std::cout << V << std::endl;
   
-    // initialize original index locations
+  // initialize original index locations
   std::vector<size_t> idx(ev.size());
   for (size_t i = 0; i != idx.size(); ++i) idx[i] = i;
   // sort indexes based on comparing values in v

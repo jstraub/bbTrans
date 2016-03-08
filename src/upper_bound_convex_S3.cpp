@@ -47,7 +47,9 @@ double UpperBoundConvexS3::EvaluateRotationSet(const
   for (uint32_t i=0; i<qs.size(); ++i) {
     Q(0,i) = qs[i].w();
     Q.block<3,1>(1,i) = qs[i].vec();
+//    std::cout << Q.col(i).norm() << " ";
   }
+//  std::cout << std::endl << Q << std::endl;
 
   std::vector<Eigen::Matrix4d> Melem(vmf_mm_A_.GetK()*vmf_mm_B_.GetK());
   Eigen::VectorXd Aelem(vmf_mm_A_.GetK()*vmf_mm_B_.GetK());
@@ -169,8 +171,11 @@ double FindMaximumQAQ(const Eigen::Matrix4d& A, const
     if(verbose) std::cout<<"lambda 1x1 " << lambdas[i] << std::endl;
   }
   // Full problem:
-  Eigen::Matrix4d A_ = Q.transpose() * A * Q;
-  Eigen::Matrix4d B_ = Q.transpose() * Q;
+  Eigen::MatrixXd A_ = Q.transpose() * A * Q;
+  Eigen::MatrixXd B_ = Q.transpose() * Q;
+
+//  std::cout << "full A and B: " << std::endl
+//    << A_ << std::endl << B_ << std::endl;
   ComputeLambdasOfSubset<2>(A_,B_,Q,verbose,lambdas);
   ComputeLambdasOfSubset<3>(A_,B_,Q,verbose,lambdas);
   ComputeLambdasOfSubset<4>(A_,B_,Q,verbose,lambdas);
@@ -187,6 +192,10 @@ double FindMaximumQAQ(const Eigen::Matrix4d& A, const
   if (Q.cols() > 9)
     std::cout << "ERROR: FindMaximumQAQ does not compute all lambdas;"
       << " you have to many rotations in the set." << std::endl;
+//  std::cout << "lambda: " ;
+//  for (auto l : lambdas)
+//    std::cout << l << " ";
+//  std::cout << std::endl;
   return *std::max_element(lambdas.begin(), lambdas.end());
 }
 
