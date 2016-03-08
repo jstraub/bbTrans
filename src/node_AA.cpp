@@ -41,11 +41,30 @@ std::vector<NodeAA> NodeAA::Branch() const {
 }
 
 std::list<NodeAA> TessellateAA() {
+//  Eigen::Vector3d p_min(-M_PI,-M_PI,-M_PI);
+//  Eigen::Vector3d p_max( M_PI, M_PI, M_PI);
+  // split into 4 cubes for level 4 so that at level 2 we have 256
+  // cubes which is close to the 270 of the 600-cell tessellation.
   Eigen::Vector3d p_min(-M_PI,-M_PI,-M_PI);
-  Eigen::Vector3d p_max(M_PI,M_PI,M_PI);
-  NodeAA root(Box(p_min, p_max),std::vector<uint32_t>(0));
+  Eigen::Vector3d p_max( 0., 0., M_PI);
+  NodeAA root00(Box(p_min, p_max),std::vector<uint32_t>(1,0));
+  p_min << -M_PI,0.,-M_PI;
+  p_max << 0., M_PI, M_PI;
+  NodeAA root01(Box(p_min, p_max),std::vector<uint32_t>(1,1));
+  p_min << 0., -M_PI,-M_PI;
+  p_max << M_PI, 0., M_PI;
+  NodeAA root10(Box(p_min, p_max),std::vector<uint32_t>(1,1));
+  p_min << 0.,0.,-M_PI;
+  p_max << M_PI, M_PI, M_PI;
+  NodeAA root01(Box(p_min, p_max),std::vector<uint32_t>(1,1));
 //  std::cout << root.ToString() << std::endl;
-  std::vector<NodeAA> l1 = root.Branch();
+  std::vector<NodeAA> l1 = root00.Branch();
+  std::vector<NodeAA> a = root01.Branch();
+  l1.insert(l1.end(),a.begin(), a.end());
+  a = root10.Branch();
+  l1.insert(l1.end(),a.begin(), a.end());
+  a = root11.Branch();
+  l1.insert(l1.end(),a.begin(), a.end());
   std::list<NodeAA> nodes;
   for (auto& node1 : l1) {
     std::vector<NodeAA> l2 = node1.Branch();
