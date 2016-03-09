@@ -6,6 +6,26 @@
 namespace bb {
 
 std::vector<Tetrahedron4D> TessellateS3() {
+  // Search for a north pole to split the sphere into two halfs of
+  // equal size.  The standard north 1,0,0,0 dooes not work;
+  S4d north;
+  for (uint32_t i=0; i<1000; ++i) {
+    north = S4d::Random();
+    std::vector<Tetrahedron4D> tetrahedra = TessellateS3(north.vector());
+    if ( tetrahedra.size() == 300)  {
+      break;
+    }
+  }
+  std::cout << "Found north for division of the sphere into two equal halfs" 
+      << std::endl << north << std::endl;
+  std::cout << "theta " << 2.*acos(north.vector()(0))*180./M_PI
+    << std::endl << "axis= " 
+    << north.vector().bottomRows(3).transpose()/sin(acos(north.vector()(0))) 
+    << std::endl;
+  return TessellateS3(north.vector());
+}
+
+std::vector<Tetrahedron4D> TessellateS3(const Eigen::Vector4d& north) {
   std::vector<Tetrahedron4D> tetrahedra;
   tetrahedra.reserve(600);
   
@@ -55,19 +75,17 @@ std::vector<Tetrahedron4D> TessellateS3() {
   vertices *= 0.5;
   assert(i == 120);
   // Filter out half of the sphere.
-  Eigen::Vector4d north;
-  north << 1., 0., 0., 0.;
   uint32_t j = 0;
   for (i = 0; i < 120; ++i) {
-    // this does a bit less than half the sphere
+    // this does a bit less than half the sphere (90)
 //    if (acos(north.transpose() * vertices.col(i)) <= 90.*M_PI/180.){
-    // This does a bit more than half the sphere
-    if (acos(north.transpose() * vertices.col(i)) <= 108.*M_PI/180.){
+    // This does a bit more than half the sphere (108)
+    if (acos(north.transpose() * vertices.col(i)) <= 105.*M_PI/180.){
 //    if (acos(north.transpose() * vertices.col(i)) <= 120.*M_PI/180.){
       vertices.col(j++) = vertices.col(i); 
 //    } else {
-//      std::cout << acos(north.transpose() * vertices.col(i))*180./M_PI << std::endl;
     }
+//      std::cout << acos(north.transpose() * vertices.col(i))*180./M_PI << std::endl;
   }
 
   uint32_t n_vertices = j;

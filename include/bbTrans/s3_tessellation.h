@@ -13,6 +13,7 @@
 namespace bb {
 
 std::vector<Tetrahedron4D> TessellateS3();
+std::vector<Tetrahedron4D> TessellateS3(const Eigen::Vector4d& north);
 void TessellationTest(std::vector<Tetrahedron4D>& tetrahedra, uint32_t Nsamples);
 
 }
