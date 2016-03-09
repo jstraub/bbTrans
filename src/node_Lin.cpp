@@ -62,23 +62,40 @@ Eigen::Quaterniond NodeLin::GetCenter() const {
   return Project(nodeLin_.GetBox().GetCenter());
 }
 
+Eigen::Vector4d NodeLin::QuaternionToVec(const Eigen::Quaterniond& q) {
+  return Eigen::Vector4d(q.w(),q.x(),q.y(),q.z());
+}
+
+Tetrahedron4D NodeLin::TetraFromBox(const Box& box, uint32_t i,
+    uint32_t j, uint32_t k, uint32_t l) const {
+  Eigen::Vector3d a;
+  box.GetCorner(i,a);
+  Eigen::Vector3d b;
+  box.GetCorner(j,b);
+  Eigen::Vector3d c;
+  box.GetCorner(k,c);
+  Eigen::Vector3d d;
+  box.GetCorner(l,d);
+  return Tetrahedron4D(QuaternionToVec(Project(a)),
+      QuaternionToVec(Project(b)),
+      QuaternionToVec(Project(c)),
+      QuaternionToVec(Project(d)));
+}
+
 double NodeLin::GetVolume() const { 
   // subdivide box in Lin space into 4 tetrahedra and sum their volumes
   // https://www.ics.uci.edu/~eppstein/projects/tetra/
-//  nodeS3s_.reserve(5);
-//  // NodeS3 1: 0 4 5 7
-//  Tetrahedron4D t = TetraFromBox(box, 0, 4, 5, 7);
-//  // NodeS3 2: 1 4 5 6
-//  t = TetraFromBox(box, 1, 4, 5, 6);
-//  // NodeS3 3: 2 4 6 7
-//  t = TetraFromBox(box, 2, 4, 6, 7);
-//  // NodeS3 4: 3 5 6 7
-//  t = TetraFromBox(box, 3, 5, 6, 7);
-//  // NodeS3 5: 0 1 2 3
-//  t = TetraFromBox(box, 0, 1, 2, 3);
-//
-//  return nodeLin_.GetVolume();
-  return 0.;
+  // NodeS3 1: 0 4 5 7
+  double V = TetraFromBox(nodeLin_.GetBox(), 0, 4, 5, 7).GetVolume();
+  // NodeS3 2: 1 4 5 6
+  V += TetraFromBox(nodeLin_.GetBox(), 1, 4, 5, 6).GetVolume();
+  // NodeS3 3: 2 4 6 7
+  V += TetraFromBox(nodeLin_.GetBox(), 2, 4, 6, 7).GetVolume();
+  // NodeS3 4: 3 5 6 7
+  V += TetraFromBox(nodeLin_.GetBox(), 3, 5, 6, 7).GetVolume();
+  // NodeS3 5: 0 1 2 3
+  V += TetraFromBox(nodeLin_.GetBox(), 0, 1, 2, 3).GetVolume();
+  return V;
 }
 
 std::string NodeLin::ToString() const {

@@ -43,5 +43,8 @@ class NodeLin : public BaseNode {
   Eigen::Quaterniond q_lb_;
   virtual void Linearize(const Box& box);
   virtual Eigen::Quaterniond Project(const Eigen::Vector3d& c) const = 0;
+  Tetrahedron4D TetraFromBox(const Box& box, uint32_t i,
+      uint32_t j, uint32_t k, uint32_t l) const;
+  static Eigen::Vector4d QuaternionToVec(const Eigen::Quaterniond& q);
 };
 }
