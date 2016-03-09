@@ -11,6 +11,49 @@ int main(int argc, char**argv) {
   std::vector<Tetrahedron4D> tetrahedra = TessellateS3();
   std::cout << tetrahedra.size() << std::endl;
 
+  double V = 0.;
+  for (const auto& tetra : tetrahedra) {
+    V += tetra.GetVolume();
+  }
+  std::cout << "Tessellation l0 volume: " << V << std::endl;
+
+//  V = 0.;
+//  for (const auto& tetra : tetrahedra) {
+//    auto l1 = tetra.Subdivide();
+//    for (const auto& t : l1) {
+//      V += t.GetVolume();
+//    }
+//  }
+//  std::cout << "Tessellation l1 volume: " << V << std::endl;
+//
+//  V = 0.;
+//  for (const auto& tetra : tetrahedra) {
+//    auto l1 = tetra.Subdivide();
+//    for (const auto& t1 : l1) {
+//      auto l2 = t1.Subdivide();
+//      for (const auto& t2 : l2) {
+//        V += t2.GetVolume();
+//      }
+//    }
+//  }
+//  std::cout << "Tessellation l2 volume: " << V << std::endl;
+//
+//  V = 0.;
+//  for (const auto& tetra : tetrahedra) {
+//    auto l1 = tetra.Subdivide();
+//    for (const auto& t1 : l1) {
+//      auto l2 = t1.Subdivide();
+//      for (const auto& t2 : l2) {
+//        auto l3 = t2.Subdivide();
+//        for (const auto& t3 : l3) {
+//          V += t3.GetVolume();
+//        }
+//      }
+//    }
+//  }
+//  std::cout << "Tessellation l3 volume: " << V << std::endl;
+  std::cout << "true volume of half sphere: " << M_PI*M_PI << std::endl;
+
   uint32_t N = 0;
   uint32_t Nall = 100000;
   for (uint32_t i=0; i<Nall; ++i) {

@@ -20,13 +20,12 @@ c3 = colorScheme("labelMap")["green"]
 #bs = np.loadtxt('./testBound.csv').T
 fig = plt.figure(figsize = figSize, dpi = 80, facecolor="w",
     edgecolor="k")
-for i,path in enumerate(['./bb_bounds_S3_t0.csv','./bb_bounds_TpS3_t0.csv',
-  './bb_bounds_R3_t0.csv']):
+for i,path in enumerate(['./bb_bounds_S3_t0.csv','./bb_bounds_TpS3_t0.csv','./bb_bounds_AA_t0.csv', './bb_bounds_R3_t0.csv']):
   bs = np.loadtxt(path).T
   bs[:3,:] = np.log(bs[:3,:])/np.log(10)
   ids = np.argsort(bs[0,:])
 
-  ax = plt.subplot(3,1,i+1)
+  ax = plt.subplot(4,1,i+1)
 #  ax.set_yscale("log")
   plt.plot(bs[1,ids],label="indep. UB",
       color=c3)
@@ -43,4 +42,4 @@ for i,path in enumerate(['./bb_bounds_S3_t0.csv','./bb_bounds_TpS3_t0.csv',
     plt.xlabel("nodes in first level of BB tree")
   plt.tight_layout(0.4)
 plt.savefig("./bb_bounds_S3_R3_t0.png", figure = fig)
-#  plt.show()
+plt.show()

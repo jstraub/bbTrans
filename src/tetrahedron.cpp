@@ -40,13 +40,47 @@ Eigen::Quaterniond Tetrahedron4D::GetVertexQuaternion(uint32_t i) const {
   return Eigen::Quaterniond(q(0), q(1), q(2), q(3));
 }
 
-double Tetrahedron4D::GetVolume() const {
-  Eigen::Matrix<double, 4,3> A;
-  A.col(0) = vertices_.col(0)-vertices_.col(3);
-  A.col(1) = vertices_.col(1)-vertices_.col(3);
-  A.col(2) = vertices_.col(2)-vertices_.col(3);
-  Eigen::JacobiSVD<Eigen::Matrix<double,4,3>> svd(A);
-  return svd.singularValues().prod()/6.;
+double Tetrahedron4D::GetVolume(const Tetrahedron4D& tetra) {
+  // The volume of a parallelepiped is the sqrt of the determinant of
+  // the Grammian matrix G
+  // https://en.wikipedia.org/wiki/Parallelepiped
+  // https://en.wikipedia.org/wiki/Gramian_matrix
+  // The volume of the n simplex is obtained by dividing the volume of
+  // the parallelepiped by the factorial of dimension.
+  // https://en.wikipedia.org/wiki/Gramian_matrix
+  Eigen::Matrix4d G = tetra.vertices_.transpose()*tetra.vertices_;
+  return sqrt(G.determinant())/6.;
+}
+
+double Tetrahedron4D::GetVolume(uint32_t maxLvl) const {
+  return RecursivelyApproximateSurfaceArea(*this, maxLvl);
+}
+
+double Tetrahedron4D::RecursivelyApproximateSurfaceArea(Tetrahedron4D
+    tetra, uint32_t lvl) const {
+  double V = 0;
+  if (lvl == 0) {
+    V = GetVolume(tetra);
+  } else {
+    std::vector<Tetrahedron4D> tetras_i = tetra.Subdivide();
+    for (auto& tetra_i: tetras_i) {
+      V += RecursivelyApproximateSurfaceArea(tetra_i, lvl-1);
+    }
+  }
+  return V;
+}
+
+void Tetrahedron4D::RecursivelySubdivide(Tetrahedron4D
+    tetra, std::vector<Tetrahedron4D>& tetras, uint32_t lvl)
+  const {
+  if (lvl == 0) {
+    tetras.push_back(tetra);
+  } else {
+    std::vector<Tetrahedron4D> tetras_i = tetra.Subdivide();
+    for (auto& tetra_i: tetras_i) {
+      RecursivelySubdivide(tetra_i, tetras, lvl-1);
+    }
+  }
 }
 
 std::vector<Tetrahedron4D> Tetrahedron4D::Subdivide() const {

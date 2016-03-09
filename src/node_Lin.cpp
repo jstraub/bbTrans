@@ -39,6 +39,15 @@ NodeLin::NodeLin(const NodeLin& node)
 //  idsInternal = std::vector<uint32_t>(1,4);
 //  nodeS3s_.push_back(NodeS3(t, idsInternal));
 //}
+NodeS3 NodeLin::GetNodeS3() const {
+  Eigen::Matrix4d Q;
+  for (uint32_t i=0; i<4; ++i) {
+    Q(0,i) = qs_[i].w();
+    Q.block<3,1>(1,i) = qs_[i].vec();
+  }
+  Tetrahedron4D t(Q);
+  return NodeS3(t, ids_);
+}
 
 void NodeLin::Linearize(const Box& box) {
   qs_.reserve(8);
@@ -54,8 +63,22 @@ Eigen::Quaterniond NodeLin::GetCenter() const {
 }
 
 double NodeLin::GetVolume() const { 
-  // TODO would be better to use space on the surface of the sphere
-  return nodeLin_.GetVolume();
+  // subdivide box in Lin space into 4 tetrahedra and sum their volumes
+  // https://www.ics.uci.edu/~eppstein/projects/tetra/
+//  nodeS3s_.reserve(5);
+//  // NodeS3 1: 0 4 5 7
+//  Tetrahedron4D t = TetraFromBox(box, 0, 4, 5, 7);
+//  // NodeS3 2: 1 4 5 6
+//  t = TetraFromBox(box, 1, 4, 5, 6);
+//  // NodeS3 3: 2 4 6 7
+//  t = TetraFromBox(box, 2, 4, 6, 7);
+//  // NodeS3 4: 3 5 6 7
+//  t = TetraFromBox(box, 3, 5, 6, 7);
+//  // NodeS3 5: 0 1 2 3
+//  t = TetraFromBox(box, 0, 1, 2, 3);
+//
+//  return nodeLin_.GetVolume();
+  return 0.;
 }
 
 std::string NodeLin::ToString() const {

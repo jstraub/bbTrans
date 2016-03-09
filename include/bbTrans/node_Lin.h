@@ -34,6 +34,7 @@ class NodeLin : public BaseNode {
   virtual std::string Serialize() const;
   std::string GetSpace() const { return "Lin"; }
   double GetVolume() const;
+  NodeS3 GetNodeS3() const;
   const std::vector<Eigen::Quaterniond>& GetQuaternions() const { return qs_; }
   std::vector<Eigen::Quaterniond>& GetQuaternions() { return qs_; }
  protected:

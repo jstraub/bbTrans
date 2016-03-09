@@ -59,8 +59,14 @@ std::vector<Tetrahedron4D> TessellateS3() {
   north << 1., 0., 0., 0.;
   uint32_t j = 0;
   for (i = 0; i < 120; ++i) {
-    if (acos(north.transpose() * vertices.col(i)) <= 90.*M_PI/180.){
+    // this does a bit less than half the sphere
+//    if (acos(north.transpose() * vertices.col(i)) <= 90.*M_PI/180.){
+    // This does a bit more than half the sphere
+    if (acos(north.transpose() * vertices.col(i)) <= 108.*M_PI/180.){
+//    if (acos(north.transpose() * vertices.col(i)) <= 120.*M_PI/180.){
       vertices.col(j++) = vertices.col(i); 
+//    } else {
+//      std::cout << acos(north.transpose() * vertices.col(i))*180./M_PI << std::endl;
     }
   }
 

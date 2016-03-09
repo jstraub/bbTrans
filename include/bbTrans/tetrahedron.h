@@ -22,12 +22,24 @@ class Tetrahedron4D {
   Eigen::Vector4d GetVertex(uint32_t i) const;
   Eigen::Quaterniond GetVertexQuaternion(uint32_t i) const;
   std::vector<Tetrahedron4D> Subdivide() const;
-  double GetVolume() const;
+  /// Get the volume of this tetrahedron projected onto S^3 by
+  /// approximating this Tetrahedron with a set of recursively
+  /// subdivided tetrahedra down to the maxLvl subdividision level.
+  double GetVolume(uint32_t maxLvl=5) const;
 
   bool Intersects(const Eigen::Vector4d& q) const;
- private:
+
+  /// Get the volume of a given Tetrahedron in 4D
+  static double GetVolume(const Tetrahedron4D& tetra);
+ protected:
   /// One 4D vertex per column. 4 vertices in total to describe the 4D
   /// Tetrahedron.
   Eigen::Matrix<double, 4, 4> vertices_;
+
+  double RecursivelyApproximateSurfaceArea(Tetrahedron4D tetra,
+    uint32_t lvl) const;
+
+  void RecursivelySubdivide(Tetrahedron4D tetra,
+    std::vector<Tetrahedron4D>& tetras, uint32_t lvl) const;
 };
 }

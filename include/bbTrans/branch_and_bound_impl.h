@@ -32,11 +32,16 @@ uint32_t BranchAndBound<Node>::BoundAndPrune(std::list<Node>& nodes, double& lb,
 }
 
 template <class Node>
-void BranchAndBound<Node>::WriteStats(std::ofstream& out, std::list<Node>& nodes, double lb, double ub) {
+void BranchAndBound<Node>::WriteStats(std::ofstream& out,
+    std::list<Node>& nodes, double lb, double ub, typename
+    std::list<Node>::iterator& node_star) {
     double V = 0.; // Volume that the nodes explain
     for (auto& node : nodes) V += node.GetVolume(); 
     uint32_t n_nodes = std::distance(nodes.begin(), nodes.end());
-    out << lb << " " << ub << " " << n_nodes << " " << V << std::endl;
+    out << lb << " " << ub << " " << n_nodes << " " << V 
+      << " " << node_star->GetLB()
+      << " " << node_star->GetUB()
+      << " " << node_star->GetLevel() << std::endl;
 };
 
 template <class Node>
@@ -79,7 +84,8 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
       node.SetUB(node.GetLB()+eps); 
     }
   }
-  if (write_stats) WriteStats(out, nodes, lb, ub);
+  typename std::list<Node>::iterator node_star = FindBestNode(nodes, eps);
+  if (write_stats) WriteStats(out, nodes, lb, ub, node_star);
   if (write_stats) WriteNodes(outNodes, nodes, lb, ub);
   uint32_t n_nodes = BoundAndPrune(nodes, lb, ub, eps);
   uint32_t it = 0;
@@ -89,7 +95,7 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     auto node_i = FindBestNodeToExplore(nodes, eps);
     // Find the current best estimate as the maximizer of the lower
     // bounds
-    auto node_star = FindBestNode(nodes, eps);
+    node_star = FindBestNode(nodes, eps);
     if (node_star->GetLevel() >= max_lvl) break;
     // Find the node with the biggest lower bound (the most
     // conservative node to return).
@@ -128,21 +134,21 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     // Pop the examined node since we are branching here
     nodes.erase(node_i); 
     n_nodes = BoundAndPrune(nodes, lb, ub, eps);
-    if (write_stats) WriteStats(out, nodes, lb, ub);
+    if (write_stats) WriteStats(out, nodes, lb, ub, node_star);
     if (write_stats) WriteNodes(outNodes, nodes, lb, ub);
   } while (it++ < max_it && (ub - lb)/lb > eps && n_nodes >= 1);
 
-  Node node_star = *FindBestNode(nodes, eps);
+  node_star = FindBestNode(nodes, eps);
 
   std::cout << "@" << it << " # " << n_nodes << ": global " 
     << lb << " < " << ub << " " << " |.| " << fabs(ub - lb)/lb << "\t selected "
-    << node_star.GetLB() << " < " << node_star.GetUB() << " lvl "
-    << node_star.GetLevel() << " " //<< node_star.GetIds()[0] << "\t" 
+    << node_star->GetLB() << " < " << node_star->GetUB() << " lvl "
+    << node_star->GetLevel() << " " //<< node_star.GetIds()[0] << "\t" 
     << std::endl;
 
   if (write_stats) out.close();
   if (write_stats) outNodes.close();
-  return node_star;
+  return *node_star;
 }
 
 template<class Node>
