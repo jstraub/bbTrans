@@ -9,6 +9,7 @@
 #include <fstream>
 #include "bbTrans/node.h"
 #include "bbTrans/bound.h"
+#include "jsCore/timer.hpp"
 
 namespace bb {
 
@@ -29,7 +30,7 @@ class BranchAndBound {
   typename std::list<Node>::iterator FindBestNode(std::list<Node>& nodes, double eps);
 
   void WriteStats(std::ofstream& out, std::list<Node>& nodes, double
-      lb, double ub, typename std::list<Node>::iterator& node_star);
+      lb, double ub, double dt, typename std::list<Node>::iterator& node_star);
   void WriteNodes(std::ofstream& out, std::list<Node>& nodes, double
       lb, double ub);
 };

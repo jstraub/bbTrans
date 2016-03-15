@@ -82,7 +82,7 @@ Tetrahedron4D NodeLin::TetraFromBox(const Box& box, uint32_t i,
       QuaternionToVec(Project(d)));
 }
 
-double NodeLin::GetVolume() const { 
+double NodeLin::GetVolume_() const { 
   // subdivide box in Lin space into 4 tetrahedra and sum their volumes
   // https://www.ics.uci.edu/~eppstein/projects/tetra/
   // NodeS3 1: 0 4 5 7
@@ -100,8 +100,8 @@ double NodeLin::GetVolume() const {
 
 std::string NodeLin::ToString() const {
   std::stringstream ss;
-  ss << " V=" << GetVolume()
-    << " in lin space: " << nodeLin_.ToString() 
+  ss  << " in lin space: " << nodeLin_.ToString() 
+//    << " V=" << GetVolume()
     << std::endl;
   for (const auto& q : qs_) 
     ss << "\t " << q.coeffs().transpose() << std::endl;

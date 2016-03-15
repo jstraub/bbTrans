@@ -14,7 +14,7 @@ int main(int argc, char**argv) {
   std::cout << "initial # nodeAAs: " << nodeAAs.size() << std::endl;
 
   double V = 0.;
-  for (const auto& node : nodeAAs) {
+  for (auto& node : nodeAAs) {
     V += node.GetVolume();
   }
   std::cout << "Tessellation AA volume: " << V << std::endl;
@@ -33,7 +33,7 @@ int main(int argc, char**argv) {
   std::cout << "initial # nodes: " << nodes.size() << std::endl;
 
   V = 0.;
-  for (const auto& node : nodes) {
+  for (auto& node : nodes) {
     V += node.GetVolume();
   }
   std::cout << "Tessellation TpS3 volume: " << V << std::endl;

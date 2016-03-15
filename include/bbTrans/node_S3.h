@@ -27,10 +27,10 @@ class NodeS3 : public BaseNode {
   virtual std::string ToString() const;
   virtual std::string Serialize() const;
   std::string GetSpace() const { return "S3"; }
-  double GetVolume() const { return tetrahedron_.GetVolume();}
  protected:
   Tetrahedron4D tetrahedron_;
   Eigen::Quaterniond q_lb_;
+  virtual double GetVolume_() const { return tetrahedron_.GetVolume();}
 };
 
 std::list<NodeS3> GenerateNotesThatTessellateS3();

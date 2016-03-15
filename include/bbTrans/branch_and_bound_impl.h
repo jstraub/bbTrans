@@ -33,12 +33,14 @@ uint32_t BranchAndBound<Node>::BoundAndPrune(std::list<Node>& nodes, double& lb,
 
 template <class Node>
 void BranchAndBound<Node>::WriteStats(std::ofstream& out,
-    std::list<Node>& nodes, double lb, double ub, typename
+    std::list<Node>& nodes, double lb, double ub, double dt,
+    typename
     std::list<Node>::iterator& node_star) {
     double V = 0.; // Volume that the nodes explain
     for (auto& node : nodes) V += node.GetVolume(); 
     uint32_t n_nodes = std::distance(nodes.begin(), nodes.end());
     out << lb << " " << ub << " " << n_nodes << " " << V 
+      << " " << dt
       << " " << node_star->GetLB()
       << " " << node_star->GetUB()
       << " " << node_star->GetLevel() << std::endl;
@@ -50,7 +52,7 @@ void BranchAndBound<Node>::WriteNodes(std::ofstream& out, std::list<Node>& nodes
     for (auto& node : nodes) V += node.GetVolume(); 
     uint32_t n_nodes = std::distance(nodes.begin(), nodes.end());
     out << lb << " " << ub << " " << n_nodes << " " << V << std::endl;
-    for (const auto& node : nodes) {
+    for (auto& node : nodes) {
       out << node.GetLB() << " " << node.GetUB() << " " << node.GetLevel()
         << " " << node.GetVolume() << std::endl;
       out << node.Serialize();
@@ -72,7 +74,7 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     ssNodes << "./bb_nodes_per_iteration_" << nodes.begin()->GetSpace() << ".csv";
     outNodes.open(ssNodes.str());
   }
-
+  jsc::Timer t0;
   // Get initial upper and lower bounds
   double lb = -1.e6;
   double ub = -1.e6;
@@ -85,11 +87,12 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     }
   }
   typename std::list<Node>::iterator node_star = FindBestNode(nodes, eps);
-  if (write_stats) WriteStats(out, nodes, lb, ub, node_star);
+  if (write_stats) WriteStats(out, nodes, lb, ub, t0.toc(), node_star);
   if (write_stats) WriteNodes(outNodes, nodes, lb, ub);
   uint32_t n_nodes = BoundAndPrune(nodes, lb, ub, eps);
   uint32_t it = 0;
   do  {
+    t0.tic();
     // Find node with the biggest upper bound (the most promising node)
     // to explore further.
     auto node_i = FindBestNodeToExplore(nodes, eps);
@@ -134,7 +137,7 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     // Pop the examined node since we are branching here
     nodes.erase(node_i); 
     n_nodes = BoundAndPrune(nodes, lb, ub, eps);
-    if (write_stats) WriteStats(out, nodes, lb, ub, node_star);
+    if (write_stats) WriteStats(out, nodes, lb, ub, t0.toc(), node_star);
     if (write_stats) WriteNodes(outNodes, nodes, lb, ub);
   } while (it++ < max_it && (ub - lb)/lb > eps && n_nodes >= 1);
 

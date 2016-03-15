@@ -28,11 +28,13 @@ class BaseNode {
   uint64_t GetIdAtLevel(uint32_t lvl) const;
   virtual uint32_t GetBranchingFactor(uint32_t i) const = 0;
   virtual std::string ToString() const = 0;
-  virtual double GetVolume() const = 0;
+  virtual double GetVolume();
  protected:
   std::vector<uint32_t> ids_;
   double lb_;
   double ub_;
+  double V_;
+  virtual double GetVolume_() const = 0;
 };
 
 // For use with std::forward_list::remove_if
