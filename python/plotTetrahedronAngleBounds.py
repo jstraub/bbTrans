@@ -39,6 +39,11 @@ dotMaxPred2[0] = tetras[0].GeMinMaxVertexDotProduct()[1]
 for lvl in range(1,lvls):
   dotMaxPred2[lvl] = (3.*dotMaxPred2[lvl-1]+1.)/(2.*(1. +dotMaxPred2[lvl-1]))
 
+dotMaxPred = [ToDeg(np.arccos(dotMaxPred_i)) for dotMaxPred_i in dotMaxPred]
+dotMaxPredSqrt = [ToDeg(np.arccos(dotMaxPredSqrt_i)) for dotMaxPredSqrt_i in dotMaxPredSqrt]
+dotMaxPred2 = [ToDeg(np.arccos(dotMaxPred2_i)) for dotMaxPred2_i in dotMaxPred2]
+
+
 dotMinPred = [-1*np.ones(1)]*lvls
 dotMinPred[0] = tetras[0].GeMinMaxVertexDotProduct()[0]
 for lvl in range(1,lvls):
@@ -62,12 +67,24 @@ for i in range(600):
     tetra = tetra.Subdivide()[np.random.randint(0,6,1)]
     dotMin[lvl] = min(dotMin[lvl], tetra.GeMinMaxVertexDotProduct()[0])
 
-dotMaxPred = [ToDeg(np.arccos(dotMaxPred_i)) for dotMaxPred_i in dotMaxPred]
-dotMaxPredSqrt = [ToDeg(np.arccos(dotMaxPredSqrt_i)) for dotMaxPredSqrt_i in dotMaxPredSqrt]
-dotMaxPred2 = [ToDeg(np.arccos(dotMaxPred2_i)) for dotMaxPred2_i in dotMaxPred2]
 dotMax = [ToDeg(np.arccos(dotMax_i)) for dotMax_i in dotMax]
 dotMin = [ToDeg(np.arccos(dotMin_i)) for dotMin_i in dotMin]
 dotMinPred = [ToDeg(np.arccos(dotMinPred_i)) for dotMinPred_i in dotMinPred]
+
+fig = plt.figure(figsize = figSize, dpi = 80, facecolor="w",
+    edgecolor="k")
+ax = plt.subplot(111)
+plt.plot(np.array(dotMaxPred)/np.array(dotMaxPredSqrt),"-", color=c2,
+    label="bounds")
+plt.plot(np.array(dotMax)/np.array(dotMin),"-", color=c1, label="real")
+ax.set_yscale("log", nonposy='clip')
+plt.xlabel("subdivision level")
+plt.ylabel("upper/lower")
+plt.legend()
+plt.tight_layout(0.4)
+plt.savefig("../subdivisionVsMinAngle_BoundRatio.png", figure=fig)
+plt.show()
+
 
 fig = plt.figure(figsize = figSize, dpi = 80, facecolor="w",
     edgecolor="k")
