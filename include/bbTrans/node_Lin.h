@@ -33,14 +33,18 @@ class NodeLin : public BaseNode {
   virtual std::string ToString() const;
   virtual std::string Serialize() const;
   std::string GetSpace() const { return "Lin"; }
-  double GetVolume() const;
+  NodeS3 GetNodeS3() const;
   const std::vector<Eigen::Quaterniond>& GetQuaternions() const { return qs_; }
   std::vector<Eigen::Quaterniond>& GetQuaternions() { return qs_; }
  protected:
   NodeR3 nodeLin_;
   std::vector<Eigen::Quaterniond> qs_;
   Eigen::Quaterniond q_lb_;
+  virtual double GetVolume_() const;
   virtual void Linearize(const Box& box);
   virtual Eigen::Quaterniond Project(const Eigen::Vector3d& c) const = 0;
+  Tetrahedron4D TetraFromBox(const Box& box, uint32_t i,
+      uint32_t j, uint32_t k, uint32_t l) const;
+  static Eigen::Vector4d QuaternionToVec(const Eigen::Quaterniond& q);
 };
 }

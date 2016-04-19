@@ -26,10 +26,10 @@ class NodeR3 : public BaseNode {
   virtual std::string ToString() const;
   virtual std::string Serialize() const;
   std::string GetSpace() const { return "R3"; }
-  double GetVolume() const { return box_.GetVolume();}
  protected:
   Box box_;
   Eigen::Vector3d t_lb_;
+  virtual double GetVolume_() const { return box_.GetVolume();}
 };
 
 std::list<NodeR3> GenerateNotesThatTessellateR3(const Eigen::Vector3d&

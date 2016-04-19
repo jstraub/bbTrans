@@ -39,6 +39,15 @@ NodeLin::NodeLin(const NodeLin& node)
 //  idsInternal = std::vector<uint32_t>(1,4);
 //  nodeS3s_.push_back(NodeS3(t, idsInternal));
 //}
+NodeS3 NodeLin::GetNodeS3() const {
+  Eigen::Matrix4d Q;
+  for (uint32_t i=0; i<4; ++i) {
+    Q(0,i) = qs_[i].w();
+    Q.block<3,1>(1,i) = qs_[i].vec();
+  }
+  Tetrahedron4D t(Q);
+  return NodeS3(t, ids_);
+}
 
 void NodeLin::Linearize(const Box& box) {
   qs_.reserve(8);
@@ -53,15 +62,46 @@ Eigen::Quaterniond NodeLin::GetCenter() const {
   return Project(nodeLin_.GetBox().GetCenter());
 }
 
-double NodeLin::GetVolume() const { 
-  // TODO would be better to use space on the surface of the sphere
-  return nodeLin_.GetVolume();
+Eigen::Vector4d NodeLin::QuaternionToVec(const Eigen::Quaterniond& q) {
+  return Eigen::Vector4d(q.w(),q.x(),q.y(),q.z());
+}
+
+Tetrahedron4D NodeLin::TetraFromBox(const Box& box, uint32_t i,
+    uint32_t j, uint32_t k, uint32_t l) const {
+  Eigen::Vector3d a;
+  box.GetCorner(i,a);
+  Eigen::Vector3d b;
+  box.GetCorner(j,b);
+  Eigen::Vector3d c;
+  box.GetCorner(k,c);
+  Eigen::Vector3d d;
+  box.GetCorner(l,d);
+  return Tetrahedron4D(QuaternionToVec(Project(a)),
+      QuaternionToVec(Project(b)),
+      QuaternionToVec(Project(c)),
+      QuaternionToVec(Project(d)));
+}
+
+double NodeLin::GetVolume_() const { 
+  // subdivide box in Lin space into 4 tetrahedra and sum their volumes
+  // https://www.ics.uci.edu/~eppstein/projects/tetra/
+  // NodeS3 1: 0 4 5 7
+  double V = TetraFromBox(nodeLin_.GetBox(), 0, 4, 5, 7).GetVolume();
+  // NodeS3 2: 1 4 5 6
+  V += TetraFromBox(nodeLin_.GetBox(), 1, 4, 5, 6).GetVolume();
+  // NodeS3 3: 2 4 6 7
+  V += TetraFromBox(nodeLin_.GetBox(), 2, 4, 6, 7).GetVolume();
+  // NodeS3 4: 3 5 6 7
+  V += TetraFromBox(nodeLin_.GetBox(), 3, 5, 6, 7).GetVolume();
+  // NodeS3 5: 0 1 2 3
+  V += TetraFromBox(nodeLin_.GetBox(), 0, 1, 2, 3).GetVolume();
+  return V;
 }
 
 std::string NodeLin::ToString() const {
   std::stringstream ss;
-  ss << " V=" << GetVolume()
-    << " in lin space: " << nodeLin_.ToString() 
+  ss  << " in lin space: " << nodeLin_.ToString() 
+//    << " V=" << GetVolume()
     << std::endl;
   for (const auto& q : qs_) 
     ss << "\t " << q.coeffs().transpose() << std::endl;
