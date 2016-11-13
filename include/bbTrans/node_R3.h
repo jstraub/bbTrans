@@ -26,6 +26,9 @@ class NodeR3 : public BaseNode {
   virtual std::string ToString() const;
   virtual std::string Serialize() const;
   std::string GetSpace() const { return "R3"; }
+  double DistanceTo(const NodeR3& other) const {
+    return (GetLbArgument()-other.GetLbArgument()).norm();
+  }
  protected:
   Box box_;
   Eigen::Vector3d t_lb_;

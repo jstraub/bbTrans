@@ -38,21 +38,29 @@ double LowerBoundS3::EvaluateAndSet(NodeS3& node) {
   return lb;
 }
 
+void LowerBoundS3::EvaluateRotation(const Eigen::Quaterniond& q,
+    double& lb) const {
+
+  Eigen::VectorXd lbElem(vmf_mm_A_.GetK()*vmf_mm_B_.GetK());
+  for (std::size_t j=0; j < vmf_mm_A_.GetK(); ++j) {
+    for (std::size_t k=0; k < vmf_mm_B_.GetK(); ++k) {
+      lbElem(j*vmf_mm_B_.GetK() + k) =
+        ComputeLogvMFtovMFcost<3>(vmf_mm_A_.Get(j), vmf_mm_B_.Get(k),
+            q._transformVector(vmf_mm_B_.Get(k).GetMu()));
+    }
+  }
+  lb = SumExp(lbElem);
+}
+
 void LowerBoundS3::EvaluateRotationSet(const
     std::vector<Eigen::Quaterniond>& qs, Eigen::VectorXd& lbs) const {
   lbs = Eigen::VectorXd::Zero(qs.size());
   for (uint32_t i=0; i<qs.size(); ++i) {
-    Eigen::VectorXd lbElem(vmf_mm_A_.GetK()*vmf_mm_B_.GetK());
-    for (std::size_t j=0; j < vmf_mm_A_.GetK(); ++j) {
-      for (std::size_t k=0; k < vmf_mm_B_.GetK(); ++k) {
-        lbElem(j*vmf_mm_B_.GetK() + k) =
-          ComputeLogvMFtovMFcost<3>(vmf_mm_A_.Get(j), vmf_mm_B_.Get(k),
-              qs[i]._transformVector(vmf_mm_B_.Get(k).GetMu()));
-      }
-    }
-    lbs(i) = SumExp(lbElem);
-    if (this->verbose_)
-      std::cout << lbElem.transpose() <<  " " << lbs(i) << std::endl;
+    double lb;
+    EvaluateRotation(qs[i], lb);
+    lbs(i) = lb;
+//    if (this->verbose_)
+//      std::cout << lbElem.transpose() <<  " " << lbs(i) << std::endl;
   }
 }
 

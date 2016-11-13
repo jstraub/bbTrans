@@ -42,9 +42,12 @@ double UpperBoundIndepS3::EvaluateAndSet(NodeS3& node) {
 
 Eigen::Vector3d ComputeExtremumOnGeodesic(const Eigen::Vector3d& q1,
     const Eigen::Vector3d& q2, const Eigen::Vector3d& p, bool verbose) {
-  const double theta12 = acos(std::min(1., std::max(-1., (q1.transpose()*q2)(0))));
-  const double theta1 = acos(std::min(1., std::max(-1., (q1.transpose()*p)(0))));
-  const double theta2 = acos(std::min(1., std::max(-1., (q2.transpose()*p)(0))));
+  const double dot12 =std::min(1., std::max(-1.,(q1.dot(q2))));
+  const double dot1 = std::min(1., std::max(-1., (q1.dot(p))));
+  const double dot2 = std::min(1., std::max(-1., (q2.dot(p))));
+  const double theta12 =acos(dot12);
+  const double theta1 = acos( dot1);
+  const double theta2 = acos( dot2);
   if (verbose)
     std::cout << "theta: " << theta12*180./M_PI << " "  << theta1*180./M_PI
       << " "  << theta2*180./M_PI << std::endl;
@@ -58,8 +61,8 @@ Eigen::Vector3d ComputeExtremumOnGeodesic(const Eigen::Vector3d& q1,
     if(verbose) std::cout << "  points are equal. " << std::endl;
     return (q1+q2)*0.5; // q1 \approx q2;
   }
-  t = atan2(cos(theta2) - cos(theta12)*cos(theta1),
-      cos(theta1)*sin(theta12)) / theta12;
+  t = atan2(dot2 - dot12*dot1,
+      dot1*sin(theta12)) / theta12;
   t = std::min(1., std::max(0., t));
   if(verbose) std::cout << "  on geodesic at " << t << std::endl;
   return (q1*sin((1.-t)*theta12) + q2*sin(t*theta12))/sin(theta12);

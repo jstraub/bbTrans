@@ -25,12 +25,15 @@ class vMF {
     std::cout << "vMF tau= " << tau_ << "\tmu= " << mu_.transpose() 
       << "\tpi= " << pi_ << std::endl;
   }
+  const Eigen::Matrix<double, D, 1>& GetXSum() const {return xSum_;}
+  Eigen::Matrix<double, D, 1>& GetXSum() {return xSum_;}
   static double MLEstimateTau(const Eigen::Vector3d& xSum, const
       Eigen::Vector3d& mu, double count);
  private:
   Eigen::Matrix<double, D, 1> mu_;
   double tau_;
   double pi_;
+  Eigen::Matrix<double, D, 1> xSum_;
 };
 
 template<uint32_t D>

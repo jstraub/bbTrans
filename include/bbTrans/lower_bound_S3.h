@@ -22,6 +22,9 @@ class LowerBoundS3 : public Bound<NodeS3> {
 
   void EvaluateRotationSet(const std::vector<Eigen::Quaterniond>& qs,
       Eigen::VectorXd& lbs) const;
+
+  void EvaluateRotation(const Eigen::Quaterniond& q,
+      double& lb) const;
  private:
 //  void Evaluate(const NodeS3& node, std::vector<Eigen::Quaterniond>& qs,
 //      Eigen::Matrix<double,5,1>& lbs);

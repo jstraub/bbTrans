@@ -36,6 +36,9 @@ class NodeLin : public BaseNode {
   NodeS3 GetNodeS3() const;
   const std::vector<Eigen::Quaterniond>& GetQuaternions() const { return qs_; }
   std::vector<Eigen::Quaterniond>& GetQuaternions() { return qs_; }
+  double DistanceTo(const NodeLin& other) const {
+    return GetLbArgument().angularDistance(other.GetLbArgument())*180./M_PI;
+  }
  protected:
   NodeR3 nodeLin_;
   std::vector<Eigen::Quaterniond> qs_;

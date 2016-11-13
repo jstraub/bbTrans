@@ -27,6 +27,10 @@ class NodeS3 : public BaseNode {
   virtual std::string ToString() const;
   virtual std::string Serialize() const;
   std::string GetSpace() const { return "S3"; }
+
+  double DistanceTo(const NodeS3& other) const {
+    return GetLbArgument().angularDistance(other.GetLbArgument())*180./M_PI;
+  }
  protected:
   Tetrahedron4D tetrahedron_;
   Eigen::Quaterniond q_lb_;

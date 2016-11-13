@@ -13,7 +13,7 @@ BranchAndBound<Node>::BranchAndBound(Bound<Node>& lower_bound,
 template <class Node>
 uint32_t BranchAndBound<Node>::BoundAndPrune(std::list<Node>& nodes, double& lb,
     double& ub, double eps) {
-  lb = -1e40; ub = -1e40; 
+//  lb = -1e40; ub = -1e40; 
   for (auto& node : nodes) {
     // Because of numerics...
     if (node.GetUB() < node.GetLB()) {
@@ -61,7 +61,7 @@ void BranchAndBound<Node>::WriteNodes(std::ofstream& out, std::list<Node>& nodes
 
 template <class Node>
 Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
-    uint32_t max_lvl, uint32_t max_it) {
+    uint32_t max_lvl, uint32_t max_it, double lb0, double ub0) {
 
   // Prepare output
   bool write_stats = true;
@@ -76,8 +76,9 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
   }
   jsc::Timer t0;
   // Get initial upper and lower bounds
-  double lb = -1.e6;
-  double ub = -1.e6;
+  double lb = lb0;
+  double ub = ub0;
+  Node node0 = nodes.front();
   for (auto& node : nodes) {
     lower_bound_.EvaluateAndSet(node);
     upper_bound_.EvaluateAndSet(node);
@@ -141,17 +142,23 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     if (write_stats) WriteNodes(outNodes, nodes, lb, ub);
   } while (it++ < max_it && (ub - lb)/lb > eps && n_nodes >= 1);
 
-  node_star = FindBestNode(nodes, eps);
-
-  std::cout << "@" << it << " # " << n_nodes << ": global " 
-    << lb << " < " << ub << " " << " |.| " << fabs(ub - lb)/lb << "\t selected "
-    << node_star->GetLB() << " < " << node_star->GetUB() << " lvl "
-    << node_star->GetLevel() << " " //<< node_star.GetIds()[0] << "\t" 
-    << std::endl;
-
   if (write_stats) out.close();
   if (write_stats) outNodes.close();
-  return *node_star;
+
+  if (n_nodes > 0) {
+    node_star = FindBestNode(nodes, eps);
+    std::cout << "@" << it << " # " << n_nodes << ": global " 
+      << lb << " < " << ub << " " << " |.| " << fabs(ub - lb)/lb << "\t selected "
+      << node_star->GetLB() << " < " << node_star->GetUB() << " lvl "
+      << node_star->GetLevel() << " " //<< node_star.GetIds()[0] << "\t" 
+      << std::endl;
+    return *node_star;
+  } else {
+    node0.SetLB(-1);
+    node0.SetUB(-1);
+    return node0;
+  }
+
 }
 
 template<class Node>
@@ -161,9 +168,13 @@ typename std::list<Node>::iterator BranchAndBound<Node>::FindBestNodeToExplore(s
   uint32_t Neq = 0;
   auto node_istar = node_i;
   for (auto it=nodes.begin(); it!=nodes.end(); it++) 
-    if (node_i->GetUB() - it->GetUB() < eps && it->GetLB() > node_istar->GetLB()) {
+    if (node_i->GetUB() - it->GetUB() < eps 
+        && it->GetLB() > node_istar->GetLB()) {
       ++ Neq;
       node_istar = it;
+      std::cout << "angle between equal nodes: " 
+        << node_i->DistanceTo(*node_istar)
+        << std::endl;
     }
   if (Neq > 1) {
     std::cout << " equal to explore node updates: " << Neq << std::endl;
