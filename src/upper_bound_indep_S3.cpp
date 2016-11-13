@@ -24,7 +24,7 @@ double UpperBoundIndepS3::EvaluateRotationSet(const
   for (std::size_t j=0; j < vmf_mm_A_.GetK(); ++j)
     for (std::size_t k=0; k < vmf_mm_B_.GetK(); ++k) {
       // just use old way since we are not using indep bound anyways
-      Eigen::Vector3d p_star = ClosestPointInRotationSetOld(vmf_mm_A_.Get(j),
+      Eigen::Vector3d p_star = ClosestPointInRotationSet(vmf_mm_A_.Get(j),
           vmf_mm_B_.Get(k), qs);
 //      std::cout << "p_star " << p_star.transpose() << std::endl;
       ubElem(j*vmf_mm_B_.GetK() + k) =
@@ -69,6 +69,8 @@ Eigen::Vector3d ComputeExtremumOnGeodesic(const Eigen::Vector3d& q1,
 Eigen::Vector3d ClosestPointInRotationSetOld(const vMF<3>& vmf_A, const
     vMF<3>& vmf_B, const std::vector<Eigen::Quaterniond>& qs, bool
     furthest, bool verbose) {
+
+
   Eigen::Vector3d muA = vmf_A.GetMu();
 //  std::cout << " muA " << muA.transpose() << std::endl;
   if (furthest) muA *= -1.;
@@ -140,40 +142,56 @@ Eigen::Vector3d ClosestPointInRotationSetOld(const vMF<3>& vmf_A, const
 
 
 
-Eigen::Vector3d ClosestPointInRotationSet(const vMF<3>& vmf_A, const
+Eigen::Vector3d ClosestPointInRotationSetNew(const vMF<3>& vmf_A, const
     vMF<3>& vmf_B, const std::vector<Eigen::Quaterniond>& qs, bool
     furthest, bool verbose) {
   Eigen::Vector3d muA = vmf_A.GetMu();
-//  std::cout << " muA " << muA.transpose() << std::endl;
   if (furthest) muA *= -1.;
   Eigen::Matrix<double,3,Eigen::Dynamic> M(3,qs.size());
   for (uint32_t i=0; i<qs.size(); ++i) {
     M.col(i) = qs[i]._transformVector(vmf_B.GetMu());
   }
-  if(verbose) {
-    std::cout << "-- Polygone:\n";
-    std::cout << M << std::endl;
-    std::cout << " query: " << muA.transpose(); 
-  }
   double Jmax = std::numeric_limits<double>::lowest();
   Eigen::Vector3d pMax = Eigen::Vector3d::Zero();
   ComputeMaxJofSubset<1>(M, muA, verbose, Jmax, pMax);
+  if(verbose) 
+    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
   if (qs.size() > 1)
     ComputeMaxJofSubset<2>(M, muA, verbose, Jmax, pMax);
+  if(verbose) 
+    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
   if (qs.size() > 2)
     ComputeMaxJofSubset<3>(M, muA, verbose, Jmax, pMax);
+  if(verbose) 
+    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
   if (qs.size() > 3)
     ComputeMaxJofSubset<4>(M, muA, verbose, Jmax, pMax);
+  if(verbose) 
+    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
   if (qs.size() > 4)
     ComputeMaxJofSubset<5>(M, muA, verbose, Jmax, pMax);
+  if(verbose) 
+    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
   if (qs.size() > 5)
     ComputeMaxJofSubset<6>(M, muA, verbose, Jmax, pMax);
+  if(verbose) 
+    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
   if (qs.size() > 6)
     ComputeMaxJofSubset<7>(M, muA, verbose, Jmax, pMax);
+  if(verbose) 
+    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
   if (qs.size() > 7)
     ComputeMaxJofSubset<8>(M, muA, verbose, Jmax, pMax);
+  if(verbose) 
+    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
   if (qs.size() > 8)
     std::cerr << "not enough ComputeMaxJofSubset in ClosestPointInRotationSet"<< std::endl;
+  if(verbose) {
+    std::cout << "-- Polygone:\n";
+    std::cout << M << std::endl;
+    std::cout << " query: " << muA.transpose() << std::endl;
+    std::cout << "closest point " << pMax.transpose() << std::endl;
+  }
   return pMax;
 }
 
