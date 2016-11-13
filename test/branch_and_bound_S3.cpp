@@ -9,6 +9,7 @@
 #include "bbTrans/upper_bound_indep_S3.h"
 #include "bbTrans/upper_bound_convex_S3.h"
 #include "bbTrans/branch_and_bound.h"
+#include "jsCore/timer.hpp"
 
 using namespace bb;
 
@@ -57,21 +58,24 @@ int main(int argc, char** argv) {
   
   double eps = 1.0e-8;
   uint32_t max_it = 1000;
-  uint32_t max_lvl = 20;
+  uint32_t max_lvl = 15;
   BranchAndBound<NodeS3> bb(lower_bound, upper_bound_convex);
+
+  jsc::Timer t0;
   NodeS3 node_star = bb.Compute(nodes, eps, max_lvl, max_it);
+  t0.toctic("BB ");
 
   std::cout << "optimum quaternion: " 
     << node_star.GetLbArgument().coeffs().transpose()
     << " |.|=" << node_star.GetLbArgument().norm()
     << std::endl;
-  std::cout << "true quaternion: " << q_true.w() << " " << q_true.x()
-    << " " << q_true.y() << " " << q_true.z() 
+  std::cout << "true quaternion: " << q_true.coeffs().transpose()
     << " |.|=" << q_true.norm()
     << std::endl;
 
-  std::cout << "Deviation from GT: " 
-    << 2.*acos(std::min(1.0, std::max(-1.,node_star.GetLbArgument().dot(q_true))))*180./M_PI
+  std::cout << "Deviation from GT: "  <<
+    q_true.angularDistance(node_star.GetLbArgument())
+//    << 2.*acos(std::min(1.0, std::max(-1.,node_star.GetLbArgument().dot(q_true))))*180./M_PI
     << std::endl;
 }
 

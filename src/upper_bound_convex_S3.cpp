@@ -64,7 +64,8 @@ double UpperBoundConvexS3::EvaluateRotationSet(const
           vmf_B, qs, false, this->verbose_);
       Eigen::Vector3d p_L = FurthestPointInRotationSet(vmf_A,
           vmf_B, qs, this->verbose_);
-  //    std::cout << p_U.transpose() << " and " << p_L.transpose() << std::endl;
+//      std::cout << k << " " << j << std::endl;
+//      std::cout << p_U.transpose() << " and " << p_L.transpose() << std::endl;
       double U = (vmf_A.GetTau()*vmf_A.GetMu() +
           vmf_B.GetTau()*p_U).norm();
       double L = (vmf_A.GetTau()*vmf_A.GetMu() +

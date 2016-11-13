@@ -2,7 +2,7 @@ from discretized4dSphere import *
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-from js.utils.plot.colors import colorScheme
+from colors import colorScheme
 
 c1 = colorScheme("labelMap")["turquoise"]
 c2 = colorScheme("labelMap")["orange"]

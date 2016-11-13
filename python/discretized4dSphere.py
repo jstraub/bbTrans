@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.linalg import svd, det, eig
-from js.geometry.rotations import *
+from rotations import *
 from itertools import combinations, permutations
 
 def normed(a):
