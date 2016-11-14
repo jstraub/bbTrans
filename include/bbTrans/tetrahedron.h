@@ -27,10 +27,14 @@ class Tetrahedron4D {
   /// subdivided tetrahedra down to the maxLvl subdividision level.
   double GetVolume(uint32_t maxLvl=5) const;
 
+  /// any part of tetrahedron is in upper half sphere
+  bool IntersectsUpperHalfSphere() const;
   bool Intersects(const Eigen::Vector4d& q) const;
 
   /// Get the volume of a given Tetrahedron in 4D
   static double GetVolume(const Tetrahedron4D& tetra);
+
+  static const Eigen::Vector4d north_;
  protected:
   /// One 4D vertex per column. 4 vertices in total to describe the 4D
   /// Tetrahedron.
