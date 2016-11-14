@@ -20,9 +20,11 @@ std::vector<NodeS3> NodeS3::Branch() const {
   nodes.reserve(8);
   std::vector<Tetrahedron4D> tetrahedra = tetrahedron_.Subdivide();
   for (uint32_t i=0; i < tetrahedra.size(); ++i) {
-    std::vector<uint32_t> ids(this->ids_);
-    ids.push_back(i);
-    nodes.push_back(NodeS3(tetrahedra[i], ids));
+    if (tetrahedra[i].IntersectsUpperHalfSphere()) {
+      std::vector<uint32_t> ids(this->ids_);
+      ids.push_back(i);
+      nodes.push_back(NodeS3(tetrahedra[i], ids));
+    }
   }
   return nodes;
 }

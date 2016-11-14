@@ -6,6 +6,8 @@
 
 namespace bb {
 
+const Eigen::Vector4d Tetrahedron4D::north_ = Eigen::Vector4d(0,0,0,1);
+
 Eigen::Vector4d normed(const Eigen::Vector4d& x) {
   return x / x.norm();
 }
@@ -29,6 +31,10 @@ Eigen::Vector4d Tetrahedron4D::GetVertex(uint32_t i) const {
   Eigen::Vector4d v = vertices_.col(i);
 //  v.bottomRows<3>() *= -1;
   return v;
+}
+
+bool Tetrahedron4D::IntersectsUpperHalfSphere() const {
+  return ((vertices_*north_).array() > 0.).any();
 }
 
 Eigen::Quaterniond Tetrahedron4D::GetCenterQuaternion() const {
@@ -144,7 +150,7 @@ std::vector<Tetrahedron4D> Tetrahedron4D::Subdivide() const {
 }
 
 bool Tetrahedron4D::Intersects(const Eigen::Vector4d& q) const {
-  Eigen::Vector3d alpha = vertices_.lu().solve(q);
+  Eigen::Vector4d alpha = vertices_.lu().solve(q);
   return (alpha.array() >= 0.).all();
 }
 

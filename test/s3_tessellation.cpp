@@ -15,6 +15,7 @@ int main(int argc, char**argv) {
   double V = 0.;
   for (const auto& tetra : tetrahedra) {
     V += tetra.GetVolume();
+//    std::cout << tetra.GetCenter().transpose() << std::endl;
   }
   std::cout << "Tessellation l0 volume: " << V << std::endl;
 
@@ -59,6 +60,8 @@ int main(int argc, char**argv) {
   uint32_t Nall = 100000;
   for (uint32_t i=0; i<Nall; ++i) {
     S4d q = S4d::Random();
+//    if (i%100 == 0) 
+//      std::cout << q.vector().transpose() << std::endl;
     for (const auto& tetra : tetrahedra) 
       if (tetra.Intersects(q.vector())) {
         ++N;
@@ -71,7 +74,7 @@ int main(int argc, char**argv) {
   N = 0.;
   for (uint32_t i=0; i<Nall; ++i) {
     S4d q = S4d::Random();
-    q.vector()(0) = q.vector()(0) < 0. ? -q.vector()(0) : q.vector()(0);
+    q.vector()(3) = q.vector()(3) < 0. ? -q.vector()(3) : q.vector()(3);
     for (const auto& tetra : tetrahedra) 
       if (tetra.Intersects(q.vector())) {
         ++N;
@@ -84,7 +87,7 @@ int main(int argc, char**argv) {
   N = 0.;
   for (uint32_t i=0; i<Nall; ++i) {
     S4d q = S4d::Random();
-    q.vector()(0) = q.vector()(0) < 0. ? q.vector()(0) : -q.vector()(0);
+    q.vector()(3) = q.vector()(3) < 0. ? q.vector()(3) : -q.vector()(3);
     for (const auto& tetra : tetrahedra) 
       if (tetra.Intersects(q.vector())) {
         ++N;
