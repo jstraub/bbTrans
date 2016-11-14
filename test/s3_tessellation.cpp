@@ -68,6 +68,7 @@ int main(int argc, char**argv) {
   std::cout << "fraction all over sphere intersected with tessellation: "
     << static_cast<double>(N)/static_cast<double>(Nall)
     << std::endl;
+
   N = 0.;
   for (uint32_t i=0; i<Nall; ++i) {
     S4d q = S4d::Random();

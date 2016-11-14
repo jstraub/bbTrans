@@ -167,28 +167,28 @@ Eigen::Vector3d ClosestPointInRotationSetNew(const vMF<3>& vmf_A, const
     ComputeMaxJofSubset<3>(M, muA, verbose, Jmax, pMax);
   if(verbose) 
     std::cout << Jmax << ": " << pMax.transpose() << std::endl;
-  if (qs.size() > 3)
-    ComputeMaxJofSubset<4>(M, muA, verbose, Jmax, pMax);
-  if(verbose) 
-    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
-  if (qs.size() > 4)
-    ComputeMaxJofSubset<5>(M, muA, verbose, Jmax, pMax);
-  if(verbose) 
-    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
-  if (qs.size() > 5)
-    ComputeMaxJofSubset<6>(M, muA, verbose, Jmax, pMax);
-  if(verbose) 
-    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
-  if (qs.size() > 6)
-    ComputeMaxJofSubset<7>(M, muA, verbose, Jmax, pMax);
-  if(verbose) 
-    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
-  if (qs.size() > 7)
-    ComputeMaxJofSubset<8>(M, muA, verbose, Jmax, pMax);
-  if(verbose) 
-    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
-  if (qs.size() > 8)
-    std::cerr << "not enough ComputeMaxJofSubset in ClosestPointInRotationSet"<< std::endl;
+//  if (qs.size() > 3)
+//    ComputeMaxJofSubset<4>(M, muA, verbose, Jmax, pMax);
+//  if(verbose) 
+//    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
+//  if (qs.size() > 4)
+//    ComputeMaxJofSubset<5>(M, muA, verbose, Jmax, pMax);
+//  if(verbose) 
+//    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
+//  if (qs.size() > 5)
+//    ComputeMaxJofSubset<6>(M, muA, verbose, Jmax, pMax);
+//  if(verbose) 
+//    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
+//  if (qs.size() > 6)
+//    ComputeMaxJofSubset<7>(M, muA, verbose, Jmax, pMax);
+//  if(verbose) 
+//    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
+//  if (qs.size() > 7)
+//    ComputeMaxJofSubset<8>(M, muA, verbose, Jmax, pMax);
+//  if(verbose) 
+//    std::cout << Jmax << ": " << pMax.transpose() << std::endl;
+//  if (qs.size() > 8)
+//    std::cerr << "not enough ComputeMaxJofSubset in ClosestPointInRotationSet"<< std::endl;
   if(verbose) {
     std::cout << "-- Polygone:\n";
     std::cout << M << std::endl;

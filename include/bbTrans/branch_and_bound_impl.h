@@ -125,7 +125,7 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
               << " lvl " << node.GetLevel() << "@" << it << " # " <<
               n_nodes << ": cur " << node_i->GetLB() << " < " <<
               node_i->GetUB() << " lvl " << node_i->GetLevel() 
-              << "\t global " << lb << " < " << ub << " " << " |.| " <<
+              << "\t global LB " << lb << " UB " << ub << " " << " |.| " <<
               (ub - lb)/lb << std::endl;
           node.SetUB(node.GetLB()+10*eps); 
         }
@@ -154,6 +154,8 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
       << std::endl;
     return *node_star;
   } else {
+    std::cout << "@" << it << " pruned all nodes " 
+      << lb << " < " << ub << " " << " |.| " << fabs(ub - lb)/lb << std::endl;
     node0.SetLB(-1);
     node0.SetUB(-1);
     return node0;
