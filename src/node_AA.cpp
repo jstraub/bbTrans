@@ -5,8 +5,8 @@
 
 namespace bb {
 
-NodeAA::NodeAA(const Box& box, std::vector<uint32_t> ids) 
-  : NodeLin(box,ids)
+NodeAA::NodeAA(const Box& box, uint32_t lvl) 
+  : NodeLin(box,lvl)
 {
   Linearize(box);
 }
@@ -33,9 +33,7 @@ std::vector<NodeAA> NodeAA::Branch() const {
   nodes.reserve(8);
   std::vector<NodeR3> boxs = nodeLin_.Branch();
   for (uint32_t i=0; i < boxs.size(); ++i) {
-    std::vector<uint32_t> ids(this->ids_);
-    ids.push_back(i);
-    nodes.push_back(NodeAA(boxs[i].GetBox(), ids));
+    nodes.push_back(NodeAA(boxs[i].GetBox(), lvl_+1));
   }
   return nodes;
 }
@@ -47,16 +45,16 @@ std::list<NodeAA> TessellateAA() {
   // cubes which is close to the 270 of the 600-cell tessellation.
   Eigen::Vector3d p_min(-M_PI,-M_PI,-M_PI);
   Eigen::Vector3d p_max( 0., 0., M_PI);
-  NodeAA root00(Box(p_min, p_max),std::vector<uint32_t>(1,0));
+  NodeAA root00(Box(p_min, p_max),0);
   p_min << -M_PI,0.,-M_PI;
   p_max << 0., M_PI, M_PI;
-  NodeAA root01(Box(p_min, p_max),std::vector<uint32_t>(1,1));
+  NodeAA root01(Box(p_min, p_max),0);
   p_min << 0., -M_PI,-M_PI;
   p_max << M_PI, 0., M_PI;
-  NodeAA root10(Box(p_min, p_max),std::vector<uint32_t>(1,1));
+  NodeAA root10(Box(p_min, p_max),0);
   p_min << 0.,0.,-M_PI;
   p_max << M_PI, M_PI, M_PI;
-  NodeAA root11(Box(p_min, p_max),std::vector<uint32_t>(1,1));
+  NodeAA root11(Box(p_min, p_max),0);
 //  std::cout << root.ToString() << std::endl;
   std::vector<NodeAA> l1 = root00.Branch();
   std::vector<NodeAA> a = root01.Branch();

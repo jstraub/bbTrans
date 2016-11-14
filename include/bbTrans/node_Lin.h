@@ -22,7 +22,7 @@ namespace bb {
 
 class NodeLin : public BaseNode {
  public:
-  NodeLin(const Box& box, std::vector<uint32_t> ids);
+  NodeLin(const Box& box, uint32_t lvl);
   NodeLin(const NodeLin& node);
   virtual ~NodeLin() = default;
 

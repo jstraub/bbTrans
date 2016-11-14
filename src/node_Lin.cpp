@@ -5,12 +5,12 @@
 
 namespace bb {
 
-NodeLin::NodeLin(const Box& box, std::vector<uint32_t> ids) 
-  : BaseNode(ids), nodeLin_(box, ids)
+NodeLin::NodeLin(const Box& box, uint32_t lvl) 
+  : BaseNode(lvl), nodeLin_(box, lvl)
 { }
 
 NodeLin::NodeLin(const NodeLin& node) 
-  : BaseNode(node.GetIds(), node.GetLB(), node.GetUB()),
+  : BaseNode(node.GetLevel(), node.GetLB(), node.GetUB()),
   nodeLin_(node.nodeLin_), qs_(node.qs_), q_lb_(node.q_lb_)
 { }
 
@@ -46,7 +46,7 @@ NodeS3 NodeLin::GetNodeS3() const {
     Q.block<3,1>(1,i) = qs_[i].vec();
   }
   Tetrahedron4D t(Q);
-  return NodeS3(t, ids_);
+  return NodeS3(t, lvl_);
 }
 
 void NodeLin::Linearize(const Box& box) {

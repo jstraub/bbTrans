@@ -6,11 +6,11 @@
 namespace bb {
 
 NodeS3::NodeS3(const Tetrahedron4D& tetrahedron,
-    std::vector<uint32_t> ids) : BaseNode(ids),
+    uint32_t lvl) : BaseNode(lvl),
   tetrahedron_(tetrahedron) {
 }
 
-NodeS3::NodeS3(const NodeS3& node) : BaseNode(node.GetIds(),
+NodeS3::NodeS3(const NodeS3& node) : BaseNode(node.GetLevel(),
     node.GetLB(), node.GetUB()), tetrahedron_(node.GetTetrahedron()),
   q_lb_(node.GetLbArgument()) {
 }
@@ -21,9 +21,7 @@ std::vector<NodeS3> NodeS3::Branch() const {
   std::vector<Tetrahedron4D> tetrahedra = tetrahedron_.Subdivide();
   for (uint32_t i=0; i < tetrahedra.size(); ++i) {
     if (tetrahedra[i].IntersectsUpperHalfSphere()) {
-      std::vector<uint32_t> ids(this->ids_);
-      ids.push_back(i);
-      nodes.push_back(NodeS3(tetrahedra[i], ids));
+      nodes.push_back(NodeS3(tetrahedra[i], lvl_+1));
     }
   }
   return nodes;
@@ -61,7 +59,7 @@ std::list<NodeS3> GenerateNotesThatTessellateS3() {
   std::list<NodeS3> nodes; 
 //  nodes.reserve(tetrahedra.size());
   for (uint32_t i=0; i<tetrahedra.size(); ++i) {
-    nodes.push_back(NodeS3(tetrahedra[i], std::vector<uint32_t>(1,i)));
+    nodes.push_back(NodeS3(tetrahedra[i], 0));
   }
   return nodes;
 }

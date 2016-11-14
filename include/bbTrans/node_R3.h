@@ -15,7 +15,7 @@ namespace bb {
 
 class NodeR3 : public BaseNode {
  public:
-  NodeR3(const Box& box, std::vector<uint32_t> ids);
+  NodeR3(const Box& box, uint32_t lvl);
   NodeR3(const NodeR3& node);
   virtual ~NodeR3() = default;
   virtual std::vector<NodeR3> Branch() const;

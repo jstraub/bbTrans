@@ -16,7 +16,7 @@ namespace bb {
 
 class NodeS3 : public BaseNode {
  public:
-  NodeS3(const Tetrahedron4D& tetrahedron, std::vector<uint32_t> ids);
+  NodeS3(const Tetrahedron4D& tetrahedron, uint32_t lvl);
   NodeS3(const NodeS3& node);
   virtual ~NodeS3() = default;
   virtual std::vector<NodeS3> Branch() const;

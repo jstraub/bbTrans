@@ -20,7 +20,7 @@ namespace bb {
 
 class NodeTpS3 : public NodeLin {
  public:
-  NodeTpS3(const Box& box, std::vector<uint32_t> ids);
+  NodeTpS3(const Box& box, uint32_t lvl);
   NodeTpS3(const NodeTpS3& node);
   virtual ~NodeTpS3() = default;
   virtual std::vector<NodeTpS3> Branch() const;

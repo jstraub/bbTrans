@@ -13,24 +13,24 @@ namespace bb {
 
 class BaseNode {
  public:
-  BaseNode(std::vector<uint32_t> ids);
-  BaseNode(std::vector<uint32_t> ids, double lb, double ub);
+  BaseNode(uint32_t lvl);
+  BaseNode(uint32_t lvl, double lb, double ub);
   BaseNode(const BaseNode& node);
   virtual ~BaseNode() = default;
 //  virtual std::vector<std::unique_ptr<BaseNode>> Branch() const = 0;
-  uint32_t GetLevel() const {return ids_.size()-1;}
-  std::vector<uint32_t> GetIds() const {return ids_;}
+  uint32_t GetLevel() const {return lvl_;}
+//  std::vector<uint32_t> GetIds() const {return ids_;}
   double GetUB() const { return ub_;}
   double GetLB() const { return lb_;}
   void SetUB(double ub) { ub_ = ub;}
   void SetLB(double lb) { lb_ = lb;}
   double GetBoundGap() const {return ub_-lb_;}
-  uint64_t GetIdAtLevel(uint32_t lvl) const;
+//  uint64_t GetIdAtLevel(uint32_t lvl) const;
   virtual uint32_t GetBranchingFactor(uint32_t i) const = 0;
   virtual std::string ToString() const = 0;
   virtual double GetVolume();
  protected:
-  std::vector<uint32_t> ids_;
+  uint32_t lvl_;
   double lb_;
   double ub_;
   double V_;

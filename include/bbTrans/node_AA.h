@@ -20,7 +20,7 @@ namespace bb {
 
 class NodeAA : public NodeLin {
  public:
-  NodeAA(const Box& box, std::vector<uint32_t> ids);
+  NodeAA(const Box& box, uint32_t lvl);
   NodeAA(const NodeAA& node);
   virtual ~NodeAA() = default;
   virtual std::vector<NodeAA> Branch() const;

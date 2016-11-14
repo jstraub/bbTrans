@@ -5,10 +5,11 @@
 
 namespace bb {
 
-NodeR3::NodeR3(const Box& box, std::vector<uint32_t> ids) : BaseNode(ids), box_(box) {
+NodeR3::NodeR3(const Box& box, uint32_t lvl) :
+  BaseNode(lvl), box_(box) {
 }
 
-NodeR3::NodeR3(const NodeR3& node) : BaseNode(node.GetIds(),
+NodeR3::NodeR3(const NodeR3& node) : BaseNode(node.GetLevel(),
     node.GetLB(), node.GetUB()), box_(node.GetBox()), 
   t_lb_(node.GetLbArgument()) {
 }
@@ -18,16 +19,14 @@ std::vector<NodeR3> NodeR3::Branch() const {
   nodes.reserve(8);
   std::vector<Box> boxs = box_.Subdivide();
   for (uint32_t i=0; i < boxs.size(); ++i) {
-    std::vector<uint32_t> ids(this->ids_);
-    ids.push_back(i);
-    nodes.push_back(NodeR3(boxs[i], ids));
+    nodes.push_back(NodeR3(boxs[i], lvl_+1));
   }
   return nodes;
 }
 
 std::list<NodeR3> GenerateNotesThatTessellateR3(const Eigen::Vector3d&
     min, const Eigen::Vector3d& max, double max_side_len) {
-  NodeR3 node0(Box(min, max), std::vector<uint32_t>(1,0));
+  NodeR3 node0(Box(min, max), 0);
   std::vector<std::vector<NodeR3>> node_tree;
   node_tree.push_back(std::vector<NodeR3>(1,node0));
   for (uint32_t lvl = 0; lvl < 20; ++lvl) {
