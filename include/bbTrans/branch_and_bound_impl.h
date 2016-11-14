@@ -64,7 +64,7 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     uint32_t max_lvl, uint32_t max_it, double lb0, double ub0) {
 
   // Prepare output
-  bool write_stats = true;
+  bool write_stats = false;
   std::ofstream out, outNodes;
   if (write_stats) {
     std::stringstream ss;
@@ -83,9 +83,9 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     lower_bound_.EvaluateAndSet(node);
     upper_bound_.EvaluateAndSet(node);
     // Because of numerics in S3 case...
-    if (node.GetUB() < node.GetLB()) {
-      node.SetUB(node.GetLB()+eps); 
-    }
+//    if (node.GetUB() < node.GetLB()) {
+//      node.SetUB(node.GetLB()+eps); 
+//    }
   }
   typename std::list<Node>::iterator node_star = FindBestNode(nodes, eps);
   if (write_stats) WriteStats(out, nodes, lb, ub, t0.toc(), node_star);
@@ -118,17 +118,17 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
         upper_bound_.EvaluateAndSet(node);
         lower_bound_.EvaluateAndSet(node);
         // Because of numerics in S3 case...
-        if (node.GetUB() < node.GetLB()) {
-          if (node.GetLevel() < 8) 
-            std::cout << " ub < lb: " << node.GetUB() << " < " <<
-              node.GetLB() << " - " << node.GetUB() - node.GetLB() 
-              << " lvl " << node.GetLevel() << "@" << it << " # " <<
-              n_nodes << ": cur " << node_i->GetLB() << " < " <<
-              node_i->GetUB() << " lvl " << node_i->GetLevel() 
-              << "\t global LB " << lb << " UB " << ub << " " << " |.| " <<
-              (ub - lb)/lb << std::endl;
-          node.SetUB(node.GetLB()+10*eps); 
-        }
+//        if (node.GetUB() < node.GetLB()) {
+//          if (node.GetLevel() < 8) 
+//            std::cout << " ub < lb: " << node.GetUB() << " < " <<
+//              node.GetLB() << " - " << node.GetUB() - node.GetLB() 
+//              << " lvl " << node.GetLevel() << "@" << it << " # " <<
+//              n_nodes << ": cur " << node_i->GetLB() << " < " <<
+//              node_i->GetUB() << " lvl " << node_i->GetLevel() 
+//              << "\t global LB " << lb << " UB " << ub << " " << " |.| " <<
+//              (ub - lb)/lb << std::endl;
+//          node.SetUB(node.GetLB()+10*eps); 
+//        }
         if (node.GetUB() > lb) {
           // Remember this node since we cannot prune it.
           nodes.push_back(node);

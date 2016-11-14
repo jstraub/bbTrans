@@ -2,11 +2,16 @@
  * under the MIT license. See the license file LICENSE.
  */
 #include "bbTrans/s3_tessellation.h" 
+#include "jsCore/timer.hpp"
 
 namespace bb {
 
 std::vector<Tetrahedron4D> TessellateS3() {
 
+//  jsc::Timer t0;
+//  TessellateS3(Tetrahedron4D::north_);
+//  t0.toctic("TessellateS3");
+  
   return TessellateS3(Tetrahedron4D::north_);
 
   // Does not work
