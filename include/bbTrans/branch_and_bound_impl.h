@@ -79,6 +79,7 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
   double lb = lb0;
   double ub = ub0;
   Node node0 = nodes.front();
+#pragma omp parallel for
   for (auto& node : nodes) {
     lower_bound_.EvaluateAndSet(node);
     upper_bound_.EvaluateAndSet(node);
