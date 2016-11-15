@@ -98,6 +98,22 @@ double NodeLin::GetVolume_() const {
   return V;
 }
 
+NodeS3 NodeLin::GetNodeS3(uint32_t i) const {
+  switch (i) {
+    case 0:
+      return NodeS3(TetraFromBox(nodeLin_.GetBox(), 0, 4, 5, 7),lvl_);
+    case 1:
+      return NodeS3(TetraFromBox(nodeLin_.GetBox(), 1, 4, 5, 6),lvl_);
+    case 2:
+      return NodeS3(TetraFromBox(nodeLin_.GetBox(), 2, 4, 6, 7),lvl_);
+    case 3:
+      return NodeS3(TetraFromBox(nodeLin_.GetBox(), 3, 5, 6, 7),lvl_);
+    case 4:
+      return NodeS3(TetraFromBox(nodeLin_.GetBox(), 0, 1, 2, 3),lvl_);
+  };
+  return NodeS3(TetraFromBox(nodeLin_.GetBox(), 0, 4, 5, 7),lvl_);
+}
+
 std::string NodeLin::ToString() const {
   std::stringstream ss;
   ss  << " in lin space: " << nodeLin_.ToString() 

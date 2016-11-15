@@ -65,7 +65,7 @@ int main(int argc, char**argv) {
     for (const auto& tetra : tetrahedra) 
       if (tetra.Intersects(q.vector())) {
         ++N;
-        break;
+//        break;
       }
   }
   std::cout << "fraction all over sphere intersected with tessellation: "
