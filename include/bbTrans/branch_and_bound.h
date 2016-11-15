@@ -19,7 +19,7 @@ class BranchAndBound {
   BranchAndBound(Bound<Node>& lower_bound, Bound<Node>& upper_bound);
   ~BranchAndBound() = default;
   Node Compute(std::list<Node>& nodes, double eps, uint32_t max_lvl,
-      uint32_t max_it, double lb0=-1e6, double ub0=-1e6);
+      uint32_t max_it, double lb0=-1., double ub0=-1.);
  private:
   Bound<Node>& lower_bound_;
   Bound<Node>& upper_bound_;

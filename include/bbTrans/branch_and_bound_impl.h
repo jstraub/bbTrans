@@ -13,16 +13,17 @@ BranchAndBound<Node>::BranchAndBound(Bound<Node>& lower_bound,
 template <class Node>
 uint32_t BranchAndBound<Node>::BoundAndPrune(std::list<Node>& nodes, double& lb,
     double& ub, double eps) {
-//  lb = -1e40; ub = -1e40; 
+//  lb = -1.; 
+  ub = -1.; // only reset UB but LB should only be able to go up
   for (auto& node : nodes) {
     // Because of numerics...
-    if (node.GetUB() < node.GetLB()) {
-      std::cout << " ub < lb: " << node.GetUB() << " < " <<
-        node.GetLB() << " - " << node.GetUB() - node.GetLB()
-        << " lvl " << node.GetLevel()
-        << std::endl;
-      node.SetUB(node.GetLB()+eps); 
-    }
+//    if (node.GetUB() < node.GetLB()) {
+//      std::cout << " ub < lb: " << node.GetUB() << " < " <<
+//        node.GetLB() << " - " << node.GetUB() - node.GetLB()
+//        << " lvl " << node.GetLevel()
+//        << std::endl;
+//      node.SetUB(node.GetLB()+eps); 
+//    }
     lb = std::max(lb, node.GetLB());
     ub = std::max(ub, node.GetUB());
   }
@@ -79,25 +80,29 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
   double lb = lb0;
   double ub = ub0;
   Node node0 = nodes.front();
-//  for (auto& node : nodes) {
+  // ugly but works
+  std::vector<Node*> parForNodes(nodes.size(), nullptr);
+  size_t i=0;
+  for (auto& node : nodes) 
+    parForNodes[i++] = &node;
 #pragma omp parallel for
-  for (size_t i=0; i<nodes.size(); ++i) {
-    for (auto node = nodes.begin(); node != nodes.end(); node++) {
-      if (std::distance(node, nodes.begin()) == i) {
-        lower_bound_.EvaluateAndSet(*node);
-        upper_bound_.EvaluateAndSet(*node);
-        break;
-      }
+  for (size_t i=0; i<parForNodes.size(); ++i) {
+    lower_bound_.EvaluateAndSet(*parForNodes[i]);
+    upper_bound_.EvaluateAndSet(*parForNodes[i]);
     // Because of numerics in S3 case...
 //    if (node.GetUB() < node.GetLB()) {
 //      node.SetUB(node.GetLB()+eps); 
 //    }
-    }
+//    }
   }
+//  for (const auto& node : nodes) 
+//    std::cout << node.GetLB() << " " << node.GetUB() << std::endl;
   typename std::list<Node>::iterator node_star = FindBestNode(nodes, eps);
   if (write_stats) WriteStats(out, nodes, lb, ub, t0.toc(), node_star);
   if (write_stats) WriteNodes(outNodes, nodes, lb, ub);
-  uint32_t n_nodes = BoundAndPrune(nodes, lb, ub, eps);
+  // Prune
+  nodes.remove_if(IsPrunableNode<Node>(lb));
+  uint32_t n_nodes  = std::distance(nodes.begin(), nodes.end());
   uint32_t it = 0;
   do  {
     t0.tic();
@@ -151,6 +156,10 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
     n_nodes = BoundAndPrune(nodes, lb, ub, eps);
     if (write_stats) WriteStats(out, nodes, lb, ub, t0.toc(), node_star);
     if (write_stats) WriteNodes(outNodes, nodes, lb, ub);
+
+//    for (auto& node : new_nodes) 
+//      std::cout << " (" << node.GetLB() << " " << node.GetUB() << ") ";
+//    std::cout << std::endl;
   } while (it++ < max_it && (ub - lb)/lb > eps && n_nodes >= 1);
 
   if (write_stats) out.close();
