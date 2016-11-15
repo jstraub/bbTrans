@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
   
   double eps = 1.e-4;
   uint32_t max_it = 1000;
-  uint32_t max_lvl = 50;
+  uint32_t max_lvl = 15;
   BranchAndBound<NodeR3> bb1(lower_bound, upper_bound);
   NodeR3 node_star = bb1.Compute(nodes, eps, max_lvl, max_it);
 

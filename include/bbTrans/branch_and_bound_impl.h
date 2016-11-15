@@ -79,14 +79,20 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
   double lb = lb0;
   double ub = ub0;
   Node node0 = nodes.front();
+//  for (auto& node : nodes) {
 #pragma omp parallel for
-  for (auto& node : nodes) {
-    lower_bound_.EvaluateAndSet(node);
-    upper_bound_.EvaluateAndSet(node);
+  for (size_t i=0; i<nodes.size(); ++i) {
+    for (auto node = nodes.begin(); node != nodes.end(); node++) {
+      if (std::distance(node, nodes.begin()) == i) {
+        lower_bound_.EvaluateAndSet(*node);
+        upper_bound_.EvaluateAndSet(*node);
+        break;
+      }
     // Because of numerics in S3 case...
 //    if (node.GetUB() < node.GetLB()) {
 //      node.SetUB(node.GetLB()+eps); 
 //    }
+    }
   }
   typename std::list<Node>::iterator node_star = FindBestNode(nodes, eps);
   if (write_stats) WriteStats(out, nodes, lb, ub, t0.toc(), node_star);
@@ -115,9 +121,11 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
         << std::endl;
       // Branch and check resulting nodes.
       std::vector<Node> new_nodes = node_i->Branch();
-      for (auto& node : new_nodes) {
-        upper_bound_.EvaluateAndSet(node);
-        lower_bound_.EvaluateAndSet(node);
+//      for (auto& node : new_nodes) {
+#pragma omp parallel for
+      for (size_t i=0; i<new_nodes.size(); ++i) {
+        upper_bound_.EvaluateAndSet(new_nodes[i]);
+        lower_bound_.EvaluateAndSet(new_nodes[i]);
         // Because of numerics in S3 case...
 //        if (node.GetUB() < node.GetLB()) {
 //          if (node.GetLevel() < 8) 
@@ -130,6 +138,8 @@ Node BranchAndBound<Node>::Compute(std::list<Node>& nodes, double eps,
 //              (ub - lb)/lb << std::endl;
 //          node.SetUB(node.GetLB()+10*eps); 
 //        }
+      }
+      for (auto& node : new_nodes) {
         if (node.GetUB() > lb) {
           // Remember this node since we cannot prune it.
           nodes.push_back(node);
